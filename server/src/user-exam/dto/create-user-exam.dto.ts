@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateUserExamDto {
@@ -7,12 +8,14 @@ export class CreateUserExamDto {
   @IsArray()
   sections: string[];
 
-  @IsOptional() // Để cho phép không cần cung cấp
-  answers: Map<number, string>;
+  @IsOptional()
+  answers: Map<string, string>;
 
   @IsDate()
+  @Type(() => Date) // Thêm decorator @Type để chuyển đổi chuỗi thành Date
   startTime: Date;
 
   @IsDate()
+  @Type(() => Date)
   endTime: Date;
 }

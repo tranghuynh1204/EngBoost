@@ -6,21 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UserExamService } from './user-exam.service';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { UserExam } from './entities/user-exam.entity';
+import { User } from 'src/auth/decorator/user.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('user-exams')
 export class UserExamController {
   constructor(private readonly userExamService: UserExamService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(
     @Body() createUserExamDto: CreateUserExamDto,
+    @User() user,
   ): Promise<UserExam> {
-    return this.userExamService.create(createUserExamDto, '1'); //sau này thêm jwt để biết ng dùng
+    return this.userExamService.create(createUserExamDto, user.sub); //sau này thêm jwt để biết ng dùng
   }
 
   // @Get()

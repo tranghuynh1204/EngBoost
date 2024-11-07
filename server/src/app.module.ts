@@ -6,13 +6,21 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ExcelService } from './excel/excel.service';
 import { UserExamModule } from './user-exam/user-exam.module';
 import { CommentModule } from './comment/comment.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import jwtConfig from './config/jwt.config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/tlcn'),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [jwtConfig],
+    }),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
     ExamModule,
     UserExamModule,
     CommentModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

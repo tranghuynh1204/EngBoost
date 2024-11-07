@@ -61,7 +61,6 @@ export class CommentService {
         if (currentComment.replies && currentComment.replies.length > 0) {
           const replies = await this.commentModel
             .find({ _id: { $in: currentComment.replies } })
-            .select('content replies')
             .exec();
 
           currentComment.replies = replies; // Gán lại replies vào comment

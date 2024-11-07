@@ -82,11 +82,13 @@ export class ExamService {
       .findById(id)
       .populate('sections')
       .populate('comments')
+      .lean()
       .exec();
     if (!exam) {
       throw new NotFoundException(`Không tìm thấy bài thi với ${id}`);
     }
     exam.comments = await this.commentService.getReplies(exam.comments);
+
     return exam;
   }
 

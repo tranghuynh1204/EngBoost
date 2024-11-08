@@ -6,12 +6,11 @@ import {
   HttpStatus,
   Post,
   UseGuards,
-  Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../guards/auth.guard';
 import { SignInDto } from './dto/sign-in-dto';
-import { User } from './decorator/user.decorator';
+import { User } from '../decorator/user.decorator';
 
 @Controller('auth')
 export class AuthController {

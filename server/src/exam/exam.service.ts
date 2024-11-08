@@ -6,36 +6,14 @@ import {
 } from '@nestjs/common';
 import { ExcelService } from 'src/excel/excel.service';
 import { Exam } from './entities/exam.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
 import { CommentService } from 'src/comment/comment.service';
+import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
+import { ExamDetailDto } from './dto/exam-detail.dto';
 
-interface Result {
-  sections?: {
-    name: string;
-    tags: string[];
-    correct: number;
-    incorrect: number;
-    skipped: number;
-  }[];
-  mapQuestion?: {
-    [tag: string]: {
-      correct: number;
-      incorrect: number;
-      skipped: number;
-      questions: {
-        content: string;
-        options: string;
-        correctAnswer: string;
-        serial: string;
-        tag: string;
-        answer: string;
-      }[];
-    };
-  };
-}
 @Injectable()
 export class ExamService {
   constructor(
@@ -73,23 +51,23 @@ export class ExamService {
     }
   }
 
-  // findAll() {
-  //   return `This action returns all exam`;
-  // }
-
-  async findOne(id: string): Promise<any> {
+  async findExamDetail(id: string): Promise<ExamDetailDto> {
     const exam = await this.examModel
       .findById(id)
       .populate('sections')
       .populate('comments')
-      .lean()
+      .lean({ virtuals: true })
       .exec();
     if (!exam) {
       throw new NotFoundException(`Không tìm thấy bài thi với ${id}`);
     }
-    exam.comments = await this.commentService.getReplies(exam.comments);
-
-    return exam;
+    const { comments, commentCount } =
+      await this.commentService.getCommentToExamAndCount(exam.comments, id);
+    const userCount = await this.userExamService.getUniqueUserCountForExam(id);
+    exam.comments = comments;
+    exam.commentCount = commentCount;
+    exam.userCount = userCount;
+    return ExamDetailDto.mapExamToDto(exam);
   }
 
   async addComment(examId: string, commentId: string) {
@@ -100,85 +78,81 @@ export class ExamService {
     );
   }
 
-  async gradeExam(userExamId: string) {
+  async gradeExam(userExamId: string): Promise<UserExamResult> {
+    // Truy vấn bài thi của người dùng
     const userExam = await this.userExamService.findOne(userExamId);
-    const sectionExams = userExam.sections;
+    if (!userExam) {
+      throw new NotFoundException(
+        `Không tìm thấy bài thi với ID: ${userExamId}`,
+      );
+    }
+
     const answers = userExam.answers;
-    const result: Result = { sections: [] };
-    const tagObject = {};
-
-    sectionExams.forEach((sectionExam) => {
-      const sectionResult = this.createSectionResult(sectionExam);
-      sectionExam.questions.forEach((question) => {
-        const tagResult = this.getOrCreateTagResult(tagObject, question.tag);
-        const questionResult = this.createQuestionResult(question, answers);
-
-        this.updateResults(sectionResult, tagResult, questionResult);
-        tagResult.questions.push(questionResult);
-      });
-
-      result.sections.push(sectionResult);
-    });
-
-    result.mapQuestion = tagObject;
-    return result;
-  }
-
-  // Tạo một đối tượng chứa kết quả cho từng phần thi
-  private createSectionResult(sectionExam: any) {
-    return {
-      name: sectionExam.name,
-      tags: sectionExam.tags,
+    const mapQuestion = {};
+    const result: UserExamResult = {
+      sections: [],
       correct: 0,
       incorrect: 0,
       skipped: 0,
     };
-  }
 
-  // Lấy hoặc tạo kết quả cho một tag
-  private getOrCreateTagResult(tagObject: any, tag: string) {
-    if (!tagObject[tag]) {
-      tagObject[tag] = {
+    // Duyệt qua các phần thi và câu hỏi
+    for (const sectionExam of userExam.sections) {
+      // Khởi tạo kết quả phần thi
+      const sectionResult = {
+        name: sectionExam.name,
+        tags: sectionExam.tags,
         correct: 0,
         incorrect: 0,
         skipped: 0,
-        questions: [],
       };
+
+      for (const question of sectionExam.questions) {
+        // Lấy hoặc tạo mới kết quả tag nếu chưa có
+        if (!mapQuestion[question.tag]) {
+          mapQuestion[question.tag] = {
+            correct: 0,
+            incorrect: 0,
+            skipped: 0,
+            questions: [],
+          };
+        }
+        const tagResult = mapQuestion[question.tag];
+
+        // Tạo đối tượng chứa kết quả câu hỏi
+        const questionResult = {
+          content: question.content,
+          options: question.options,
+          correctAnswer: question.correctAnswer,
+          serial: question.serial,
+          tag: question.tag,
+          answer: answers.get(question.serial),
+        };
+
+        // Xác định và cập nhật loại kết quả (correct, incorrect, skipped)
+        if (!questionResult.answer) {
+          result.skipped++;
+          tagResult.skipped++;
+          sectionResult.skipped++;
+        } else if (questionResult.answer !== questionResult.correctAnswer) {
+          result.incorrect++;
+          tagResult.incorrect++;
+          sectionResult.incorrect++;
+        } else {
+          result.correct++;
+          tagResult.correct++;
+          sectionResult.correct++;
+        }
+
+        // Thêm câu hỏi vào kết quả tag
+        tagResult.questions.push(questionResult);
+      }
+
+      // Thêm kết quả phần thi vào mảng kết quả
+      result.sections.push(sectionResult);
     }
-    return tagObject[tag];
+
+    result.mapQuestion = mapQuestion; // Thêm bản đồ các tag vào kết quả
+    return result;
   }
-
-  // Tạo một đối tượng chứa kết quả của một câu hỏi
-  private createQuestionResult(question: any, answers: Map<string, string>) {
-    return {
-      content: question.content,
-      options: question.options,
-      correctAnswer: question.correctAnswer,
-      serial: question.serial,
-      tag: question.tag,
-      answer: answers.get(question.serial),
-    };
-  }
-
-  // Cập nhật kết quả cho phần thi và tag dựa trên câu trả lời
-  private updateResults(section: any, tag: any, question: any) {
-    if (question.answer === '') {
-      tag.skipped++;
-      section.skipped++;
-    } else if (question.answer !== question.correctAnswer) {
-      tag.incorrect++;
-      section.incorrect++;
-    } else {
-      tag.correct++;
-      section.correct++;
-    }
-  }
-
-  // update(id: number, updateExamDto: UpdateExamDto) {
-  //   return `This action updates a #${id} exam`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} exam`;
-  // }
 }

@@ -8,6 +8,9 @@ export class Comment {
   @Prop({ required: true })
   user: string;
 
+  @Prop()
+  exam: string;
+
   @Prop({ required: true })
   content: string;
 

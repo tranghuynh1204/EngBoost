@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/shared/enums/role.enum';
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -18,6 +19,7 @@ export class UserService {
     const createdUser = new this.userModel({
       ...createUserDto,
       password: hashedPassword,
+      roles: [Role.USER, Role.MODERATOR],
     });
 
     return createdUser.save();

@@ -12,7 +12,6 @@ export class ExcelService {
       throw new HttpException('Lỗi khi đọc file Excel', HttpStatus.BAD_REQUEST);
     }
   }
-
   async parseToExam(file: any): Promise<any> {
     const jsonData = await this.readFile(file);
 
@@ -21,6 +20,8 @@ export class ExcelService {
       duration: 0,
       category: '',
       sections: [],
+      sectionCount: 0,
+      questionCount: 0,
     };
 
     // Đọc thông tin tiêu đề, thời gian thi, và loại bài thi
@@ -69,13 +70,19 @@ export class ExcelService {
               HttpStatus.BAD_REQUEST,
             );
           }
+
+          // Cập nhật số phần thi và câu hỏi
+          exam.sectionCount++;
+          exam.questionCount += currentSection.questions.length;
           exam.sections.push(currentSection); // Thêm phần thi trước đó vào danh sách
         }
 
+        // Khởi tạo phần thi mới
         currentSection = {
           name: row[0],
           tags: [], // Bạn có thể thêm logic để điền tags nếu cần
           questions: [],
+          questionCount: 0,
         };
       }
 
@@ -94,7 +101,6 @@ export class ExcelService {
             row[6] ?? '', // Tương tự cho row[6]
             row[7] ?? '', // Tương tự cho row[7]
           ],
-          // Đáp án A, B, C, D
           correctAnswer: row[8], // Đáp án đúng
           tag: row[9], // Gán tag đầu tiên cho câu hỏi
         };
@@ -122,11 +128,11 @@ export class ExcelService {
 
         if (!question.tag && currentSection.tags.length > 0) {
           throw new HttpException(
-            'Nếu phẩn thi có nhiều tag thì câu hỏi phải thuộc về 1 tag',
+            'Nếu phần thi có nhiều tag thì câu hỏi phải thuộc về 1 tag',
             HttpStatus.BAD_REQUEST,
           );
         }
-
+        currentSection.questionCount++;
         currentSection.questions.push(question);
       }
 
@@ -135,9 +141,12 @@ export class ExcelService {
 
     // Thêm phần thi cuối cùng nếu có
     if (currentSection) {
+      exam.sectionCount++;
+      exam.questionCount += currentSection.questions.length;
       exam.sections.push(currentSection);
     }
 
+    // Kiểm tra xem bài thi có phần thi nào không
     if (exam.sections.length === 0) {
       throw new HttpException(
         'Phải có ít nhất 1 phần thi',
@@ -145,6 +154,7 @@ export class ExcelService {
       );
     }
 
+    // Trả về kết quả cùng với số liệu đếm
     return exam;
   }
 }

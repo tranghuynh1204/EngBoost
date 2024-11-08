@@ -1,25 +1,20 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { UserExamService } from './user-exam.service';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { UserExam } from './entities/user-exam.entity';
-import { User } from 'src/auth/decorator/user.decorator';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from 'src/decorator/user.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/decorator/roles.decorator';
+import { Role } from 'src/shared/enums/role.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('user-exams')
 export class UserExamController {
   constructor(private readonly userExamService: UserExamService) {}
 
-  @UseGuards(AuthGuard)
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post()
   async create(
     @Body() createUserExamDto: CreateUserExamDto,

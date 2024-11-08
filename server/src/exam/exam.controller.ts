@@ -10,6 +10,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExamService } from './exam.service';
 import { Exam } from './entities/exam.entity';
+import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
 
 @Controller('exams')
 export class ExamController {
@@ -22,12 +23,14 @@ export class ExamController {
   }
 
   @Get(':id')
-  async getExam(@Param('id') id: string): Promise<any> {
-    return this.examService.findOne(id);
+  async getExamDetail(@Param('id') id: string): Promise<any> {
+    return this.examService.findExamDetail(id);
   }
 
   @Post(':examId/result/:userExamId')
-  async gradeExam(@Param('userExamId') userExamId: string): Promise<any> {
+  async gradeExam(
+    @Param('userExamId') userExamId: string,
+  ): Promise<UserExamResult> {
     return this.examService.gradeExam(userExamId);
   }
 }

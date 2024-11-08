@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment } from './entities/comment.entity';
@@ -15,7 +20,6 @@ export class CommentService {
   ) {}
 
   async addCommentToExam(
-    examId: string,
     userId: string,
     createCommentDto: CreateCommentDto,
   ): Promise<Comment> {
@@ -25,7 +29,7 @@ export class CommentService {
     });
     const comment = await newComment.save();
 
-    await this.examService.addComment(examId, comment.id);
+    await this.examService.addComment(createCommentDto.examId, comment.id);
 
     return comment;
   }
@@ -35,9 +39,18 @@ export class CommentService {
     userId: string,
     createCommentDto: CreateCommentDto,
   ): Promise<Comment> {
+    try {
+      const parentComment = await this.commentModel.findById(commentId).exec();
+      if (!parentComment) {
+        throw new NotFoundException();
+      }
+    } catch {
+      throw new NotFoundException();
+    }
     const newReply = new this.commentModel({
       content: createCommentDto.content,
       user: userId,
+      exam: createCommentDto.examId,
     });
 
     const reply = await newReply.save();
@@ -46,31 +59,31 @@ export class CommentService {
       { $push: { replies: reply.id } },
       { new: true },
     );
-    return reply;
+    return newReply;
   }
 
-  async getReplies(comments: Comment[]): Promise<Comment[]> {
-    const queue: Comment[] = [...comments];
+  async getCommentToExamAndCount(
+    comments: Comment[],
+    id: string,
+  ): Promise<{ comments: Comment[]; commentCount: number }> {
+    const replies = await this.commentModel
+      .find({ exam: id }, { exam: 0 })
+      .exec();
 
-    // Duyệt qua các comment trong hàng đợi
-    while (queue.length > 0) {
-      const currentComment = queue.shift(); // Lấy comment đầu tiên trong hàng đợi
+    const commentsMap = new Map<string, Comment>();
+    replies.forEach((reply) => {
+      commentsMap.set(reply._id.toString(), reply);
+    });
 
-      if (currentComment) {
-        // Nếu comment có replies, truy vấn thêm
-        if (currentComment.replies && currentComment.replies.length > 0) {
-          const replies = await this.commentModel
-            .find({ _id: { $in: currentComment.replies } })
-            .exec();
+    [...comments, ...replies].forEach((item) => {
+      item.replies = item.replies
+        .map((replyId) => commentsMap.get(replyId.toString()) || null)
+        .filter((reply) => reply !== null);
+    });
 
-          currentComment.replies = replies; // Gán lại replies vào comment
-
-          // Thêm các replies vào hàng đợi để xử lý tiếp
-          queue.push(...replies);
-        }
-      }
-    }
-
-    return comments; // Trả về danh sách comment đã được xử lý và cập nhật replies
+    return {
+      comments: comments,
+      commentCount: comments.length + replies.length,
+    };
   }
 }

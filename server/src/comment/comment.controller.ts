@@ -2,25 +2,20 @@ import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
-import { User } from 'src/auth/decorator/user.decorator';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/decorator/user.decorator';
 
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @UseGuards(AuthGuard)
-  @Post('exam/:examId')
+  @Post()
   async addCommentToExam(
-    @Param('examId') examId: string,
     @Body() createCommentDto: CreateCommentDto,
     @User() user,
   ): Promise<Comment> {
-    return this.commentService.addCommentToExam(
-      examId,
-      user.sub,
-      createCommentDto,
-    );
+    return this.commentService.addCommentToExam(user.sub, createCommentDto);
   }
 
   @UseGuards(AuthGuard)

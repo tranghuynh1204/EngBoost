@@ -27,6 +27,13 @@ export class UserExamService {
     return await this.userExamModel.findById(id).populate('sections').exec();
   }
 
+  async getUniqueUserCountForExam(examId: string): Promise<number> {
+    const uniqueUsers = await this.userExamModel
+      .distinct('user', { exam: examId })
+      .exec();
+    return uniqueUsers.length; // Trả về số lượng người duy nhất đã làm bài thi
+  }
+
   // update(id: number, updateUserExamDto: UpdateUserExamDto) {
   //   return `This action updates a #${id} userExam`;
   // }

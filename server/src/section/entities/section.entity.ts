@@ -13,6 +13,9 @@ export class Section {
 
   @Prop({ type: [String] })
   tags: string[];
+
+  @Prop()
+  questionCount: number;
 }
 
 export const SectionSchema = SchemaFactory.createForClass(Section);

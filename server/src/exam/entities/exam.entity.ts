@@ -19,18 +19,11 @@ export class Exam {
   @Prop({ ref: 'Section' })
   sections: Section[];
 
-  @Prop({ ref: 'Comment' })
-  comments: Comment[];
-
   @Prop()
   questionCount: number;
 
   @Prop()
   sectionCount: number;
-
-  commentCount: number;
-
-  userCount: number;
 }
 
 export const ExamSchema = SchemaFactory.createForClass(Exam);

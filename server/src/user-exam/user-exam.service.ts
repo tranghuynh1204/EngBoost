@@ -3,7 +3,7 @@ import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { UserExam, UserExamDocument } from './entities/user-exam.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UserExamService {
@@ -14,6 +14,7 @@ export class UserExamService {
   async create(createUserExamDto: CreateUserExamDto, userId: string) {
     const newUserExam = new this.userExamModel({
       ...createUserExamDto,
+      exam: new Types.ObjectId(createUserExamDto.exam),
       user: userId,
     });
     return newUserExam.save();

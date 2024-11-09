@@ -1,73 +1,78 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment } from './entities/comment.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ExamService } from 'src/exam/exam.service';
 
 @Injectable()
 export class CommentService {
   constructor(
-    @Inject(forwardRef(() => ExamService))
-    private readonly examService: ExamService,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
   ) {}
 
-  async addCommentToExam(
+  async create(
     userId: string,
     createCommentDto: CreateCommentDto,
   ): Promise<Comment> {
-    const newComment = new this.commentModel({
-      content: createCommentDto.content,
-      user: userId,
-    });
-    const comment = await newComment.save();
+    let comment;
+    if (createCommentDto.repToCommentId) {
+      const newReply = new this.commentModel({
+        exam: new Types.ObjectId(createCommentDto.examId),
+        content: createCommentDto.content,
+        user: userId,
+      });
 
-    await this.examService.addComment(createCommentDto.examId, comment.id);
+      const parentComment = await this.commentModel
+        .findById(createCommentDto.repToCommentId)
+        .exec();
+      if (!parentComment) {
+        throw new NotFoundException('Parent comment not found');
+      }
 
+      newReply.rootId = parentComment.rootId || parentComment.id;
+
+      comment = await newReply.save();
+
+      parentComment.replies.push(comment.id);
+
+      await parentComment.save();
+    } else {
+      const newComment = new this.commentModel({
+        exam: new Types.ObjectId(createCommentDto.examId),
+        content: createCommentDto.content,
+        user: userId,
+      });
+      comment = await newComment.save();
+    }
     return comment;
   }
 
-  async replyToComment(
-    commentId: string,
-    userId: string,
-    createCommentDto: CreateCommentDto,
-  ): Promise<Comment> {
-    try {
-      const parentComment = await this.commentModel.findById(commentId).exec();
-      if (!parentComment) {
-        throw new NotFoundException();
-      }
-    } catch {
-      throw new NotFoundException();
-    }
-    const newReply = new this.commentModel({
-      content: createCommentDto.content,
-      user: userId,
-      exam: createCommentDto.examId,
-    });
-
-    const reply = await newReply.save();
-    await this.commentModel.findByIdAndUpdate(
-      commentId,
-      { $push: { replies: reply.id } },
-      { new: true },
-    );
-    return newReply;
+  async getCommentCount(examId: string): Promise<number> {
+    return await this.commentModel.countDocuments({ exam: examId });
   }
 
-  async getCommentToExamAndCount(
-    comments: Comment[],
-    id: string,
-  ): Promise<{ comments: Comment[]; commentCount: number }> {
+  async getCommentsByExam(
+    examId: string,
+    offset: number = 0,
+    limit: number = 10,
+  ): Promise<Comment[]> {
+    const comments = await this.commentModel
+      .find({
+        exam: new Types.ObjectId(examId), // Điều kiện tìm theo examId
+        rootId: { $exists: false }, // Lọc các bình luận không có trường root
+      })
+      .skip(offset * limit) // Bỏ qua số lượng bình luận trước đó (offset)
+      .limit(limit) // Giới hạn số lượng bình luận trả về
+      .exec(); // Thực hiện truy vấn
+
+    if (!comments || comments.length === 0) {
+      throw new NotFoundException('No comments found for this exam');
+    }
+
+    const commentIds = comments.map((cmt) => cmt._id);
     const replies = await this.commentModel
-      .find({ exam: id }, { exam: 0 })
+      .find({ rootId: { $in: commentIds } })
       .exec();
 
     const commentsMap = new Map<string, Comment>();
@@ -81,9 +86,6 @@ export class CommentService {
         .filter((reply) => reply !== null);
     });
 
-    return {
-      comments: comments,
-      commentCount: comments.length + replies.length,
-    };
+    return comments;
   }
 }

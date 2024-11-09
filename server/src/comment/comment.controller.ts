@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
@@ -11,24 +19,19 @@ export class CommentController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async addCommentToExam(
+  async create(
     @Body() createCommentDto: CreateCommentDto,
     @User() user,
   ): Promise<Comment> {
-    return this.commentService.addCommentToExam(user.sub, createCommentDto);
+    return this.commentService.create(user.sub, createCommentDto);
   }
 
-  @UseGuards(AuthGuard)
-  @Post('reply/:commentId')
-  async replyToComment(
-    @Param('commentId') commentId: string,
-    @Body() createCommentDto: CreateCommentDto,
-    @User() user,
-  ): Promise<Comment> {
-    return this.commentService.replyToComment(
-      commentId,
-      user.sub,
-      createCommentDto,
-    );
+  @Get('by-exam')
+  async getCommentsByExam(
+    @Query('examId') examId: string,
+    @Query('offset') offset: number = 0,
+    @Query('limit') limit: number = 10,
+  ): Promise<Comment[]> {
+    return this.commentService.getCommentsByExam(examId, offset, limit);
   }
 }

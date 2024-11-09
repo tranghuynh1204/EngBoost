@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ExcelService } from 'src/excel/excel.service';
 import { Exam } from './entities/exam.entity';
 import { Model, Types } from 'mongoose';
@@ -12,7 +7,8 @@ import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
 import { CommentService } from 'src/comment/comment.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
-import { ExamDetailDto } from './dto/exam-detail.dto';
+
+import { SectionDto } from 'src/section/entities/section.dto';
 
 @Injectable()
 export class ExamService {
@@ -20,7 +16,6 @@ export class ExamService {
     private readonly excelService: ExcelService,
     private readonly sectionService: SectionService,
     private readonly userExamService: UserExamService,
-    @Inject(forwardRef(() => CommentService))
     private readonly commentService: CommentService,
     @InjectModel(Exam.name) private examModel: Model<Exam>,
   ) {}
@@ -51,23 +46,69 @@ export class ExamService {
     }
   }
 
-  async findExamDetail(id: string): Promise<ExamDetailDto> {
-    const exam = await this.examModel
-      .findById(id)
-      .populate('sections')
-      .populate('comments')
-      .lean({ virtuals: true })
-      .exec();
+  async findExamDetail(id: string): Promise<Exam> {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } }, // Match the exam by ID
+      {
+        $lookup: {
+          from: 'comments', // Replace with your comments collection name
+          localField: '_id',
+          foreignField: 'exam', // Field in comments that references the exam
+          as: 'comments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'sections', // Replace with your comments collection name
+          localField: 'sections',
+          foreignField: '_id', // Field in comments that references the exam
+          as: 'sections',
+        },
+      },
+      {
+        $lookup: {
+          // Lookup to count unique users related to the exam
+          from: 'userexams', // Replace with your user exams collection name
+          localField: '_id',
+          foreignField: 'exam', // Field in user exams that references the exam
+          as: 'userExams',
+        },
+      },
+      {
+        $unwind: { path: '$userExams', preserveNullAndEmptyArrays: true }, // Unwind userExams to individual documents
+      },
+      {
+        $group: {
+          _id: '$_id', // Group by exam ID
+          title: { $first: '$title' }, // Giữ lại các trường bạn muốn
+          category: { $first: '$category' },
+          duration: { $first: '$duration' },
+          sections: { $first: '$sections' },
+          sectionCount: { $first: '$sectionCount' },
+          questionCount: { $first: '$questionCount' },
+          comments: { $first: '$comments' },
+          userExams: { $addToSet: '$userExams.user' }, // Collect unique users into a set
+        },
+      },
+      {
+        $addFields: {
+          commentCount: { $size: '$comments' }, // Count of comments
+          userCount: { $size: { $ifNull: ['$userExams', []] } }, // Count of users
+        },
+      },
+      {
+        $project: {
+          comments: 0, // Optionally, remove the comments array
+          userExams: 0, // Optionally, remove the userExams array
+        },
+      },
+    ]);
+    exam.sections = SectionDto.mapSectionsToDtos(exam.sections);
     if (!exam) {
       throw new NotFoundException(`Không tìm thấy bài thi với ${id}`);
     }
-    const { comments, commentCount } =
-      await this.commentService.getCommentToExamAndCount(exam.comments, id);
-    const userCount = await this.userExamService.getUniqueUserCountForExam(id);
-    exam.comments = comments;
-    exam.commentCount = commentCount;
-    exam.userCount = userCount;
-    return ExamDetailDto.mapExamToDto(exam);
+
+    return exam;
   }
 
   async addComment(examId: string, commentId: string) {
@@ -154,5 +195,71 @@ export class ExamService {
 
     result.mapQuestion = mapQuestion; // Thêm bản đồ các tag vào kết quả
     return result;
+  }
+
+  async searchExams(
+    category: string,
+    title: string,
+    offset: number = 0,
+    limit: number = 10,
+  ): Promise<Exam[]> {
+    const query: any = {};
+    if (category) {
+      query.category = category;
+    }
+    if (title) {
+      query.title = { $regex: title, $options: 'i' }; // Tìm kiếm không phân biệt chữ hoa chữ thường
+    }
+    const exams = await this.examModel.aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'comments', // Replace with your comments collection name
+          localField: '_id',
+          foreignField: 'exam', // Field in comments that references the exam
+          as: 'comments',
+        },
+      },
+      {
+        $lookup: {
+          // Lookup to count unique users related to the exam
+          from: 'userexams', // Replace with your user exams collection name
+          localField: '_id',
+          foreignField: 'exam', // Field in user exams that references the exam
+          as: 'userExams',
+        },
+      },
+      {
+        $unwind: { path: '$userExams', preserveNullAndEmptyArrays: true }, // Unwind userExams to individual documents
+      },
+      {
+        $group: {
+          _id: '$_id', // Group by exam ID
+          title: { $first: '$title' }, // Giữ lại các trường bạn muốn
+          category: { $first: '$category' },
+          duration: { $first: '$duration' },
+          sectionCount: { $first: '$sectionCount' },
+          questionCount: { $first: '$questionCount' },
+          comments: { $first: '$comments' }, // Keep the original comments array
+          userExams: { $addToSet: '$userExams.user' }, // Collect unique users into a set
+        },
+      },
+      {
+        $addFields: {
+          commentCount: { $size: '$comments' }, // Count of comments
+          userCount: { $size: { $ifNull: ['$userExams', []] } }, // Count of users
+        },
+      },
+      {
+        $project: {
+          comments: 0, // Optionally, remove the comments array
+          userExams: 0,
+        },
+      },
+      { $skip: Number.isInteger(offset) ? offset * limit : 0 },
+      { $limit: Number.isInteger(limit) && limit > 0 ? limit : 10 },
+    ]);
+
+    return exams;
   }
 }

@@ -3,7 +3,7 @@ import { IsArray, IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateUserExamDto {
   @IsNotEmpty()
-  exam: number;
+  exam: string;
 
   @IsArray()
   sections: string[];

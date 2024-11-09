@@ -5,7 +5,15 @@ import { Role } from 'src/shared/enums/role.enum';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true, // Bật các virtual fields
+    versionKey: false, // Loại bỏ __v
+    transform: (doc, ret) => {
+      delete ret.password; // Xóa password khi trả về JSON
+    },
+  },
+})
 export class User {
   @Prop({ required: true })
   name: string;

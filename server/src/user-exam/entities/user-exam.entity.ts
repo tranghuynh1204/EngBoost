@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { Section } from 'src/section/entities/section.entity';
 
 export type UserExamDocument = HydratedDocument<UserExam>;
@@ -10,7 +10,7 @@ export class UserExam {
   user: string;
 
   @Prop({ required: true })
-  exam: string;
+  exam: Types.ObjectId;
 
   @Prop({ ref: 'Section' })
   sections: Section[];

@@ -14,7 +14,7 @@ import { CommentModule } from 'src/comment/comment.module';
     MongooseModule.forFeature([{ name: Exam.name, schema: ExamSchema }]),
     SectionModule,
     UserExamModule,
-    forwardRef(() => CommentModule),
+    CommentModule,
   ],
   controllers: [ExamController],
   providers: [ExamService, ExcelService],

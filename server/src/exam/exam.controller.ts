@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,15 +23,25 @@ export class ExamController {
     return this.examService.create(file);
   }
 
-  @Get(':id')
-  async getExamDetail(@Param('id') id: string): Promise<any> {
-    return this.examService.findExamDetail(id);
-  }
-
   @Post(':examId/result/:userExamId')
   async gradeExam(
     @Param('userExamId') userExamId: string,
   ): Promise<UserExamResult> {
     return this.examService.gradeExam(userExamId);
+  }
+
+  @Get('search')
+  async searchExams(
+    @Query('category') category: string, // Lọc theo category
+    @Query('title') title: string, // Lọc theo title
+    @Query('offset') offset: number = 0, // Bỏ qua số lượng bài thi trước đó
+    @Query('limit') limit: number = 10, // Giới hạn số lượng bài thi trả về
+  ): Promise<Exam[]> {
+    return this.examService.searchExams(category, title, offset, limit);
+  }
+
+  @Get(':id')
+  async getExamDetail(@Param('id') id: string): Promise<Exam> {
+    return this.examService.findExamDetail(id);
   }
 }

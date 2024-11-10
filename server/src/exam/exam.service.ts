@@ -256,8 +256,13 @@ export class ExamService {
           userExams: 0,
         },
       },
-      { $skip: Number.isInteger(offset) ? offset * limit : 0 },
-      { $limit: Number.isInteger(limit) && limit > 0 ? limit : 10 },
+      {
+        $skip:
+          Number.isInteger(offset) && Number.isInteger(limit)
+            ? offset * limit
+            : 0,
+      },
+      { $limit: limit > 0 && Number.isInteger(limit) ? limit : 10 },
     ]);
 
     return exams;

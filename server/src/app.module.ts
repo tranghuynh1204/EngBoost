@@ -8,6 +8,8 @@ import { UserExamModule } from './user-exam/user-exam.module';
 import { CommentModule } from './comment/comment.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { FlashcardModule } from './flashcard/flashcard.module';
+import { VocabularyModule } from './vocabulary/vocabulary.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -21,6 +23,8 @@ import jwtConfig from './config/jwt.config';
     UserExamModule,
     CommentModule,
     AuthModule,
+    FlashcardModule,
+    VocabularyModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

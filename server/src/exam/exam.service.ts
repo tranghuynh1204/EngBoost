@@ -5,7 +5,6 @@ import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
-import { CommentService } from 'src/comment/comment.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
 
 import { SectionDto } from 'src/section/entities/section.dto';
@@ -16,7 +15,6 @@ export class ExamService {
     private readonly excelService: ExcelService,
     private readonly sectionService: SectionService,
     private readonly userExamService: UserExamService,
-    private readonly commentService: CommentService,
     @InjectModel(Exam.name) private examModel: Model<Exam>,
   ) {}
 
@@ -103,10 +101,10 @@ export class ExamService {
         },
       },
     ]);
-    exam.sections = SectionDto.mapSectionsToDtos(exam.sections);
     if (!exam) {
-      throw new NotFoundException(`Không tìm thấy bài thi với ${id}`);
+      throw new NotFoundException(`Không tìm thấy bài thi`);
     }
+    exam.sections = SectionDto.mapSectionsToDtos(exam.sections);
 
     return exam;
   }

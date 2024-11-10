@@ -6,34 +6,55 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { BSONError } from 'bson'; // Import BSONError to handle ObjectId errors specifically
+import { ValidationError } from 'class-validator'; // Import ValidationError from mongoose
 
-@Catch(HttpException)
+@Catch(HttpException, BSONError, ValidationError) // Catch HttpException, BSONError, and ValidationError
 export class HttpExceptionFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest();
 
-    const status = exception.getStatus();
-    const responseBody = exception.getResponse();
+    let status = HttpStatus.INTERNAL_SERVER_ERROR; // Default to 500 for unhandled errors
+    let responseBody: any;
 
-    // Nếu lỗi 401 Unauthorized, thay thế thông báo lỗi
-    if (status === HttpStatus.UNAUTHORIZED) {
-      response.status(status).json({
-        message: 'Người dùng chưa đăng nhập', // Thông báo tùy chỉnh
+    // Handle BSONError
+    if (exception instanceof BSONError) {
+      status = HttpStatus.BAD_REQUEST; // Typically, BSON errors are 400 Bad Request
+      responseBody = {
+        message: 'Id không hợp lệ', // Custom message for BSON errors
         statusCode: status,
-      });
-    } else {
-      // Nếu không phải 401, giữ nguyên thông báo lỗi gốc
-      const errorResponse =
-        typeof responseBody === 'string'
-          ? { message: responseBody }
-          : responseBody;
-
-      response.status(status).json({
-        ...errorResponse,
-        statusCode: status,
-      });
+      };
     }
+    // Handle ValidationError (Mongoose validation error)
+    else if (exception instanceof ValidationError) {
+      status = HttpStatus.BAD_REQUEST; // Typically 400 Bad Request for validation errors
+      responseBody = {
+        message: 'Validation failed', // Generic validation message
+        errors: exception.message, // Attach the validation errors
+        statusCode: status,
+      };
+    } else if (exception instanceof HttpException) {
+      // Handle generic HTTP exceptions
+      status = exception.getStatus();
+      const errorResponse = exception.getResponse();
+      responseBody =
+        typeof errorResponse === 'string'
+          ? { message: errorResponse }
+          : errorResponse;
+
+      // If the error is 401 Unauthorized, change the message
+      if (status === HttpStatus.UNAUTHORIZED) {
+        responseBody.message = 'Người dùng chưa đăng nhập'; // Custom message for unauthorized
+      }
+    }
+
+    // Send the response back to the client
+    response.status(status).json({
+      ...responseBody,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    });
   }
 }

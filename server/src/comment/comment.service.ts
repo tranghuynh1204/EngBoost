@@ -27,7 +27,7 @@ export class CommentService {
         .findById(createCommentDto.repToCommentId)
         .exec();
       if (!parentComment) {
-        throw new NotFoundException('Parent comment not found');
+        throw new NotFoundException('Không tìm thấy comment được rep');
       }
 
       newReply.rootId = parentComment.rootId || parentComment.id;

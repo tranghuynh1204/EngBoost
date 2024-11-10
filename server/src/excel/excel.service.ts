@@ -95,14 +95,15 @@ export class ExcelService {
         const question = {
           serial: row[2],
           content: row[3], // Câu hỏi
+          image: row[4],
           options: [
-            row[4] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
-            row[5] ?? '', // Tương tự cho row[5]
-            row[6] ?? '', // Tương tự cho row[6]
-            row[7] ?? '', // Tương tự cho row[7]
+            row[5] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
+            row[6] ?? '', // Tương tự cho row[5]
+            row[7] ?? '', // Tương tự cho row[6]
+            row[8] ?? '', // Tương tự cho row[7]
           ],
-          correctAnswer: row[8], // Đáp án đúng
-          tag: row[9], // Gán tag đầu tiên cho câu hỏi
+          correctAnswer: row[9], // Đáp án đúng
+          tag: row[10], // Gán tag đầu tiên cho câu hỏi
         };
 
         if (!question.serial) {

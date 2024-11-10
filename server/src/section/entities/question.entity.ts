@@ -15,6 +15,9 @@ export class Question {
   correctAnswer: string;
 
   @Prop()
+  image: string;
+
+  @Prop()
   serial: string;
 
   @Prop()

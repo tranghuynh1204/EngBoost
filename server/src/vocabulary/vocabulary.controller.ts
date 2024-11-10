@@ -28,26 +28,21 @@ export class VocabularyController {
     return this.vocabularyService.create(createVocabularyDto, user.sub);
   }
 
-  @Get()
-  findAll() {
-    return this.vocabularyService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.vocabularyService.findOne(+id);
-  }
-
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateVocabularyDto: UpdateVocabularyDto,
+    @User() user,
   ) {
-    return this.vocabularyService.update(+id, updateVocabularyDto);
+    return this.vocabularyService.update(id, updateVocabularyDto, user.sub);
   }
 
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vocabularyService.remove(+id);
+  remove(@Param('id') id: string, @User() user) {
+    return this.vocabularyService.remove(id, user.sub);
   }
 }

@@ -6,10 +6,11 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { BSONError } from 'bson'; // Import BSONError to handle ObjectId errors specifically
-import { ValidationError } from 'class-validator'; // Import ValidationError from mongoose
+import { BSONError } from 'bson'; // Import BSONError to handle BSON-specific errors
+import { ValidationError } from 'class-validator'; // Import ValidationError for class-validator errors
+import mongoose from 'mongoose'; // Import mongoose to handle CastError
 
-@Catch(HttpException, BSONError, ValidationError) // Catch HttpException, BSONError, and ValidationError
+@Catch(HttpException, BSONError, ValidationError, mongoose.Error.CastError) // Catch additional errors including CastError
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -27,16 +28,25 @@ export class HttpExceptionFilter implements ExceptionFilter {
         statusCode: status,
       };
     }
-    // Handle ValidationError (Mongoose validation error)
+    // Handle CastError from Mongoose
+    else if (exception instanceof mongoose.Error.CastError) {
+      status = HttpStatus.BAD_REQUEST; // Typically 400 Bad Request for CastError
+      responseBody = {
+        message: 'Id không hợp lệ. Vui lòng kiểm tra lại Id.', // Custom message for CastError
+        statusCode: status,
+      };
+    }
+    // Handle ValidationError (class-validator errors)
     else if (exception instanceof ValidationError) {
-      status = HttpStatus.BAD_REQUEST; // Typically 400 Bad Request for validation errors
+      status = HttpStatus.BAD_REQUEST;
       responseBody = {
         message: 'Validation failed', // Generic validation message
         errors: exception.message, // Attach the validation errors
         statusCode: status,
       };
-    } else if (exception instanceof HttpException) {
-      // Handle generic HTTP exceptions
+    }
+    // Handle generic HTTP exceptions
+    else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const errorResponse = exception.getResponse();
       responseBody =

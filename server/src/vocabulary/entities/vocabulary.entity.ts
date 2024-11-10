@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Flashcard } from 'src/flashcard/entities/flashcard.entity';
 
 export type VocabularyDocument = HydratedDocument<Vocabulary>;
 
@@ -26,8 +27,12 @@ export class Vocabulary {
   @Prop()
   partOfSpeech: string;
 
-  @Prop({ required: true })
-  flashcard: Types.ObjectId;
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Flashcard',
+    required: true,
+  })
+  flashcard: Flashcard;
 }
 
 export const VocabularySchema = SchemaFactory.createForClass(Vocabulary);

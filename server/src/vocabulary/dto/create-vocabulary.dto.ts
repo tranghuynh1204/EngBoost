@@ -42,7 +42,7 @@ export class CreateVocabularyDto {
   partOfSpeech?: string;
 
   @IsOptional()
-  @IsMongoId({ message: 'Không tìm thấy flashcard' })
+  @IsMongoId({ message: 'Không tìm thấy list từ vựng' })
   flashcard: Types.ObjectId;
 
   @IsOptional()

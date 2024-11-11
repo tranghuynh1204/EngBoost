@@ -130,7 +130,7 @@ export class VocabularyService {
       .exec();
 
     return {
-      vocabularies,
+      data: vocabularies,
       totalPages,
       currentPage,
       pageSize,

@@ -28,8 +28,22 @@ export class FlashcardService {
     return newFlashcard.save();
   }
 
-  async findAll(userId: string) {
-    return this.flashcardModel.aggregate([
+  async findAll(
+    userId: string,
+    currentPage: number = 1,
+    pageSize: number = 10,
+  ) {
+    const totalFlashcards = await this.flashcardModel
+      .countDocuments({ user: userId })
+      .exec();
+
+    const totalPages = Math.ceil(totalFlashcards / pageSize);
+
+    if (currentPage > totalPages) {
+      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
+    }
+
+    const flashcards = await this.flashcardModel.aggregate([
       { $match: { user: userId } },
       {
         $lookup: {
@@ -39,13 +53,11 @@ export class FlashcardService {
           as: 'vocabularies',
         },
       },
-
       {
         $addFields: {
           vocabularyCount: { $size: '$vocabularies' },
         },
       },
-
       {
         $project: {
           _id: 1,
@@ -53,7 +65,21 @@ export class FlashcardService {
           vocabularyCount: 1,
         },
       },
+      {
+        $skip:
+          Number.isInteger(currentPage - 1) && Number.isInteger(pageSize)
+            ? (currentPage - 1) * pageSize
+            : 0,
+      },
+      { $limit: pageSize > 0 && Number.isInteger(pageSize) ? pageSize : 10 },
     ]);
+
+    return {
+      data: flashcards,
+      totalPages,
+      currentPage,
+      pageSize,
+    };
   }
 
   async findOne(id: string, userId: string) {

@@ -269,7 +269,7 @@ export class ExamService {
     ]);
 
     return {
-      exams,
+      data: exams,
       totalPages,
       currentPage,
       pageSize,

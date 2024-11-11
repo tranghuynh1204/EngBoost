@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FlashcardService } from './flashcard.service';
 import { CreateFlashcardDto } from './dto/create-flashcard.dto';
@@ -35,8 +36,18 @@ export class FlashcardController {
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
-  findAll(@User() user) {
-    return this.flashcardService.findAll(user.sub);
+  findAll(
+    @User() user,
+    @Query('currentPage') currentPage?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    const effectivePage = currentPage || 1;
+    const effectivePageSize = pageSize || 10;
+    return this.flashcardService.findAll(
+      user.sub,
+      effectivePage,
+      effectivePageSize,
+    );
   }
 
   @Roles(Role.USER)

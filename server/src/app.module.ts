@@ -18,6 +18,7 @@ import jwtConfig from './config/jwt.config';
       isGlobal: true,
       load: [jwtConfig],
     }),
+
     MongooseModule.forRoot(process.env.DATABASE_URL),
     ExamModule,
     UserExamModule,
@@ -29,4 +30,4 @@ import jwtConfig from './config/jwt.config';
   controllers: [AppController],
   providers: [AppService, ExcelService],
 })
-export class AppModule {}
+export class AppModule { }

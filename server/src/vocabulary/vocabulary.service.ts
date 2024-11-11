@@ -99,4 +99,41 @@ export class VocabularyService {
       flashcard: new Types.ObjectId(flashcard),
     });
   }
+
+  async findByFlashcardId(
+    flashcardId: string,
+    currentPage: number,
+    pageSize: number,
+  ) {
+    const flashcardObjectId = new Types.ObjectId(flashcardId);
+
+    const totalVocabularies = await this.vocabularyModel
+      .countDocuments({ flashcard: flashcardObjectId })
+      .exec();
+
+    if (totalVocabularies === 0) {
+      throw new NotFoundException(
+        'Không tìm thấy từ vựng nào cho flashcard này',
+      );
+    }
+
+    const totalPages = Math.ceil(totalVocabularies / pageSize);
+
+    if (currentPage > totalPages) {
+      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
+    }
+
+    const vocabularies = await this.vocabularyModel
+      .find({ flashcard: flashcardObjectId })
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
+      .exec();
+
+    return {
+      vocabularies,
+      totalPages,
+      currentPage,
+      pageSize,
+    };
+  }
 }

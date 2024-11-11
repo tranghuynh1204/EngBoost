@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
@@ -44,5 +45,20 @@ export class VocabularyController {
   @Delete(':id')
   remove(@Param('id') id: string, @User() user) {
     return this.vocabularyService.remove(id, user.sub);
+  }
+
+  @Get('flashcards/:flashcardId')
+  async getByFlashcard(
+    @Param('flashcardId') flashcardId: string,
+    @Query('currentPage') currentPage?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    const effectivePage = currentPage || 1;
+    const effectivePageSize = pageSize || 10;
+    return this.vocabularyService.findByFlashcardId(
+      flashcardId,
+      effectivePage,
+      effectivePageSize,
+    );
   }
 }

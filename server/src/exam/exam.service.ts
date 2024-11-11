@@ -198,15 +198,20 @@ export class ExamService {
   async searchExams(
     category: string,
     title: string,
-    offset: number = 0,
-    limit: number = 10,
-  ): Promise<Exam[]> {
+    currentPage: number,
+    pageSize: number,
+  ) {
     const query: any = {};
     if (category) {
       query.category = category;
     }
     if (title) {
       query.title = { $regex: title, $options: 'i' }; // Tìm kiếm không phân biệt chữ hoa chữ thường
+    }
+    const totalItems = await this.examModel.countDocuments(query).exec();
+    const totalPages = Math.ceil(totalItems / pageSize);
+    if (currentPage > totalPages) {
+      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
     }
     const exams = await this.examModel.aggregate([
       { $match: query },
@@ -256,13 +261,18 @@ export class ExamService {
       },
       {
         $skip:
-          Number.isInteger(offset) && Number.isInteger(limit)
-            ? offset * limit
+          Number.isInteger(currentPage - 1) && Number.isInteger(pageSize)
+            ? (currentPage - 1) * pageSize
             : 0,
       },
-      { $limit: limit > 0 && Number.isInteger(limit) ? limit : 10 },
+      { $limit: pageSize > 0 && Number.isInteger(pageSize) ? pageSize : 10 },
     ]);
 
-    return exams;
+    return {
+      exams,
+      totalPages,
+      currentPage,
+      pageSize,
+    };
   }
 }

@@ -34,10 +34,17 @@ export class ExamController {
   async searchExams(
     @Query('category') category: string, // Lọc theo category
     @Query('title') title: string, // Lọc theo title
-    @Query('offset') offset: number = 0, // Bỏ qua số lượng bài thi trước đó
-    @Query('limit') limit: number = 10, // Giới hạn số lượng bài thi trả về
-  ): Promise<Exam[]> {
-    return this.examService.searchExams(category, title, offset, limit);
+    @Query('currentPage') currentPage?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    const effectivePage = currentPage || 1;
+    const effectivePageSize = pageSize || 10;
+    return this.examService.searchExams(
+      category,
+      title,
+      effectivePage,
+      effectivePageSize,
+    );
   }
 
   @Get(':id')

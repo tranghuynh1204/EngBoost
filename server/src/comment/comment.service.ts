@@ -59,12 +59,12 @@ export class CommentService {
   ): Promise<Comment[]> {
     const comments = await this.commentModel
       .find({
-        exam: new Types.ObjectId(examId), // Điều kiện tìm theo examId
-        rootId: { $exists: false }, // Lọc các bình luận không có trường root
+        exam: new Types.ObjectId(examId),
+        rootId: { $exists: false },
       })
-      .skip(offset * limit) // Bỏ qua số lượng bình luận trước đó (offset)
-      .limit(limit) // Giới hạn số lượng bình luận trả về
-      .exec(); // Thực hiện truy vấn
+      .skip(offset * limit)
+      .limit(limit)
+      .exec();
 
     if (!comments || comments.length === 0) {
       throw new NotFoundException('No comments found for this exam');

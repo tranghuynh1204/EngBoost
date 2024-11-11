@@ -3,20 +3,10 @@
 
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import ExamCard from "../../components/ExamCard";
+import ExamCard from "../../components/exam/exam-card";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
-
-interface Exam {
-  _id: string;
-  title: string;
-  duration: number;
-  category: string;
-  questionCount: number;
-  sectionCount: number;
-  commentCount: number;
-  userCount: number;
-}
+import { Exam } from "@/types";
 
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();

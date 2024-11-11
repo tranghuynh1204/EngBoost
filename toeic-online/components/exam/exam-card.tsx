@@ -1,7 +1,7 @@
 // components/ExamCard.tsx
 import React from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardHeader, CardContent, CardFooter } from "../ui/card";
+import { Button } from "../ui/button";
 // Adjust based on actual shadcn-ui components
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";

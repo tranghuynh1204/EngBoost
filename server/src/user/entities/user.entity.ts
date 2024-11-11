@@ -7,8 +7,6 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({
   toJSON: {
-    virtuals: true, // Bật các virtual fields
-    versionKey: false, // Loại bỏ __v
     transform: (doc, ret) => {
       delete ret.password; // Xóa password khi trả về JSON
     },

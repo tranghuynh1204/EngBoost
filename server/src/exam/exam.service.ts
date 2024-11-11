@@ -7,8 +7,6 @@ import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
 
-import { SectionDto } from 'src/section/entities/section.dto';
-
 @Injectable()
 export class ExamService {
   constructor(
@@ -44,7 +42,7 @@ export class ExamService {
     }
   }
 
-  async findExamDetail(id: string): Promise<Exam> {
+  async findOne(id: string): Promise<Exam> {
     const [exam] = await this.examModel.aggregate([
       { $match: { _id: new Types.ObjectId(id) } }, // Match the exam by ID
       {
@@ -61,6 +59,15 @@ export class ExamService {
           localField: 'sections',
           foreignField: '_id', // Field in comments that references the exam
           as: 'sections',
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+                questionCount: 1,
+                tags: 1,
+              },
+            },
+          ],
         },
       },
       {
@@ -104,7 +111,6 @@ export class ExamService {
     if (!exam) {
       throw new NotFoundException(`Không tìm thấy bài thi`);
     }
-    exam.sections = SectionDto.mapSectionsToDtos(exam.sections);
 
     return exam;
   }

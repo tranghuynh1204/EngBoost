@@ -48,7 +48,7 @@ export class ExamController {
   }
 
   @Get(':id')
-  async getExamDetail(@Param('id') id: string): Promise<Exam> {
-    return this.examService.findExamDetail(id);
+  async findOne(@Param('id') id: string): Promise<Exam> {
+    return this.examService.findOne(id);
   }
 }

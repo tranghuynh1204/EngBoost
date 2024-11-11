@@ -49,7 +49,9 @@ export class CommentService {
   }
 
   async getCommentCount(examId: string): Promise<number> {
-    return await this.commentModel.countDocuments({ exam: examId });
+    return await this.commentModel.countDocuments({
+      exam: new Types.ObjectId(examId),
+    });
   }
 
   async getCommentsByExam(
@@ -62,6 +64,8 @@ export class CommentService {
         exam: new Types.ObjectId(examId),
         rootId: { $exists: false },
       })
+      .select('content user replies createdAt')
+      .populate('user', 'name')
       .skip(offset * limit)
       .limit(limit)
       .exec();
@@ -70,9 +74,11 @@ export class CommentService {
       throw new NotFoundException('No comments found for this exam');
     }
 
-    const commentIds = comments.map((cmt) => cmt._id);
+    const commentIds = comments.map((cmt) => cmt.id);
     const replies = await this.commentModel
       .find({ rootId: { $in: commentIds } })
+      .select('content user replies createdAt')
+      .populate('user', 'name')
       .exec();
 
     const commentsMap = new Map<string, Comment>();

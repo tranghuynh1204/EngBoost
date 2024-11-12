@@ -24,9 +24,7 @@ export class ExamController {
   }
 
   @Post(':examId/result/:userExamId')
-  async gradeExam(
-    @Param('userExamId') userExamId: string,
-  ): Promise<UserExamResult> {
+  async gradeExam(@Param('userExamId') userExamId: string) {
     return this.examService.gradeExam(userExamId);
   }
 

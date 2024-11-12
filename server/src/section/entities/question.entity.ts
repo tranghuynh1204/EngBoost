@@ -21,7 +21,7 @@ export class Question {
   serial: string;
 
   @Prop()
-  tag: string;
+  tags: string[];
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);

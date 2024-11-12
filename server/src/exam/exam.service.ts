@@ -123,7 +123,7 @@ export class ExamService {
     );
   }
 
-  async gradeExam(userExamId: string): Promise<UserExamResult> {
+  async gradeExam(userExamId: string) {
     const userExam = await this.userExamService.findOne(userExamId);
     if (!userExam) {
       throw new NotFoundException(
@@ -132,64 +132,79 @@ export class ExamService {
     }
 
     const answers = userExam.answers;
+
+    const mapTagQuestion = {};
     const mapQuestion = {};
+
     const result: UserExamResult = {
       sections: [],
       correct: 0,
       incorrect: 0,
       skipped: 0,
+      duration: userExam.duration,
+      result: userExam.result,
+      mapQuestion: mapQuestion,
+      mapTagQuestion: mapTagQuestion,
     };
 
+    //Duyệt các phần mà người dùng thi
     for (const sectionExam of userExam.sections) {
-      const sectionResult = {
+      //tạo map để gom nhóm các câu hỏi
+      for (const tag of sectionExam.tags) {
+        mapTagQuestion[tag] = {
+          correct: 0,
+          incorrect: 0,
+          skipped: 0,
+          questions: [],
+        };
+      }
+      //tạo kết quả của phần thi hiện tại
+      const currentSection = {
         name: sectionExam.name,
         tags: sectionExam.tags,
         correct: 0,
         incorrect: 0,
         skipped: 0,
       };
-
+      //duyệt các câu hỏi trong phần thi hiện tại
       for (const question of sectionExam.questions) {
-        if (!mapQuestion[question.tag]) {
-          mapQuestion[question.tag] = {
-            correct: 0,
-            incorrect: 0,
-            skipped: 0,
-            questions: [],
-          };
-        }
-        const tagResult = mapQuestion[question.tag];
-
+        //tạo câu hỏi kết quả
         const questionResult = {
           content: question.content,
+          image: question.image,
           options: question.options,
           correctAnswer: question.correctAnswer,
-          serial: question.serial,
-          tag: question.tag,
+          tags: question.tags,
           answer: answers.get(question.serial),
         };
-
         if (!questionResult.answer) {
           result.skipped++;
-          tagResult.skipped++;
-          sectionResult.skipped++;
+          currentSection.skipped++;
         } else if (questionResult.answer !== questionResult.correctAnswer) {
           result.incorrect++;
-          tagResult.incorrect++;
-          sectionResult.incorrect++;
+          currentSection.incorrect++;
         } else {
           result.correct++;
-          tagResult.correct++;
-          sectionResult.correct++;
+          currentSection.correct++;
         }
-
-        tagResult.questions.push(questionResult);
+        mapQuestion[question.serial] = questionResult;
+        for (const tag of question.tags) {
+          const TagQuestion = mapTagQuestion[tag];
+          if (!questionResult.answer) {
+            TagQuestion.skipped++;
+          } else if (questionResult.answer !== questionResult.correctAnswer) {
+            TagQuestion.incorrect++;
+          } else {
+            TagQuestion.correct++;
+          }
+          TagQuestion.questions.push(question.serial);
+        }
       }
-
-      result.sections.push(sectionResult);
+      result.sections.push(currentSection);
     }
-
     result.mapQuestion = mapQuestion;
+    result.mapTagQuestion = mapTagQuestion;
+
     return result;
   }
 

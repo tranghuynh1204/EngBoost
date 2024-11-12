@@ -103,7 +103,8 @@ export class ExcelService {
             row[8] ?? '', // Tương tự cho row[7]
           ],
           correctAnswer: row[9], // Đáp án đúng
-          tag: row[10], // Gán tag đầu tiên cho câu hỏi
+          tags:
+            typeof row[10] === 'string' && row[10] ? row[10].split('|') : [],
         };
 
         if (!question.serial) {
@@ -127,9 +128,9 @@ export class ExcelService {
           );
         }
 
-        if (!question.tag && currentSection.tags.length > 0) {
+        if (question.tags.length < 1 && currentSection.tags.length > 0) {
           throw new HttpException(
-            'Nếu phần thi có nhiều tag thì câu hỏi phải thuộc về 1 tag',
+            'Nếu phần thi có tag thì câu hỏi phải có ít nhất 1 tag',
             HttpStatus.BAD_REQUEST,
           );
         }

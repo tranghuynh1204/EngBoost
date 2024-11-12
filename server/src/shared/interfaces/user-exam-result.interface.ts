@@ -2,6 +2,8 @@ export interface UserExamResult {
   correct: number;
   incorrect: number;
   skipped: number;
+  result: string;
+  duration: string;
   sections: {
     name: string;
     tags: string[];
@@ -9,19 +11,22 @@ export interface UserExamResult {
     incorrect: number;
     skipped: number;
   }[];
-  mapQuestion?: {
+  mapTagQuestion?: {
     [tag: string]: {
       correct: number;
       incorrect: number;
       skipped: number;
-      questions: {
-        content: string;
-        options: string;
-        correctAnswer: string;
-        serial: string;
-        tag: string;
-        answer: string;
-      }[];
+      questions: string[];
+    };
+  };
+  mapQuestion?: {
+    [serial: string]: {
+      content: string;
+      image: string;
+      options: string;
+      correctAnswer: string;
+      tags: string[];
+      answer: string;
     };
   };
 }

@@ -21,8 +21,11 @@ export class UserExam {
   @Prop({ type: Date }) // Thêm thuộc tính thời gian làm bài
   startTime: Date;
 
-  @Prop({ type: Date }) // Thêm thuộc tính thời gian kết thúc làm bài
-  endTime: Date;
+  @Prop({ required: true })
+  duration: string;
+
+  @Prop({ required: true })
+  result: string;
 }
 
 export const UserExamSchema = SchemaFactory.createForClass(UserExam);

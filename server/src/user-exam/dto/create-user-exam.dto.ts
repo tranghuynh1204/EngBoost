@@ -15,7 +15,6 @@ export class CreateUserExamDto {
   @Type(() => Date) // Thêm decorator @Type để chuyển đổi chuỗi thành Date
   startTime: Date;
 
-  @IsDate()
-  @Type(() => Date)
-  endTime: Date;
+  @IsNotEmpty()
+  duration: string;
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Param, Get } from '@nestjs/common';
 import { UserExamService } from './user-exam.service';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
@@ -20,26 +20,16 @@ export class UserExamController {
     @Body() createUserExamDto: CreateUserExamDto,
     @User() user,
   ): Promise<UserExam> {
-    return this.userExamService.create(createUserExamDto, user.sub); //sau này thêm jwt để biết ng dùng
+    return this.userExamService.create(createUserExamDto, user.sub);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.userExamService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userExamService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserExamDto: UpdateUserExamDto) {
-  //   return this.userExamService.update(+id, updateUserExamDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userExamService.remove(+id);
-  // }
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/exam/:examId/')
+  async getUserAttemptsByExam(
+    @Param('examId') examId: string,
+    @User() user,
+  ): Promise<UserExam[]> {
+    return await this.userExamService.findAllByExamAndUser(examId, user.sub);
+  }
 }

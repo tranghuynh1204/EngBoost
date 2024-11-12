@@ -124,7 +124,6 @@ export class ExamService {
   }
 
   async gradeExam(userExamId: string): Promise<UserExamResult> {
-    // Truy vấn bài thi của người dùng
     const userExam = await this.userExamService.findOne(userExamId);
     if (!userExam) {
       throw new NotFoundException(
@@ -141,9 +140,7 @@ export class ExamService {
       skipped: 0,
     };
 
-    // Duyệt qua các phần thi và câu hỏi
     for (const sectionExam of userExam.sections) {
-      // Khởi tạo kết quả phần thi
       const sectionResult = {
         name: sectionExam.name,
         tags: sectionExam.tags,
@@ -153,7 +150,6 @@ export class ExamService {
       };
 
       for (const question of sectionExam.questions) {
-        // Lấy hoặc tạo mới kết quả tag nếu chưa có
         if (!mapQuestion[question.tag]) {
           mapQuestion[question.tag] = {
             correct: 0,
@@ -164,7 +160,6 @@ export class ExamService {
         }
         const tagResult = mapQuestion[question.tag];
 
-        // Tạo đối tượng chứa kết quả câu hỏi
         const questionResult = {
           content: question.content,
           options: question.options,
@@ -174,7 +169,6 @@ export class ExamService {
           answer: answers.get(question.serial),
         };
 
-        // Xác định và cập nhật loại kết quả (correct, incorrect, skipped)
         if (!questionResult.answer) {
           result.skipped++;
           tagResult.skipped++;
@@ -189,15 +183,13 @@ export class ExamService {
           sectionResult.correct++;
         }
 
-        // Thêm câu hỏi vào kết quả tag
         tagResult.questions.push(questionResult);
       }
 
-      // Thêm kết quả phần thi vào mảng kết quả
       result.sections.push(sectionResult);
     }
 
-    result.mapQuestion = mapQuestion; // Thêm bản đồ các tag vào kết quả
+    result.mapQuestion = mapQuestion;
     return result;
   }
 

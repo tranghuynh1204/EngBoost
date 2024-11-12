@@ -20,3 +20,10 @@ export interface Comment {
   replies: Comment[];
   createdAt: string;
 }
+
+export interface UserExam {
+  _id: string;
+  startTime: string;
+  duration: string;
+  result: string;
+}

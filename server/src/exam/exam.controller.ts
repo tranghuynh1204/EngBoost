@@ -11,7 +11,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExamService } from './exam.service';
 import { Exam } from './entities/exam.entity';
-import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
 
 @Controller('exams')
 export class ExamController {

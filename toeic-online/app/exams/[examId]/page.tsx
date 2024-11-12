@@ -1,6 +1,7 @@
 "use client";
-import { CommentSection } from "@/components/comment/comment-section";
+import { CommentContainer } from "@/components/comment/comment-container";
 import { ExamSection } from "@/components/exam/exam-section";
+import { UserExamContainer } from "@/components/user-exam/user-exam-container";
 import { Exam } from "@/types"; // Giả sử bạn đã định nghĩa kiểu Exam ở file này
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -50,7 +51,7 @@ const ExamIdPage = () => {
           <span>{exam.commentCount} bình luận</span>
         </div>
         <div>{exam.userCount} người đã luyện tập đề thi này</div>
-        <div></div>
+        <UserExamContainer examId={params.examId as string} />
         <div>
           {exam.sections.map((section, index) => (
             <ExamSection
@@ -64,7 +65,7 @@ const ExamIdPage = () => {
         </div>
       </div>
       <div>
-        <CommentSection examId={params.examId as string} />
+        <CommentContainer examId={params.examId as string} />
       </div>
     </div>
   );

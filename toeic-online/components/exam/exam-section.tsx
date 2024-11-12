@@ -18,9 +18,7 @@ export const ExamSection = ({
       </label>
       <div>
         {tags.map((tag, index) => (
-          <span key={index}>
-            #[{name}] {tag}
-          </span>
+          <span key={index}># {tag}</span>
         ))}
       </div>
     </div>

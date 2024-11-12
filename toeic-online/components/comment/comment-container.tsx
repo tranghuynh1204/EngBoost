@@ -25,7 +25,7 @@ const formSchema = z.object({
 interface CommentSectionProps {
   examId: string;
 }
-export const CommentSection = ({ examId }: CommentSectionProps) => {
+export const CommentContainer = ({ examId }: CommentSectionProps) => {
   const [comments, setComments] = useState<Comment[]>();
 
   const form = useForm<z.infer<typeof formSchema>>({

@@ -11,16 +11,13 @@ export class CommentService {
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
   ) {}
 
-  async create(
-    userId: string,
-    createCommentDto: CreateCommentDto,
-  ): Promise<Comment> {
+  async create(user: any, createCommentDto: CreateCommentDto) {
     let comment;
     if (createCommentDto.repToCommentId) {
       const newReply = new this.commentModel({
         exam: new Types.ObjectId(createCommentDto.examId),
         content: createCommentDto.content,
-        user: userId,
+        user: user.sub,
       });
 
       const parentComment = await this.commentModel
@@ -41,11 +38,20 @@ export class CommentService {
       const newComment = new this.commentModel({
         exam: new Types.ObjectId(createCommentDto.examId),
         content: createCommentDto.content,
-        user: userId,
+        user: user.sub,
       });
       comment = await newComment.save();
     }
-    return comment;
+
+    return {
+      _id: comment.id,
+      user: {
+        name: user.name,
+      },
+      content: comment.content,
+      replies: [],
+      createdAt: comment.createdAt,
+    };
   }
 
   async getCommentCount(examId: string): Promise<number> {
@@ -65,6 +71,7 @@ export class CommentService {
         rootId: { $exists: false },
       })
       .select('content user replies createdAt')
+      .sort({ createdAt: -1 })
       .populate('user', 'name')
       .skip(offset * limit)
       .limit(limit)
@@ -78,6 +85,7 @@ export class CommentService {
     const replies = await this.commentModel
       .find({ rootId: { $in: commentIds } })
       .select('content user replies createdAt')
+      .sort({ createdAt: -1 })
       .populate('user', 'name')
       .exec();
 

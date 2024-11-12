@@ -19,11 +19,8 @@ export class CommentController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async create(
-    @Body() createCommentDto: CreateCommentDto,
-    @User() user,
-  ): Promise<Comment> {
-    return this.commentService.create(user.sub, createCommentDto);
+  async create(@Body() createCommentDto: CreateCommentDto, @User() user) {
+    return this.commentService.create(user, createCommentDto);
   }
 
   @Get('by-exam')

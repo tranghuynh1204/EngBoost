@@ -21,7 +21,6 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
             },
           }
         );
-        console.log(response);
         setUserExams(response.data);
       } catch (error) {
         console.error("Error fetching exam data:", error);

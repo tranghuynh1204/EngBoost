@@ -4,7 +4,7 @@ import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { UserExam } from './entities/user-exam.entity';
 import { User } from 'src/decorator/user.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/shared/enums/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';

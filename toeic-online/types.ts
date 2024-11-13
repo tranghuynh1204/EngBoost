@@ -28,6 +28,15 @@ export interface UserExam {
   result: string;
 }
 
+export interface QuestionAnswer {
+  serial?: string;
+  content: string;
+  image: string;
+  options: string;
+  correctAnswer: string;
+  tags: string[];
+  answer: string;
+}
 export interface UserExamResult {
   exam: {
     _id: string;
@@ -53,13 +62,6 @@ export interface UserExamResult {
     skipped: number;
   }[];
   mapQuestion: {
-    [serial: string]: {
-      content: string;
-      image: string;
-      options: string;
-      correctAnswer: string;
-      tags: string[];
-      answer: string;
-    };
+    [serial: string]: QuestionAnswer;
   };
 }

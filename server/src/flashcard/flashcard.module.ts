@@ -4,12 +4,14 @@ import { FlashcardController } from './flashcard.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Flashcard, FlashcardSchema } from './entities/flashcard.entity';
 import { VocabularyModule } from 'src/vocabulary/vocabulary.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Flashcard.name, schema: FlashcardSchema },
     ]),
+    UserModule,
     forwardRef(() => VocabularyModule),
   ],
   controllers: [FlashcardController],

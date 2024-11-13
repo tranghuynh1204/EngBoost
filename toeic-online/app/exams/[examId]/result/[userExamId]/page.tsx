@@ -1,12 +1,15 @@
 "use client";
 import { ResultSectionContainer } from "@/components/result/result-section-container";
+import { setQuestions } from "@/lib/store/questionSlice";
 import { UserExamResult } from "@/types";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const UserExamIdPage = () => {
   const params = useParams();
+  const dispatch = useDispatch();
   const [result, setResult] = useState<UserExamResult>();
   useEffect(() => {
     const fetchResult = async () => {
@@ -33,6 +36,8 @@ const UserExamIdPage = () => {
 
   if (!result) {
     return null;
+  } else {
+    dispatch(setQuestions(result.mapQuestion));
   }
   return (
     <div>

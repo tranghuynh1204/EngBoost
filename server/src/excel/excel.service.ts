@@ -94,17 +94,17 @@ export class ExcelService {
         // Nếu hàng không phải tiêu đề phần thi, kiểm tra và thêm câu hỏi
         const question = {
           serial: row[2],
-          content: row[3], // Câu hỏi
-          image: row[4],
+          content: row[6], // Câu hỏi
+          image: row[7],
           options: [
-            row[5] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
-            row[6] ?? '', // Tương tự cho row[5]
-            row[7] ?? '', // Tương tự cho row[6]
-            row[8] ?? '', // Tương tự cho row[7]
+            row[8] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
+            row[9] ?? '', // Tương tự cho row[5]
+            row[10] ?? '', // Tương tự cho row[6]
+            row[11] ?? '', // Tương tự cho row[7]
           ],
-          correctAnswer: row[9], // Đáp án đúng
+          correctAnswer: row[12], // Đáp án đúng
           tags:
-            typeof row[10] === 'string' && row[10] ? row[10].split('|') : [],
+            typeof row[13] === 'string' && row[13] ? row[10].split('|') : [],
         };
 
         if (!question.serial) {

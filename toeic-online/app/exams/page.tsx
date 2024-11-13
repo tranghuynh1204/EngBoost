@@ -26,19 +26,18 @@ const ExamPage: React.FC = () => {
     async function fetchExamData(
       category: string,
       title: string,
-      offset = 0,
-      limit = 10
+      currentPage = 0,
+      pageSize = 10
     ) {
       try {
-        const response = await axios.get("http://localhost:8080/exams/search", {
+        const response = await axios.get("http://localhost:3001/exams/search", {
           params: {
             category,
             title,
-            offset,
-            limit,
+            currentPage,
+            pageSize,
           },
         });
-        console.log(response.data);
         setExams(response.data);
       } catch (error) {
         console.error("Lỗi khi gọi API:", error);
@@ -60,6 +59,12 @@ const ExamPage: React.FC = () => {
   const handlePrevPage = () => {
     setOffset(Math.max(offset - limit, 0));
   };
+
+  if (!exams) {
+    return;
+  } else {
+    console.log(exams);
+  }
 
   return (
     <div>

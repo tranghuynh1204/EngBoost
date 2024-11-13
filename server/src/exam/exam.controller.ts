@@ -14,7 +14,7 @@ import { ExamService } from './exam.service';
 import { Exam } from './entities/exam.entity';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/shared/enums/role.enum';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { User } from 'src/decorator/user.decorator';
 

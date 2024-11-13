@@ -10,7 +10,7 @@ import {
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { User } from 'src/decorator/user.decorator';
 
 @Controller('comments')

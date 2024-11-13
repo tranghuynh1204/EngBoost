@@ -23,7 +23,7 @@ export const ResultSectionContainer = ({
   return (
     <div>
       <h4>Phân tích chi tiết</h4>
-      <Tabs defaultValue="account" className="w-[400px]">
+      <Tabs defaultValue={sections[0].name} className="w-[400px]">
         <TabsList>
           {sections.map((section) => (
             <TabsTrigger key={section.name} value={section.name}>

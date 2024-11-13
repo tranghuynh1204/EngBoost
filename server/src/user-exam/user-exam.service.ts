@@ -36,8 +36,12 @@ export class UserExamService {
     return newUserExam.save();
   }
 
-  async findOne(id: string): Promise<UserExam> {
-    return await this.userExamModel.findById(id).populate('sections').exec();
+  async findOne(id: string, userId: string): Promise<UserExam> {
+    return await this.userExamModel
+      .findOne({ _id: new Types.ObjectId(id), user: userId })
+      .populate('sections')
+      .populate('exam', 'title')
+      .exec();
   }
 
   async getUniqueUserCountForExam(examId: string): Promise<number> {

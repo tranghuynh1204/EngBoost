@@ -1,4 +1,5 @@
 export interface UserExamResult {
+  exam: any;
   correct: number;
   incorrect: number;
   skipped: number;
@@ -6,19 +7,18 @@ export interface UserExamResult {
   duration: string;
   sections: {
     name: string;
-    tags: string[];
+    mapTagQuestion?: {
+      [tag: string]: {
+        correct: number;
+        incorrect: number;
+        skipped: number;
+        questions: string[];
+      };
+    };
     correct: number;
     incorrect: number;
     skipped: number;
   }[];
-  mapTagQuestion?: {
-    [tag: string]: {
-      correct: number;
-      incorrect: number;
-      skipped: number;
-      questions: string[];
-    };
-  };
   mapQuestion?: {
     [serial: string]: {
       content: string;

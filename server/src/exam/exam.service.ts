@@ -123,20 +123,18 @@ export class ExamService {
     );
   }
 
-  async gradeExam(userExamId: string) {
-    const userExam = await this.userExamService.findOne(userExamId);
+  async gradeExam(userExamId: string, userId: string) {
+    const userExam = await this.userExamService.findOne(userExamId, userId);
     if (!userExam) {
-      throw new NotFoundException(
-        `Không tìm thấy bài thi với ID: ${userExamId}`,
-      );
+      throw new NotFoundException(`Không tìm thấy bài thi`);
     }
 
     const answers = userExam.answers;
 
-    const mapTagQuestion = {};
     const mapQuestion = {};
 
     const result: UserExamResult = {
+      exam: userExam.exam,
       sections: [],
       correct: 0,
       incorrect: 0,
@@ -144,12 +142,13 @@ export class ExamService {
       duration: userExam.duration,
       result: userExam.result,
       mapQuestion: mapQuestion,
-      mapTagQuestion: mapTagQuestion,
     };
 
     //Duyệt các phần mà người dùng thi
     for (const sectionExam of userExam.sections) {
       //tạo map để gom nhóm các câu hỏi
+
+      const mapTagQuestion = {};
       for (const tag of sectionExam.tags) {
         mapTagQuestion[tag] = {
           correct: 0,
@@ -161,7 +160,7 @@ export class ExamService {
       //tạo kết quả của phần thi hiện tại
       const currentSection = {
         name: sectionExam.name,
-        tags: sectionExam.tags,
+        mapTagQuestion: mapTagQuestion,
         correct: 0,
         incorrect: 0,
         skipped: 0,
@@ -203,7 +202,6 @@ export class ExamService {
       result.sections.push(currentSection);
     }
     result.mapQuestion = mapQuestion;
-    result.mapTagQuestion = mapTagQuestion;
 
     return result;
   }

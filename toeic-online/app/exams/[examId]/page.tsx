@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 
 const ExamIdPage = () => {
   const params = useParams();
-  const [exam, setExam] = useState<Exam>(); // Kiểu Exam hoặc null khi chưa có dữ liệu
+  const [exam, setExam] = useState<Exam>();
   useEffect(() => {
     const fetchExam = async () => {
       try {

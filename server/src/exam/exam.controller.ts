@@ -6,11 +6,17 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExamService } from './exam.service';
 import { Exam } from './entities/exam.entity';
+import { Roles } from 'src/decorator/roles.decorator';
+import { Role } from 'src/shared/enums/role.enum';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { User } from 'src/decorator/user.decorator';
 
 @Controller('exams')
 export class ExamController {
@@ -22,9 +28,11 @@ export class ExamController {
     return this.examService.create(file);
   }
 
-  @Post(':examId/result/:userExamId')
-  async gradeExam(@Param('userExamId') userExamId: string) {
-    return this.examService.gradeExam(userExamId);
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get(':examId/result/:userExamId')
+  async gradeExam(@Param('userExamId') userExamId: string, @User() user) {
+    return this.examService.gradeExam(userExamId, user.sub);
   }
 
   @Get('search')

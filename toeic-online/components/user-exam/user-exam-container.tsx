@@ -3,6 +3,15 @@ import { formatDate } from "@/utils/dateUtils";
 import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface UserExamContainerProps {
   examId: string;
@@ -58,6 +67,34 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           ))}
         </tbody>
       </table>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Ngày làm</TableHead>
+            <TableHead>Kết quả</TableHead>
+            <TableHead>Thời gian làm bài</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {userExams.map((userExam) => (
+            <TableRow key={userExam._id}>
+              <TableCell className="font-medium">
+                {formatDate(userExam.startTime)}
+              </TableCell>
+              <TableCell>{userExam.result}</TableCell>
+              <TableCell>{userExam.duration}</TableCell>
+              <TableCell className="text-right">
+                <Button variant="link">
+                  <Link href={`/exams/${examId}/result/${userExam._id}`}>
+                    Xem chi tiết
+                  </Link>
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

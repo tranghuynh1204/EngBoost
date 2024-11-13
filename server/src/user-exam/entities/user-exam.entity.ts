@@ -9,7 +9,7 @@ export class UserExam {
   @Prop({ required: true })
   user: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, ref: 'Exam' })
   exam: Types.ObjectId;
 
   @Prop({ ref: 'Section' })

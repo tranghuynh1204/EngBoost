@@ -26,26 +26,41 @@ const ExamPage: React.FC = () => {
     async function fetchExamData(
       category: string,
       title: string,
-      offset = 0,
-      limit = 10
+      currentPage = 1,
+      pageSize = 10
     ) {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await axios.get("http://localhost:8080/exams/search", {
-          params: {
-            category,
-            title,
-            offset,
-            limit,
-          },
-        });
+        const response: AxiosResponse = await axios.get(
+          "http://localhost:8080/exams/search",
+          {
+            params: {
+              category,
+              title,
+              currentPage,
+              pageSize,
+            },
+          }
+        );
         console.log(response.data);
-        setExams(response.data);
+        if (response.data && Array.isArray(response.data.data)) {
+          setExams(response.data.data); // Use response.data.data for the array of exams
+        } else {
+          setExams([]);
+          console.error("API response data is not an array");
+        }
       } catch (error) {
+        setError("Lỗi khi gọi API");
         console.error("Lỗi khi gọi API:", error);
+        setExams([]); // Reset exams to avoid map error
+      } finally {
+        setLoading(false);
       }
     }
+
     fetchExamData("", "", 0, 10);
-  }, []);
+  }, [currentTab, offset]);
 
   // Xử lý tìm kiếm
   const handleSearch = (newOffset: number = 0) => {

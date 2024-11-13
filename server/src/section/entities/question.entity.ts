@@ -19,6 +19,9 @@ export class Question {
 
   @Prop()
   tags: string[];
+
+  @Prop()
+  answerExplanation: string;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);

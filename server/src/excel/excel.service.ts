@@ -111,6 +111,7 @@ export class ExcelService {
           correctAnswer: row[11], // Đáp án đúng
           tags:
             typeof row[12] === 'string' && row[12] ? row[12].split('|') : [],
+          answerExplanation: row[13],
         };
 
         if (!question.serial) {

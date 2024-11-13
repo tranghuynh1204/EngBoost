@@ -43,30 +43,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
   return (
     <div>
       <h2>Kết quả làm bài của bạn:</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Ngày làm</th>
-            <th>Kết quả</th>
-            <th>Thời gian làm bài</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {userExams.map((userExam, index) => (
-            <tr key={index}>
-              <td>{formatDate(userExam.startTime)}</td>
-              <td>{userExam.result}</td>
-              <td>{userExam.duration}</td>
-              <td>
-                <Link href={`/exams/${examId}/result/${userExam._id}`}>
-                  Xem chi tiết
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
       <Table>
         <TableHeader>
           <TableRow>

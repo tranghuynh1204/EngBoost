@@ -2,7 +2,7 @@ import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
-import { openModal } from "@/lib/store/modalSlice";
+import { openModal } from "@/lib/store/modal-slice";
 interface TagItemProps {
   tag: string;
   correct: number;
@@ -17,10 +17,13 @@ export const TagItem = ({
   tag,
   questions,
 }: TagItemProps) => {
-  const data = useSelector((state: RootState) => state.question.questions);
+  const mapQuestion = useSelector((state: RootState) => state.data.mapQuestion);
+  const mapGroup = useSelector((state: RootState) => state.data.mapGroup);
   const dispatch = useDispatch();
   const onclick = (serial: string) => {
-    dispatch(openModal({ type: "answer", data: { ...data[serial], serial } }));
+    const question = { ...mapQuestion[serial], serial };
+    const group = mapGroup[question.group];
+    dispatch(openModal({ type: "Answer", data: { group, question } }));
   };
   return (
     <TableRow>

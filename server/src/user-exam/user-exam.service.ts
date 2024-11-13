@@ -22,9 +22,11 @@ export class UserExamService {
     );
     let correct = 0;
     for (const section of sections) {
-      for (const question of section.questions) {
-        if (question.correctAnswer === answersMap.get(question.serial))
-          correct++;
+      for (const group of section.groups) {
+        for (const question of group.questions) {
+          if (question.correctAnswer === answersMap.get(question.serial))
+            correct++;
+        }
       }
     }
     const newUserExam = new this.userExamModel({

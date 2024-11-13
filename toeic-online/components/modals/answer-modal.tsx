@@ -5,17 +5,26 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { closeModal } from "@/lib/store/modalSlice";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+import { closeModal } from "@/lib/store/modal-slice";
+const mapOption: { [key: number]: string } = {
+  0: "A",
+  1: "B",
+  2: "C",
+  3: "D",
+};
 
 export const AnswerModal = () => {
   const dispatch = useDispatch();
   const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
-  const isModalOpen = isOpen && type === "answer";
-  if (!data) {
+  const { question, group } = data;
+  const isModalOpen = isOpen && type === "Answer";
+  if (!question || !group) {
     return null;
   }
   return (
@@ -25,17 +34,42 @@ export const AnswerModal = () => {
         dispatch(closeModal());
       }}
     >
-      <DialogContent>
+      <DialogContent
+        ria-labelledby="dialog-title"
+        className="w-[600px] max-w-full"
+      >
+        {/* Chỉnh độ dài ở đây nè nhưng tuyệt đối không được bỏ cái max-w-full */}
         <DialogHeader>
-          <DialogTitle>Đáp án chi tiết # {data.serial}</DialogTitle>
+          <DialogTitle>Đáp án chi tiết # {question.serial}</DialogTitle>
         </DialogHeader>
         <div>
-          {data.tags.map((tag, index) => (
+          {question.tags.map((tag, index) => (
             <span key={index}># {tag}</span>
           ))}
         </div>
-        <div>{data.content}</div>
-        <div>{data.image}</div>
+        <div>{group.audio}</div>
+        <div>{group.image}</div>
+        <div dangerouslySetInnerHTML={{ __html: group.documentText }} />
+        <div>{question.content}</div>
+        <div>
+          <div>{question.serial}</div>
+          <div>
+            <RadioGroup defaultValue={question.answer} disabled>
+              {question.options.map((option, index) => (
+                <div className="flex items-center space-x-2" key={index}>
+                  <RadioGroupItem
+                    value={mapOption[index]}
+                    id={mapOption[index]}
+                  />
+                  <Label htmlFor={mapOption[index]}>
+                    {mapOption[index]}.{option}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+          <div>Đáp án đúng là {question.correctAnswer}</div>
+        </div>
       </DialogContent>
     </Dialog>
   );

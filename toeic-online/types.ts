@@ -28,15 +28,22 @@ export interface UserExam {
   result: string;
 }
 
-export interface QuestionAnswer {
-  serial?: string;
+export interface Question {
+  serial: string;
   content: string;
-  image: string;
-  options: string;
+  options: string[];
   correctAnswer: string;
   tags: string[];
   answer: string;
+  group: string;
 }
+
+export interface Group {
+  documentText: string;
+  audio: string;
+  image: string;
+}
+
 export interface UserExamResult {
   exam: {
     _id: string;
@@ -61,7 +68,12 @@ export interface UserExamResult {
     incorrect: number;
     skipped: number;
   }[];
-  mapQuestion: {
-    [serial: string]: QuestionAnswer;
-  };
+  mapQuestion: MapQuestion;
+  mapGroup: MapGroup;
+}
+export interface MapQuestion {
+  [serial: string]: Question;
+}
+export interface MapGroup {
+  [id: string]: Group;
 }

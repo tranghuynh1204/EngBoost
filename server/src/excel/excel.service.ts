@@ -49,6 +49,7 @@ export class ExcelService {
     }
 
     let currentSection = null;
+    let currentGroup = null;
     let i = 6; // Khởi tạo biến đếm cho hàng bắt đầu từ hàng thứ 6
 
     // Vòng lặp while để kiểm tra hàng rỗng và lặp qua dữ liệu
@@ -64,47 +65,52 @@ export class ExcelService {
               HttpStatus.BAD_REQUEST,
             );
           }
-          if (currentSection.questions.length === 0) {
+          if (currentSection.questionCount === 0) {
             throw new HttpException(
               'Phần thi có ít nhất 1 câu hỏi',
               HttpStatus.BAD_REQUEST,
             );
           }
-
-          // Cập nhật số phần thi và câu hỏi
           exam.sectionCount++;
-          exam.questionCount += currentSection.questions.length;
+          exam.questionCount += currentSection.questionCount;
           exam.sections.push(currentSection); // Thêm phần thi trước đó vào danh sách
         }
 
         // Khởi tạo phần thi mới
         currentSection = {
           name: row[0],
-          tags: [], // Bạn có thể thêm logic để điền tags nếu cần
-          questions: [],
+          tags: [],
+          groups: [],
           questionCount: 0,
         };
+        currentGroup = null;
       }
 
       if (row[1]) {
         currentSection.tags.push(row[1]);
       }
-
+      if (row[3] || row[4] || row[5]) {
+        currentGroup = {
+          documentText: row[3],
+          audio: row[4],
+          image: row[5],
+          questions: [],
+        };
+        currentSection.groups.push(currentGroup);
+      }
       if (currentSection) {
-        // Nếu hàng không phải tiêu đề phần thi, kiểm tra và thêm câu hỏi
         const question = {
           serial: row[2],
           content: row[6], // Câu hỏi
-          image: row[7],
           options: [
-            row[8] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
-            row[9] ?? '', // Tương tự cho row[5]
-            row[10] ?? '', // Tương tự cho row[6]
-            row[11] ?? '', // Tương tự cho row[7]
+            row[7] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
+            row[8] ?? '', // Tương tự cho row[5]
+            row[9] ?? '', // Tương tự cho row[6]
+            row[10] ?? '', // Tương tự cho row[7]
           ],
-          correctAnswer: row[12], // Đáp án đúng
+          correctAnswer: row[11], // Đáp án đúng
           tags:
-            typeof row[13] === 'string' && row[13] ? row[10].split('|') : [],
+            typeof row[12] === 'string' && row[12] ? row[12].split('|') : [],
         };
 
         if (!question.serial) {
@@ -134,17 +140,23 @@ export class ExcelService {
             HttpStatus.BAD_REQUEST,
           );
         }
+        if (!currentGroup) {
+          currentGroup = {
+            questions: [],
+          };
+          currentSection.groups.push(currentGroup);
+        }
         currentSection.questionCount++;
-        currentSection.questions.push(question);
+        currentGroup.questions.push(question);
       }
 
-      i++; // Tăng biến đếm để tiếp tục vòng lặp
+      i++;
     }
 
     // Thêm phần thi cuối cùng nếu có
     if (currentSection) {
       exam.sectionCount++;
-      exam.questionCount += currentSection.questions.length;
+      exam.questionCount += currentSection.questionCount;
       exam.sections.push(currentSection);
     }
 

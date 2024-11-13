@@ -1,6 +1,6 @@
 "use client";
 import { ResultSectionContainer } from "@/components/result/result-section-container";
-import { setQuestions } from "@/lib/store/questionSlice";
+import { setMapGroup, setMapQuestion } from "@/lib/store/data-slice";
 import { UserExamResult } from "@/types";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -37,7 +37,8 @@ const UserExamIdPage = () => {
   if (!result) {
     return null;
   } else {
-    dispatch(setQuestions(result.mapQuestion));
+    dispatch(setMapQuestion(result.mapQuestion));
+    dispatch(setMapGroup(result.mapGroup));
   }
   return (
     <div>

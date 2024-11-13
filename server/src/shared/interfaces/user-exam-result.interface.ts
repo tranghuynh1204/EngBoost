@@ -7,7 +7,7 @@ export interface UserExamResult {
   duration: string;
   sections: {
     name: string;
-    mapTagQuestion?: {
+    mapTagQuestion: {
       [tag: string]: {
         correct: number;
         incorrect: number;
@@ -19,14 +19,20 @@ export interface UserExamResult {
     incorrect: number;
     skipped: number;
   }[];
-  mapQuestion?: {
+  mapQuestion: {
     [serial: string]: {
       content: string;
-      image: string;
       options: string;
       correctAnswer: string;
       tags: string[];
       answer: string;
+    };
+  };
+  mapGroup: {
+    [id: string]: {
+      documentText: string;
+      audio: string;
+      image: string;
     };
   };
 }

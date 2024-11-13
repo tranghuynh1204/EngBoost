@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
+import { GroupDocument } from 'src/section/entities/group.entity';
 
 @Injectable()
 export class ExamService {
@@ -130,8 +131,9 @@ export class ExamService {
     }
 
     const answers = userExam.answers;
-
     const mapQuestion = {};
+
+    const mapGroup = {};
 
     const result: UserExamResult = {
       exam: userExam.exam,
@@ -141,7 +143,8 @@ export class ExamService {
       skipped: 0,
       duration: userExam.duration,
       result: userExam.result,
-      mapQuestion: mapQuestion,
+      mapQuestion,
+      mapGroup,
     };
 
     //Duyệt các phần mà người dùng thi
@@ -166,42 +169,53 @@ export class ExamService {
         skipped: 0,
       };
       //duyệt các câu hỏi trong phần thi hiện tại
-      for (const question of sectionExam.questions) {
-        //tạo câu hỏi kết quả
-        const questionResult = {
-          content: question.content,
-          image: question.image,
-          options: question.options,
-          correctAnswer: question.correctAnswer,
-          tags: question.tags,
-          answer: answers.get(question.serial),
+      for (const group of sectionExam.groups) {
+        const groupDocument = group as GroupDocument;
+
+        // Thêm dữ liệu vào Map
+        mapGroup[groupDocument._id.toString()] = {
+          documentText: group.documentText,
+          audio: group.audio,
+          image: group.image,
         };
-        if (!questionResult.answer) {
-          result.skipped++;
-          currentSection.skipped++;
-        } else if (questionResult.answer !== questionResult.correctAnswer) {
-          result.incorrect++;
-          currentSection.incorrect++;
-        } else {
-          result.correct++;
-          currentSection.correct++;
-        }
-        mapQuestion[question.serial] = questionResult;
-        for (const tag of question.tags) {
-          const TagQuestion = mapTagQuestion[tag];
+
+        //tạo câu hỏi kết quả
+        for (const question of group.questions) {
+          const questionResult = {
+            content: question.content,
+            options: question.options,
+            correctAnswer: question.correctAnswer,
+            tags: question.tags,
+            answer: answers.get(question.serial.toString()),
+            group: (group as GroupDocument)._id,
+          };
+
           if (!questionResult.answer) {
-            TagQuestion.skipped++;
+            result.skipped++;
+            currentSection.skipped++;
           } else if (questionResult.answer !== questionResult.correctAnswer) {
-            TagQuestion.incorrect++;
+            result.incorrect++;
+            currentSection.incorrect++;
           } else {
-            TagQuestion.correct++;
+            result.correct++;
+            currentSection.correct++;
           }
-          TagQuestion.questions.push(question.serial);
+          mapQuestion[question.serial] = questionResult;
+          for (const tag of question.tags) {
+            const TagQuestion = mapTagQuestion[tag];
+            if (!questionResult.answer) {
+              TagQuestion.skipped++;
+            } else if (questionResult.answer !== questionResult.correctAnswer) {
+              TagQuestion.incorrect++;
+            } else {
+              TagQuestion.correct++;
+            }
+            TagQuestion.questions.push(question.serial);
+          }
         }
       }
       result.sections.push(currentSection);
     }
-    result.mapQuestion = mapQuestion;
 
     return result;
   }

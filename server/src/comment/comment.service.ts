@@ -78,7 +78,7 @@ export class CommentService {
       .exec();
 
     if (!comments || comments.length === 0) {
-      throw new NotFoundException('No comments found for this exam');
+      return [];
     }
 
     const commentIds = comments.map((cmt) => cmt.id);

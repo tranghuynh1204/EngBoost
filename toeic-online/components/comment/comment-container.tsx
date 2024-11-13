@@ -16,15 +16,18 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 const formSchema = z.object({
   content: z.string().min(1, {
     message: "Bình luận phải có ít nhất 1 kí tự",
   }),
   examId: z.string(),
 });
+
 interface CommentSectionProps {
   examId: string;
 }
+
 export const CommentContainer = ({ examId }: CommentSectionProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
 
@@ -43,7 +46,7 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
         values,
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMTI0MjIyOSwiZXhwIjoxNzMxODQ3MDI5fQ.-_UYPlJhdXbwuoEO2HhW1oLb_RI0sLsz76IZUOwYLq0`,
+            Authorization: `Bearer YOUR_TOKEN_HERE`,
             "Content-Type": "application/json",
           },
         }
@@ -51,7 +54,7 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
       setComments([response.data, ...comments]);
       form.reset();
     } catch (error) {
-      console.error("Error fetching exam data:", error);
+      console.error("Error posting comment:", error);
     }
   };
 
@@ -68,25 +71,29 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
         );
         setComments(response.data);
       } catch (error) {
-        console.error("Error fetching exam data:", error);
+        console.error("Error fetching comments:", error);
       }
     };
     fetchComments();
   }, [examId]);
+
   return (
-    <div>
-      <div>
+    <div className="max-w-3xl mx-auto p-6">
+      {/* Comment Form */}
+      <div className="bg-white shadow-lg rounded-xl p-6 mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">Bình luận</h2>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bình luận</FormLabel>
+                  <FormLabel className="sr-only">Bình luận</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Chia sẽ cảm nghĩ của bạn ..."
+                    <textarea
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-32"
+                      placeholder="Chia sẻ cảm nghĩ của bạn..."
                       {...field}
                     />
                   </FormControl>
@@ -94,21 +101,36 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Gửi</Button>
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              >
+                Gửi
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
-      {comments?.map((comment, index) => (
-        <CommentItem
-          id={comment._id}
-          content={comment.content}
-          replies={comment.replies}
-          user={comment.user}
-          createdAt={comment.createdAt}
-          examId={examId}
-          key={index}
-        />
-      ))}
+
+      {/* Comments List */}
+      <div className="space-y-6">
+        {comments.length > 0 ? (
+          comments.map((comment) => (
+            <CommentItem
+              id={comment._id}
+              content={comment.content}
+              replies={comment.replies}
+              user={comment.user}
+              createdAt={comment.createdAt}
+              examId={examId}
+              key={comment._id}
+            />
+          ))
+        ) : (
+          <p className="text-gray-500">Không có bình luận nào.</p>
+        )}
+      </div>
     </div>
   );
 };

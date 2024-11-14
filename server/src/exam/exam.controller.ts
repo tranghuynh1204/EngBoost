@@ -52,6 +52,19 @@ export class ExamController {
     );
   }
 
+  @Get(':id/solutions')
+  async findSolutions(@Param('id') id: string): Promise<Exam> {
+    return this.examService.findSolutions(id);
+  }
+
+  @Get(':id/parts/:sectionId/solutions')
+  async findSolution(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+  ): Promise<Exam> {
+    return this.examService.findSolution(id, sectionId);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Exam> {
     return this.examService.findOne(id);

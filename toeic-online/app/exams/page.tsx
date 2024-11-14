@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -8,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 import { Exam } from "@/types";
 
-const ExamPage: React.FC = () => {
+const ExamsPage = () => {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const currentTab = tab || "toeic";
@@ -176,4 +175,4 @@ const ExamPage: React.FC = () => {
   );
 };
 
-export default ExamPage;
+export default ExamsPage;

@@ -66,26 +66,6 @@ export class ExamService {
                 name: 1,
                 questionCount: 1,
                 tags: 1,
-                groups: {
-                  $map: {
-                    input: '$groups',
-                    as: 'group',
-                    in: {
-                      image: '$$group.image',
-                      transcript: '$$group.transcript',
-                      questions: {
-                        $map: {
-                          input: '$$group.questions',
-                          as: 'question',
-                          in: {
-                            serial: '$$question.serial',
-                            correctAnswer: '$$question.correctAnswer',
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
               },
             },
           ],
@@ -320,5 +300,85 @@ export class ExamService {
       currentPage,
       pageSize,
     };
+  }
+
+  async findSolutions(id: string): Promise<Exam> {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } }, // Lọc theo exam ID
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+        },
+      },
+
+      {
+        $project: {
+          title: 1,
+          sections: {
+            name: 1,
+            groups: {
+              image: 1,
+              transcript: 1,
+              questions: {
+                serial: 1,
+                correctAnswer: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
+  }
+
+  // Lấy solution cho một section cụ thể trong một exam
+  async findSolution(id: string, sectionId: string): Promise<Exam> {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } }, // Lọc theo exam ID
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+        },
+      },
+      {
+        $unwind: '$sections', // Làm phẳng mảng sections
+      },
+      {
+        $match: {
+          'sections._id': new Types.ObjectId(sectionId), // Lọc phần thi theo sectionId
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          sections: {
+            name: 1,
+            groups: {
+              image: 1,
+              transcript: 1,
+              questions: {
+                serial: 1,
+                correctAnswer: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
   }
 }

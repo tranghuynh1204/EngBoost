@@ -16,6 +16,9 @@ export class Group {
   documentText: string;
 
   @Prop()
+  transcript: string;
+
+  @Prop()
   questions: Question[];
 }
 

@@ -7,7 +7,15 @@ export interface Exam {
   sectionCount: number;
   commentCount: number;
   userCount: number;
-  sections: { _id: string; name: string; tags: []; questionCount: number }[];
+  sections: Section[];
+}
+
+export interface Section {
+  _id: string;
+  name: string;
+  tags: [];
+  questionCount: number;
+  groups: Group[];
 }
 
 export interface Comment {
@@ -36,12 +44,15 @@ export interface Question {
   tags: string[];
   answer: string;
   group: string;
+  answerExplanation: string;
 }
 
 export interface Group {
   documentText: string;
   audio: string;
   image: string;
+  transcript: string;
+  questions: Question[];
 }
 
 export interface UserExamResult {

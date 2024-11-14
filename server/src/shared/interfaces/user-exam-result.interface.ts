@@ -26,6 +26,7 @@ export interface UserExamResult {
       correctAnswer: string;
       tags: string[];
       answer: string;
+      answerExplanation: string;
     };
   };
   mapGroup: {

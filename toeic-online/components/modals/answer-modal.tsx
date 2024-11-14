@@ -69,6 +69,7 @@ export const AnswerModal = () => {
             </RadioGroup>
           </div>
           <div>Đáp án đúng là {question.correctAnswer}</div>
+          <div>{question.answerExplanation}</div>
         </div>
       </DialogContent>
     </Dialog>

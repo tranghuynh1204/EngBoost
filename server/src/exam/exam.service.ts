@@ -66,6 +66,26 @@ export class ExamService {
                 name: 1,
                 questionCount: 1,
                 tags: 1,
+                groups: {
+                  $map: {
+                    input: '$groups',
+                    as: 'group',
+                    in: {
+                      image: '$$group.image',
+                      transcript: '$$group.transcript',
+                      questions: {
+                        $map: {
+                          input: '$$group.questions',
+                          as: 'question',
+                          in: {
+                            serial: '$$question.serial',
+                            correctAnswer: '$$question.correctAnswer',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
               },
             },
           ],
@@ -104,8 +124,8 @@ export class ExamService {
       },
       {
         $project: {
-          comments: 0, // Optionally, remove the comments array
-          userExams: 0, // Optionally, remove the userExams array
+          comments: 0,
+          userExams: 0,
         },
       },
     ]);
@@ -188,6 +208,7 @@ export class ExamService {
             tags: question.tags,
             answer: answers.get(question.serial.toString()),
             group: (group as GroupDocument)._id,
+            answerExplanation: question.answerExplanation,
           };
 
           if (!questionResult.answer) {

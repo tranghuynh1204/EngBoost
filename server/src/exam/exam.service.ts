@@ -149,8 +149,6 @@ export class ExamService {
 
     //Duyệt các phần mà người dùng thi
     for (const sectionExam of userExam.sections) {
-      //tạo map để gom nhóm các câu hỏi
-
       const mapTagQuestion = {};
       for (const tag of sectionExam.tags) {
         mapTagQuestion[tag] = {
@@ -167,6 +165,8 @@ export class ExamService {
         correct: 0,
         incorrect: 0,
         skipped: 0,
+        serialStart: sectionExam.groups[0].questions[0].serial,
+        serialEnd: sectionExam.groups.at(-1).questions.at(-1).serial,
       };
       //duyệt các câu hỏi trong phần thi hiện tại
       for (const group of sectionExam.groups) {
@@ -177,6 +177,7 @@ export class ExamService {
           documentText: group.documentText,
           audio: group.audio,
           image: group.image,
+          transcript: group.transcript,
         };
 
         //tạo câu hỏi kết quả
@@ -378,5 +379,49 @@ export class ExamService {
     return exam;
   }
 
-  async getPractice(id: string, sectionIds: string[]) {}
+  async getPractice(id: string, sectionIds: string[]) {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+          pipeline: [
+            {
+              $match: {
+                _id: { $in: sectionIds.map((id) => new Types.ObjectId(id)) },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          sections: {
+            _id: 1,
+            name: 1,
+            groups: {
+              image: 1,
+              audio: 1,
+              documentText: 1,
+              questions: {
+                content: 1,
+                serial: 1,
+                options: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
+  }
 }

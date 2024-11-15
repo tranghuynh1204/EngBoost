@@ -50,6 +50,7 @@ export const AnswerModal = () => {
         <div>{group.audio}</div>
         <div>{group.image}</div>
         <div dangerouslySetInnerHTML={{ __html: group.documentText }} />
+        <div>{group.transcript}</div>
         <div>{question.content}</div>
         <div>
           <div>{question.serial}</div>

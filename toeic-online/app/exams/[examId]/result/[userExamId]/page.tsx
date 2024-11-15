@@ -1,6 +1,7 @@
 "use client";
 import { ResultSectionContainer } from "@/components/result/result-section-container";
 import { setMapGroup, setMapQuestion } from "@/lib/store/data-slice";
+import { openModal } from "@/lib/store/modal-slice";
 import { UserExamResult } from "@/types";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -55,6 +56,56 @@ const UserExamIdPage = () => {
         <div>Bỏ qua {result.skipped}</div>
       </div>
       <ResultSectionContainer sections={result.sections} />
+      <div>
+        {result.sections.map((section, index) => {
+          // Tạo mảng các số từ start đến end trong mỗi section
+          const serials = Array.from(
+            { length: section.serialEnd - section.serialStart + 1 },
+            (_, i) => section.serialStart + i
+          );
+
+          return (
+            <div key={index}>
+              <h1>{section.name}</h1>
+              <div>
+                {serials.map((serial) => {
+                  const question = result.mapQuestion[serial];
+                  question.serial = serial.toString();
+                  const group = result.mapGroup[question.group];
+                  const answerStatus =
+                    question.answer === "" ? (
+                      <span>⏭️</span> // Icon "bỏ qua"
+                    ) : question.answer === question.correctAnswer ? (
+                      <span>✔️</span> // Icon "đúng"
+                    ) : (
+                      <span>❌</span>
+                    ); // Icon "sai"
+                  return (
+                    <div key={serial}>
+                      <span>{serial}</span>
+                      <span>{question.correctAnswer}:</span>
+                      <span>{question.answer || "chưa trả lời"}</span>
+                      <span>{answerStatus}</span>
+                      <button
+                        onClick={() => {
+                          dispatch(
+                            openModal({
+                              type: "Answer",
+                              data: { group, question },
+                            })
+                          );
+                        }}
+                      >
+                        [chi tiết]
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

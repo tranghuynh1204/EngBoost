@@ -18,6 +18,8 @@ export interface UserExamResult {
     correct: number;
     incorrect: number;
     skipped: number;
+    serialStart: string;
+    serialEnd: string;
   }[];
   mapQuestion: {
     [serial: string]: {

@@ -149,8 +149,6 @@ export class ExamService {
 
     //Duyệt các phần mà người dùng thi
     for (const sectionExam of userExam.sections) {
-      //tạo map để gom nhóm các câu hỏi
-
       const mapTagQuestion = {};
       for (const tag of sectionExam.tags) {
         mapTagQuestion[tag] = {
@@ -167,6 +165,8 @@ export class ExamService {
         correct: 0,
         incorrect: 0,
         skipped: 0,
+        serialStart: sectionExam.groups[0].questions[0].serial,
+        serialEnd: sectionExam.groups.at(-1).questions.at(-1).serial,
       };
       //duyệt các câu hỏi trong phần thi hiện tại
       for (const group of sectionExam.groups) {

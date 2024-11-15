@@ -75,6 +75,8 @@ export interface UserExamResult {
         questions: string[];
       };
     };
+    serialStart: number;
+    serialEnd: number;
     correct: number;
     incorrect: number;
     skipped: number;

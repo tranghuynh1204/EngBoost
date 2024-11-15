@@ -34,6 +34,7 @@ export interface UserExamResult {
       documentText: string;
       audio: string;
       image: string;
+      transcript: string;
     };
   };
 }

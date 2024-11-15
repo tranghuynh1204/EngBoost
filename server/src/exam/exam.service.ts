@@ -177,6 +177,7 @@ export class ExamService {
           documentText: group.documentText,
           audio: group.audio,
           image: group.image,
+          transcript: group.transcript,
         };
 
         //tạo câu hỏi kết quả

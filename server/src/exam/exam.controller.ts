@@ -35,6 +35,13 @@ export class ExamController {
     return this.examService.gradeExam(userExamId, user.sub);
   }
 
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get(':examId/result/:userExamId/details')
+  async getAnswerDetail(@Param('userExamId') userExamId: string, @User() user) {
+    return this.examService.getAnswerDetail(userExamId, user.sub);
+  }
+
   @Get('search')
   async searchExams(
     @Query('category') category: string, // Lọc theo category
@@ -72,6 +79,7 @@ export class ExamController {
   ) {
     return this.examService.getPractice(id, sectionIds);
   }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Exam> {
     return this.examService.findOne(id);

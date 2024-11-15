@@ -5,7 +5,6 @@ import { CommentContainer } from "@/components/comment/comment-container"; // Ad
 
 export default function CommentLayout({
   children,
-  examId, // Pass examId as a prop to this layout
 }: Readonly<{
   children: React.ReactNode;
   examId: string; // Ensure this prop is defined in the parent or router

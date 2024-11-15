@@ -1,9 +1,11 @@
 "use client";
 import { ResultSectionContainer } from "@/components/result/result-section-container";
+import { Button } from "@/components/ui/button";
 import { setMapGroup, setMapQuestion } from "@/lib/store/data-slice";
 import { openModal } from "@/lib/store/modal-slice";
 import { UserExamResult } from "@/types";
 import axios from "axios";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -57,6 +59,15 @@ const UserExamIdPage = () => {
       </div>
       <ResultSectionContainer sections={result.sections} />
       <div>
+        <Button variant="link" className="hover:no-underline">
+          <Link
+            href={`/exams/${params.examId}/result/${params.userExamId}/details`}
+          >
+            Xem đáp án chi tiết
+          </Link>
+        </Button>
+      </div>
+      <div>
         {result.sections.map((section, index) => {
           // Tạo mảng các số từ start đến end trong mỗi section
           const serials = Array.from(
@@ -69,7 +80,7 @@ const UserExamIdPage = () => {
               <h1>{section.name}</h1>
               <div>
                 {serials.map((serial) => {
-                  const question = result.mapQuestion[serial];
+                  const question = { ...result.mapQuestion[serial] };
                   question.serial = serial.toString();
                   const group = result.mapGroup[question.group];
                   const answerStatus =

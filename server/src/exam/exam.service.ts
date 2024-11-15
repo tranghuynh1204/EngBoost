@@ -378,5 +378,49 @@ export class ExamService {
     return exam;
   }
 
-  async getPractice(id: string, sectionIds: string[]) {}
+  async getPractice(id: string, sectionIds: string[]) {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+          pipeline: [
+            {
+              $match: {
+                _id: { $in: sectionIds.map((id) => new Types.ObjectId(id)) },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          sections: {
+            _id: 1,
+            name: 1,
+            groups: {
+              image: 1,
+              audio: 1,
+              documentText: 1,
+              questions: {
+                content: 1,
+                serial: 1,
+                options: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
+  }
 }

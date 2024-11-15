@@ -65,17 +65,15 @@ export class ExamController {
     return this.examService.findSolution(id, sectionId);
   }
 
+  @Post('/practice')
+  async getPractice(
+    @Body('id') id: string,
+    @Body('sectionIds') sectionIds: string[],
+  ) {
+    return this.examService.getPractice(id, sectionIds);
+  }
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Exam> {
     return this.examService.findOne(id);
-  }
-
-  @Get(':id')
-  async getPractice(
-    @Query('id') id: string,
-    @Query('sectionIds') sectionIds: string[],
-  ) {
-    return 'ok rồi nè';
-    // return this.examService.getPractice(id, sectionIds);
   }
 }

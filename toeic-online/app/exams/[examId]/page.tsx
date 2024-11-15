@@ -21,7 +21,7 @@ const ExamIdPage = () => {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/exams/${params.examId}`
         );
-        setExam(response.data); // Store data in state
+        setExam(response.data); 
       } catch (error) {
         console.error("Error fetching exam data:", error);
       }
@@ -94,11 +94,6 @@ const ExamIdPage = () => {
                 ))}
               </div>
             </div>
-            ;{/* Comments Section */}
-            <div className="mt-6 bg-white shadow-md rounded-lg p-6">
-              <CommentContainer examId={params.examId as string} />
-            </div>
-            ;
           </TabsContent>
           <TabsContent value="2">
             <div>
@@ -117,7 +112,7 @@ const ExamIdPage = () => {
                     <Link
                       href={`/exams/${params.examId}/parts/${section._id}/solutions`}
                     >
-                      Đán án
+                      Đáp án
                     </Link>
                   </Button>
                 </li>
@@ -125,6 +120,10 @@ const ExamIdPage = () => {
             </ul>
           </TabsContent>
         </Tabs>
+        {/* Comments Section */}
+        <div className="mt-6 bg-white shadow-md rounded-lg p-6">
+          <CommentContainer examId={params.examId as string} />
+        </div>
       </div>
     </div>
   );

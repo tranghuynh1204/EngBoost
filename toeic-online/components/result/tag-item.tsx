@@ -3,6 +3,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import { openModal } from "@/lib/store/modal-slice";
+import { cn } from "@/lib/utils";
 interface TagItemProps {
   tag: string;
   correct: number;
@@ -34,7 +35,15 @@ export const TagItem = ({
       <TableCell>
         {questions?.map((question, index) => (
           <button
-            className="bg-red-500 m-10"
+            className={cn(
+              "m-2  border-[1px] rounded-full w-8 h-8 flex items-center justify-center",
+              mapQuestion[question]?.answer === ""
+                ? "border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white"
+                : mapQuestion[question]?.answer ===
+                  mapQuestion[question]?.correctAnswer
+                ? "border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            )}
             onClick={() => onclick(question)}
             key={index}
           >

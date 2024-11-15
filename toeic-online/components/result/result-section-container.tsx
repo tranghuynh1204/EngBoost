@@ -36,7 +36,7 @@ export const ResultSectionContainer = ({
             <ResultSectionItem
               correct={section.correct}
               incorrect={section.incorrect}
-              skipped={section.incorrect}
+              skipped={section.skipped}
               mapTagQuestion={section.mapTagQuestion}
             />
           </TabsContent>

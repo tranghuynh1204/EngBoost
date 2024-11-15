@@ -33,12 +33,14 @@ const UserExamIdPage = () => {
       fetchResult();
     }
   }, [params.examId, params.userExamId]);
-
+  useEffect(() => {
+    if (result) {
+      dispatch(setMapQuestion(result.mapQuestion));
+      dispatch(setMapGroup(result.mapGroup));
+    }
+  }, [result, dispatch]);
   if (!result) {
     return null;
-  } else {
-    dispatch(setMapQuestion(result.mapQuestion));
-    dispatch(setMapGroup(result.mapGroup));
   }
   return (
     <div>

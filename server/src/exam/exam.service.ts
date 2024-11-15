@@ -313,7 +313,6 @@ export class ExamService {
           as: 'sections',
         },
       },
-
       {
         $project: {
           title: 1,
@@ -348,14 +347,11 @@ export class ExamService {
           localField: 'sections',
           foreignField: '_id',
           as: 'sections',
-        },
-      },
-      {
-        $unwind: '$sections', // Làm phẳng mảng sections
-      },
-      {
-        $match: {
-          'sections._id': new Types.ObjectId(sectionId), // Lọc phần thi theo sectionId
+          pipeline: [
+            {
+              $match: { _id: new Types.ObjectId(sectionId) }, // Match section by sectionId
+            },
+          ],
         },
       },
       {

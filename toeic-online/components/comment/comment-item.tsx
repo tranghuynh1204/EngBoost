@@ -39,7 +39,6 @@ const formSchema = z.object({
 export const CommentItem = memo(
   ({ id, content, replies, user, createdAt, examId }: CommentItemProps) => {
     const [comments, setComments] = useState<Comment[]>(replies);
-    console.log("a");
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {

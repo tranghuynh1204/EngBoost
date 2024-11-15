@@ -16,6 +16,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useParams } from "next/navigation";
 
 const formSchema = z.object({
   content: z.string().min(1, {
@@ -24,18 +25,14 @@ const formSchema = z.object({
   examId: z.string(),
 });
 
-interface CommentSectionProps {
-  examId: string;
-}
-
-export const CommentContainer = ({ examId }: CommentSectionProps) => {
+export const CommentContainer = () => {
   const [comments, setComments] = useState<Comment[]>([]);
-
+  const params = useParams();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
-      examId: examId,
+      examId: params.examId as string,
     },
   });
 
@@ -65,7 +62,7 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
           `${process.env.NEXT_PUBLIC_API_URL}/comments/by-exam`,
           {
             params: {
-              examId: examId,
+              examId: params.examId,
             },
           }
         );
@@ -75,7 +72,7 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
       }
     };
     fetchComments();
-  }, [examId]);
+  }, [params.examId]);
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -123,7 +120,7 @@ export const CommentContainer = ({ examId }: CommentSectionProps) => {
               replies={comment.replies}
               user={comment.user}
               createdAt={comment.createdAt}
-              examId={examId}
+              examId={params.examId as string}
               key={comment._id}
             />
           ))

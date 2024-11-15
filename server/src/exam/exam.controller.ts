@@ -70,7 +70,7 @@ export class ExamController {
     return this.examService.findOne(id);
   }
 
-  @Get(':id')
+  @Get('/practice')
   async getPractice(
     @Query('id') id: string,
     @Query('sectionIds') sectionIds: string[],

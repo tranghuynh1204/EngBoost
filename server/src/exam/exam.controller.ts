@@ -69,4 +69,13 @@ export class ExamController {
   async findOne(@Param('id') id: string): Promise<Exam> {
     return this.examService.findOne(id);
   }
+
+  @Get(':id')
+  async getPractice(
+    @Query('id') id: string,
+    @Query('sectionIds') sectionIds: string[],
+  ) {
+    return 'ok rồi nè';
+    // return this.examService.getPractice(id, sectionIds);
+  }
 }

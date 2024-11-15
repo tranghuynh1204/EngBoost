@@ -377,4 +377,6 @@ export class ExamService {
 
     return exam;
   }
+
+  async getPractice(id: string, sectionIds: string[]) {}
 }

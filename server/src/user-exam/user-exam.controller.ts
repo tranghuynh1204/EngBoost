@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Param, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { UserExamService } from './user-exam.service';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
@@ -31,5 +39,29 @@ export class UserExamController {
     @User() user,
   ): Promise<UserExam[]> {
     return await this.userExamService.findAllByExamAndUser(examId, user.sub);
+  }
+
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/new')
+  async getNew(@User() user) {
+    return await this.userExamService.getNew(user.sub);
+  }
+
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/history')
+  async searchExams(
+    @User() user,
+    @Query('currentPage') currentPage?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    const effectivePage = currentPage || 1;
+    const effectivePageSize = pageSize || 10;
+    return this.userExamService.getHistory(
+      effectivePage,
+      effectivePageSize,
+      user.sub,
+    );
   }
 }

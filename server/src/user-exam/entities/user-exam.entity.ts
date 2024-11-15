@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Exam } from 'src/exam/entities/exam.entity';
 import { Section } from 'src/section/entities/section.entity';
 
 export type UserExamDocument = HydratedDocument<UserExam>;
@@ -9,8 +10,8 @@ export class UserExam {
   @Prop({ required: true })
   user: string;
 
-  @Prop({ required: true, ref: 'Exam' })
-  exam: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, required: true, ref: 'Exam' })
+  exam: Exam;
 
   @Prop({ ref: 'Section' })
   sections: Section[];

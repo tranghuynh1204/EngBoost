@@ -79,39 +79,35 @@ export class ExcelService {
         // Khởi tạo phần thi mới
         currentSection = {
           name: row[0],
+          category: row[1],
           tags: [],
           groups: [],
           questionCount: 0,
         };
         currentGroup = null;
       }
-
-      if (row[1]) {
-        currentSection.tags.push(row[1]);
+      if (row[2]) {
+        currentSection.tags.push(row[2]);
       }
-      if (row[11] || row[12] || row[13]) {
+      if (row[12] || row[13] || row[14]) {
         currentGroup = {
-          documentText: row[11],
-          audio: row[12],
-          image: row[13],
-          transcript: row[14],
+          documentText: row[12],
+          audio: row[13],
+          image: row[14],
+          transcript: row[15],
           questions: [],
         };
         currentSection.groups.push(currentGroup);
       }
       if (currentSection) {
         const question = {
-          serial: row[2],
-          content: row[3], // Câu hỏi
-          options: [
-            row[4] ?? '', // Nếu row[4] là null hoặc undefined, sử dụng ""
-            row[5] ?? '', // Tương tự cho row[5]
-            row[6] ?? '', // Tương tự cho row[6]
-            row[7] ?? '', // Tương tự cho row[7]
-          ],
-          correctAnswer: row[8], // Đáp án đúng
-          tags: typeof row[9] === 'string' && row[9] ? row[9].split('|') : [],
-          answerExplanation: row[10],
+          serial: row[3],
+          content: row[4], // Câu hỏi
+          options: [row[5] ?? '', row[6] ?? '', row[7] ?? '', row[8] ?? ''],
+          correctAnswer: row[9], // Đáp án đúng
+          tags:
+            typeof row[10] === 'string' && row[10] ? row[10].split('|') : [],
+          answerExplanation: row[11],
         };
 
         if (!question.serial) {

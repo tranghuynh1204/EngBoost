@@ -132,7 +132,6 @@ export class ExamService {
 
     const answers = userExam.answers;
     const mapQuestion = {};
-
     const mapGroup = {};
 
     const result: UserExamResult = {
@@ -145,6 +144,9 @@ export class ExamService {
       result: userExam.result,
       mapQuestion,
       mapGroup,
+      mapSectionCategory: Object.fromEntries(
+        userExam.mapSectionCategory.entries(),
+      ),
     };
 
     //Duyệt các phần mà người dùng thi
@@ -158,6 +160,7 @@ export class ExamService {
           questions: [],
         };
       }
+
       //tạo kết quả của phần thi hiện tại
       const currentSection = {
         name: sectionExam.name,
@@ -191,7 +194,6 @@ export class ExamService {
             group: (group as GroupDocument)._id,
             answerExplanation: question.answerExplanation,
           };
-
           if (!questionResult.answer) {
             result.skipped++;
             currentSection.skipped++;

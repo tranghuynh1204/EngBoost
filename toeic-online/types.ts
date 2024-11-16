@@ -85,6 +85,12 @@ export interface UserExamResult {
   }[];
   mapQuestion: MapQuestion;
   mapGroup: MapGroup;
+  mapSectionCategory: {
+    [category: string]: {
+      correct: number;
+      questionCount: number;
+    };
+  };
 }
 export interface MapQuestion {
   [serial: string]: Question;

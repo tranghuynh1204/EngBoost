@@ -5,6 +5,12 @@ export interface UserExamResult {
   skipped: number;
   result: string;
   duration: string;
+  mapSectionCategory: {
+    [category: string]: {
+      correct: number;
+      questionCount: number;
+    };
+  };
   sections: {
     name: string;
     mapTagQuestion: {

@@ -19,6 +19,9 @@ export class UserExam {
   @Prop()
   answers: Map<string, string>;
 
+  @Prop()
+  mapSectionCategory: Map<string, { correct: number; questionCount: number }>;
+
   @Prop({ type: Date }) // Thêm thuộc tính thời gian làm bài
   startTime: Date;
 

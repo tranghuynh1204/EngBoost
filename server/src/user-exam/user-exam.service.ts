@@ -20,12 +20,30 @@ export class UserExamService {
     const answersMap: Map<string, string> = new Map(
       Object.entries(createUserExamDto.answers),
     );
+
+    const mapSectionCategory = new Map<
+      string,
+      { correct: number; questionCount: number }
+    >();
     let correct = 0;
     for (const section of sections) {
+      if (!mapSectionCategory.has(section.category)) {
+        mapSectionCategory.set(section.category, {
+          correct: 0,
+          questionCount: 0,
+        });
+      }
+      const categoryData = mapSectionCategory.get(section.category)!;
       for (const group of section.groups) {
         for (const question of group.questions) {
-          if (question.correctAnswer === answersMap.get(question.serial))
+          categoryData.questionCount++;
+          if (
+            question.correctAnswer ===
+            answersMap.get(question.serial.toString())
+          ) {
+            categoryData.correct++;
             correct++;
+          }
         }
       }
     }
@@ -34,6 +52,7 @@ export class UserExamService {
       exam: new Types.ObjectId(createUserExamDto.exam),
       user: userId,
       result: correct + '/' + answersMap.size,
+      mapSectionCategory,
     });
     return newUserExam.save();
   }

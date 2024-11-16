@@ -131,63 +131,62 @@ const UserExamIdPage = () => {
                 {section.name}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {serials.map((serial) => {
-                  const question = result.mapQuestion[serial];
-                  const group = result.mapGroup[question.group];
-                  const isCorrect = question.answer === question.correctAnswer;
-                  const isSkipped = question.answer === "";
-
-                  let StatusIcon;
-                  let statusColor;
-
-                  if (isSkipped) {
-                    StatusIcon = ClockIcon;
-                    statusColor = "text-yellow-500";
-                  } else if (isCorrect) {
-                    StatusIcon = CheckCircleIcon;
-                    statusColor = "text-green-500";
-                  } else {
-                    StatusIcon = XCircleIcon;
-                    statusColor = "text-red-500";
-                  }
-
-                  return (
-                    <div
-                      key={serial}
-                      className="bg-gray-50 p-5 rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
-                    >
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="font-medium text-gray-800">
-                          Câu {serial}
-                        </span>
-                        <StatusIcon
-                          className={`h-6 w-6 font-medium ${statusColor}`}
+                {serials.map((serial) => (
+                  <div
+                    key={serial}
+                    className="bg-gray-50 p-5 rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium text-gray-800">
+                        Câu {serial}
+                      </span>
+                      {result.mapQuestion[serial].answer === "" ? (
+                        <ClockIcon
+                          className="h-6 w-6 font-medium text-yellow-500"
                           aria-hidden="true"
                         />
-                      </div>
-                      <div className="text-sm text-gray-600 mb-2">
-                        <strong>Đáp án đúng:</strong> {question.correctAnswer}
-                      </div>
-                      <div className="text-sm text-gray-600 mb-4">
-                        <strong>Câu trả lời:</strong>{" "}
-                        {question.answer || "Chưa trả lời"}
-                      </div>
-                      <button
-                        onClick={() =>
-                          dispatch(
-                            openModal({
-                              type: "Answer",
-                              data: { group, question },
-                            })
-                          )
-                        }
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                      >
-                        [Chi tiết]
-                      </button>
+                      ) : result.mapQuestion[serial].answer ===
+                        result.mapQuestion[serial].correctAnswer ? (
+                        <CheckCircleIcon
+                          className="h-6 w-6 font-medium text-green-500"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <XCircleIcon
+                          className="h-6 w-6 font-medium text-red-500"
+                          aria-hidden="true"
+                        />
+                      )}
                     </div>
-                  );
-                })}
+                    <div className="text-sm text-gray-600 mb-2">
+                      <strong>Đáp án đúng:</strong>{" "}
+                      {result.mapQuestion[serial].correctAnswer}
+                    </div>
+                    <div className="text-sm text-gray-600 mb-4">
+                      <strong>Câu trả lời:</strong>{" "}
+                      {result.mapQuestion[serial].answer || "Chưa trả lời"}
+                    </div>
+                    <button
+                      onClick={() =>
+                        dispatch(
+                          openModal({
+                            type: "Answer",
+                            data: {
+                              group:
+                                result.mapGroup[
+                                  result.mapQuestion[serial].group
+                                ],
+                              question: result.mapQuestion[serial],
+                            },
+                          })
+                        )
+                      }
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      [Chi tiết]
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           );

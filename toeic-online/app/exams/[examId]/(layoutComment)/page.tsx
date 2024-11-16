@@ -62,26 +62,25 @@ const ExamIdPage = () => {
   };
 
   const handleSubmitSelection = async () => {
+    console.log("Submit button clicked");
     if (!exam) return;
 
     setIsSubmitting(true);
     setSubmissionResult(null);
 
-    // Prepare query parameters
-    const queryParams: any = { id: exam._id };
+    // Prepare the request body
+    const requestBody: any = { id: exam._id };
     if (!isEntireExamSelected && selectedSections.length > 0) {
-      queryParams.sectionIds = selectedSections;
+      requestBody.sectionIds = selectedSections;
     }
 
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
-        {
-          params: queryParams,
-        }
+        requestBody // Send the data directly in the body
       );
       setSubmissionResult("Practice mode started successfully!");
-
+      console.log("Practice mode started successfully!");
       // Optionally, redirect to the practice session page
       // For example:
       // router.push(`/practice/${response.data.practiceId}`);

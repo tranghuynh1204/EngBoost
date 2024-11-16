@@ -42,7 +42,7 @@ export const ExamSection: React.FC<ExamSectionProps> = ({
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
+              className="bg-purple-100 text-black text-xs px-2 py-1 rounded-full"
             >
               #{tag}
             </span>

@@ -39,6 +39,7 @@ const formSchema = z.object({
 export const CommentItem = memo(
   ({ id, content, replies, user, createdAt, examId }: CommentItemProps) => {
     const [comments, setComments] = useState<Comment[]>(replies);
+    const [isReplying, setIsReplying] = useState<boolean>(false);
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -58,59 +59,92 @@ export const CommentItem = memo(
           },
         }
       );
+
       setComments([response.data, ...comments]);
       form.reset();
+      setIsReplying(false);
     };
 
     return (
-      <div>
-        <strong>
-          {user.name}, {formatDate(createdAt)}
-        </strong>
-        <div>{content}</div>
-        <div>
-          trả lời
-          <div>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-8"
-              >
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bình luận</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Chia sẽ cảm nghĩ của bạn ..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit">Gửi</Button>
-              </form>
-            </Form>
-          </div>
+      <div className="p-2 ">
+        {/* User Information */}
+        <div className="flex items-center mb-4">
+          <strong className="text-lg font-semibold text-gray-800">
+            {user.name}
+          </strong>
+          <span className="text-sm text-gray-500 ml-2">
+            {formatDate(createdAt)}
+          </span>
         </div>
-        {comments?.map((reply, index) => (
-          <div key={index} className="ml-5">
-            <CommentItem
-              examId={examId}
-              id={reply._id}
-              content={reply.content}
-              replies={reply.replies}
-              user={reply.user}
-              createdAt={reply.createdAt}
-            />
+
+        {/* Comment Content */}
+        <div className="text-gray-700 mb-4">{content}</div>
+
+        {/* Reply Section */}
+        <div className="mb-4">
+          <button
+            onClick={() => setIsReplying(!isReplying)} // Toggle reply form visibility
+            className="text-blue-600 hover:underline cursor-pointer text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+          >
+            Trả lời
+          </button>
+          {isReplying && ( // Conditionally render the reply form
+            <div className="mt-4">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="sr-only">Bình luận</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-32"
+                            placeholder="Chia sẻ cảm nghĩ của bạn..."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex justify-end">
+                    <Button
+                      type="submit"
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    >
+                      Gửi
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </div>
+          )}
+        </div>
+
+        {/* Replies */}
+        {comments.length > 0 && (
+          <div className="pl-6 border-l border-gray-200 mt-4 space-y-4">
+            {comments.map((reply) => (
+              <CommentItem
+                key={reply._id}
+                examId={examId}
+                id={reply._id}
+                content={reply.content}
+                replies={reply.replies}
+                user={reply.user}
+                createdAt={reply.createdAt}
+              />
+            ))}
           </div>
-        ))}
+        )}
       </div>
     );
   }
 );
+
 CommentItem.displayName = "CommentItem";

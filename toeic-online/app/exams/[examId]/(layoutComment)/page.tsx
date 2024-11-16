@@ -126,69 +126,96 @@ const ExamIdPage = () => {
           </h1>
         </div>
         <Tabs defaultValue="1">
-          <TabsList>
-            <TabsTrigger value="1">Thông tin đề thi</TabsTrigger>
-            <TabsTrigger value="2">Đáp án/Transcript</TabsTrigger>
+          <TabsList className="border-b border-gray-200 mb-4">
+            <TabsTrigger
+              value="1"
+              className="px-4 py-2 text-lg font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
+            >
+              Thông tin đề thi
+            </TabsTrigger>
+            <TabsTrigger
+              value="2"
+              className="px-4 py-2 text-lg font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
+            >
+              Đáp án/Transcript
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="1">
-            <div>
-              <p className="text-gray-700 mb-2">
-                Thời gian làm bài: {exam.duration} phút | {exam.sectionCount}{" "}
-                phần thi | {exam.questionCount} câu hỏi | {exam.commentCount}{" "}
-                bình luận
-              </p>
-              <p className="text-gray-700 mb-2">
-                {exam.userCount} người đã luyện đề thi này
-              </p>
-            </div>
-            {/* User Exam Container */}
-            <div className="mb-6">
-              <UserExamContainer examId={params.examId as string} />
-            </div>
-            {/* Exam Sections */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                Các Phần Thi
-              </h2>
-              {/* Selection Controls */}
-              <div className="flex items-center mb-4">
-                <input
-                  type="checkbox"
-                  checked={isEntireExamSelected}
-                  onChange={handleSelectEntireExam}
-                  className="mr-2"
-                />
-                <label className="text-lg text-gray-700">
-                  Chọn toàn bộ đề thi
-                </label>
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Chi tiết đề thi
+                </h2>
+                <p className="text-gray-700">
+                  <span className="font-medium">Thời gian làm bài:</span>{" "}
+                  {exam.duration} phút
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Phần thi:</span>{" "}
+                  {exam.sectionCount} phần
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Câu hỏi:</span>{" "}
+                  {exam.questionCount} câu
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Bình luận:</span>{" "}
+                  {exam.commentCount} bình luận
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Người luyện:</span>{" "}
+                  {exam.userCount} người
+                </p>
               </div>
-              <div className="flex flex-col space-y-4">
-                {exam.sections.map((section) => (
-                  <ExamSection
-                    id={section._id}
-                    name={section.name}
-                    questionCount={section.questionCount}
-                    tags={section.tags}
-                    key={section._id}
-                    isSelected={selectedSections.includes(section._id)}
-                    onSelect={handleSelectSection}
-                    disabled={isEntireExamSelected}
+              {/* User Exam Container */}
+              <div className="mb-6">
+                <UserExamContainer examId={params.examId as string} />
+              </div>
+              {/* Exam Sections */}
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                  Các Phần Thi
+                </h2>
+                {/* Selection Controls */}
+                <div className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    checked={isEntireExamSelected}
+                    onChange={handleSelectEntireExam}
+                    className="mr-2"
                   />
-                ))}
+                  <label className="text-lg text-gray-700">
+                    Chọn toàn bộ đề thi
+                  </label>
+                </div>
+                <div className="flex flex-col space-y-4">
+                  {exam.sections.map((section) => (
+                    <ExamSection
+                      id={section._id}
+                      name={section.name}
+                      questionCount={section.questionCount}
+                      tags={section.tags}
+                      key={section._id}
+                      isSelected={selectedSections.includes(section._id)}
+                      onSelect={handleSelectSection}
+                      disabled={isEntireExamSelected}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-            {/* Submit Button */}
-            <div className="mb-6">
-              <Button
-                onClick={handleSubmitSelection}
-                disabled={
-                  isSubmitting ||
-                  (!isEntireExamSelected && selectedSections.length === 0)
-                }
-                className="w-full"
-              >
-                {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
-              </Button>
+              {/* Submit Button */}
+              <div className="mb-6">
+                <Button
+                  onClick={handleSubmitSelection}
+                  disabled={
+                    isSubmitting ||
+                    (!isEntireExamSelected && selectedSections.length === 0)
+                  }
+                  className="w-full"
+                >
+                  {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
+                </Button>
+              </div>
               {submissionResult && (
                 <p className="mt-4 text-center text-green-600">
                   {submissionResult}
@@ -197,28 +224,47 @@ const ExamIdPage = () => {
             </div>
           </TabsContent>
           <TabsContent value="2">
-            <div>
-              <Button variant="link">
-                <Link href={`/exams/${params.examId}/solutions`}>
-                  Xem đáp án đề thi
-                </Link>
-              </Button>
-            </div>
-            <p className="mt-4">Các phần thi:</p>
-            <ul className="list-disc list-inside">
-              {exam.sections.map((section) => (
-                <li key={section._id}>
-                  {section.name}:
-                  <Button variant="link" className="ml-2">
-                    <Link
-                      href={`/exams/${params.examId}/parts/${section._id}/solutions`}
+            <div className="space-y-4">
+              {/* Solutions Overview */}
+              <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                <Button
+                  variant="link"
+                  className="text-blue-600 hover:underline"
+                >
+                  <Link href={`/exams/${params.examId}/solutions`}>
+                    Xem đáp án đề thi
+                  </Link>
+                </Button>
+              </div>
+              {/* Detailed Solutions */}
+              <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                  Đáp án Các Phần Thi
+                </h2>
+                <ul className="space-y-2">
+                  {exam.sections.map((section) => (
+                    <li
+                      key={section._id}
+                      className="flex items-center justify-between p-3 border rounded-md bg-white hover:shadow-sm"
                     >
-                      Đáp án
-                    </Link>
-                  </Button>
-                </li>
-              ))}
-            </ul>
+                      <div className="text-gray-700">
+                        <span className="font-medium">{section.name}</span>
+                      </div>
+                      <Button
+                        variant="link"
+                        className="text-blue-600 hover:underline text-sm font-semibold"
+                      >
+                        <Link
+                          href={`/exams/${params.examId}/parts/${section._id}/solutions`}
+                        >
+                          Đáp án
+                        </Link>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

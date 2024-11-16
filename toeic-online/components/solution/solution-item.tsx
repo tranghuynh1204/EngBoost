@@ -1,12 +1,7 @@
-import { Group } from "@/types";
+import { Group, mapOption } from "@/types";
 import React from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-const mapOption: { [key: number]: string } = {
-  0: "A",
-  1: "B",
-  2: "C",
-  3: "D",
-};
+
 import { Label } from "@/components/ui/label";
 
 interface SolutionItemProps {

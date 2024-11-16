@@ -1,6 +1,5 @@
 // pages/exams/[examId].tsx
 "use client";
-import { CommentContainer } from "@/components/comment/comment-container";
 import { ExamSection } from "@/components/exam/exam-section";
 import { UserExamContainer } from "@/components/user-exam/user-exam-container";
 import { Exam } from "@/types"; // Assume you have defined the Exam type here
@@ -146,23 +145,23 @@ const ExamIdPage = () => {
                   Chi tiết đề thi
                 </h2>
                 <p className="text-gray-700">
-                  <span className="font-medium">Thời gian làm bài:</span>{" "}
+                  <span className="font-medium">Thời gian làm bài:</span>
                   {exam.duration} phút
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Phần thi:</span>{" "}
+                  <span className="font-medium">Phần thi:</span>
                   {exam.sectionCount} phần
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Câu hỏi:</span>{" "}
+                  <span className="font-medium">Câu hỏi:</span>
                   {exam.questionCount} câu
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Bình luận:</span>{" "}
+                  <span className="font-medium">Bình luận:</span>
                   {exam.commentCount} bình luận
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Người luyện:</span>{" "}
+                  <span className="font-medium">Người luyện:</span>
                   {exam.userCount} người
                 </p>
               </div>

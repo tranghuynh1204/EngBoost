@@ -1,11 +1,9 @@
 "use client";
 import { ResultSectionContainer } from "@/components/result/result-section-container";
-import { Button } from "@/components/ui/button";
 import { setMapGroup, setMapQuestion } from "@/lib/store/data-slice";
 import { openModal } from "@/lib/store/modal-slice";
 import { UserExamResult } from "@/types";
 import axios from "axios";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

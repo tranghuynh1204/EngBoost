@@ -12,12 +12,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { closeModal } from "@/lib/store/modal-slice";
-const mapOption: { [key: number]: string } = {
-  0: "A",
-  1: "B",
-  2: "C",
-  3: "D",
-};
+import { mapOption } from "@/types";
+
 
 export const AnswerModal = () => {
   const dispatch = useDispatch();

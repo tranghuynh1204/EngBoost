@@ -77,13 +77,26 @@ const ExamIdPage = () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
-        requestBody // Send the data directly in the body
+        requestBody
       );
-      setSubmissionResult("Practice mode started successfully!");
-      console.log("Practice mode started successfully!");
-      // Optionally, redirect to the practice session page
-      // For example:
-      // router.push(`/practice/${response.data.practiceId}`);
+
+      // Extract the practiceSessionId from the response
+      const practiceSessionId = response.data.practiceSessionId;
+
+      if (!practiceSessionId) {
+        setSubmissionResult(
+          "Failed to start practice mode. No session ID returned."
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      const examId = params.examId as string;
+      // Redirect to the practice session page
+      router.push({
+        pathname: `/exams/${examId}/practice`,
+        state: { examData }, // Dữ liệu bạn muốn truyền
+      });
     } catch (error: any) {
       console.error("Error submitting selection:", error);
       if (

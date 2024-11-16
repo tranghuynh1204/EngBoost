@@ -15,6 +15,7 @@ import {
   ClockIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
+import { link } from "fs";
 const UserExamIdPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
@@ -103,7 +104,15 @@ const UserExamIdPage = () => {
           </span>
         </div>
       </div>
-
+      <div>
+        <Button variant="link">
+          <Link
+            href={`/exams/${params.examId}/result/${params.userExamId}/details`}
+          >
+            Xem chi tiết đáp án
+          </Link>
+        </Button>
+      </div>
       {/* Sections and Questions */}
       <ResultSectionContainer sections={result.sections} />
 

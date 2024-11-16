@@ -39,6 +39,7 @@ export interface UserExam {
 }
 
 export interface Question {
+  _id: string;
   serial: string;
   content: string;
   options: string[];
@@ -50,6 +51,7 @@ export interface Question {
 }
 
 export interface Group {
+  _id: string;
   documentText: string;
   audio: string;
   image: string;

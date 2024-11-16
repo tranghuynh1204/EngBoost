@@ -1,29 +1,55 @@
+import { Group } from "@/types";
 import React from "react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+const mapOption: { [key: number]: string } = {
+  0: "A",
+  1: "B",
+  2: "C",
+  3: "D",
+};
+import { Label } from "@/components/ui/label";
+
 interface SolutionItemProps {
-  groups: {
-    image: string;
-    transcript: string;
-    questions: { serial: string; correctAnswer: string }[];
-  }[];
+  groups: Group[];
 }
 export const SolutionItem = ({ groups }: SolutionItemProps) => {
   return (
     <div>
       {groups.map((group, index) => (
         <div key={index}>
-          <div>
-            <div>{group.image}</div>
-          </div>
-          <div>
-            <p>{group.transcript}</p>
-          </div>
+          {group.audio && <div>{group.audio}</div>}
+          {group.image && <div>{group.image}</div>}
+          {group.documentText && (
+            <div dangerouslySetInnerHTML={{ __html: group.documentText }} />
+          )}
+          <div>{group.transcript}</div>
           <div>
             {group.questions.map((question) => (
               <div key={question.serial}>
+                <span>{question.serial}</span>
+                <RadioGroup defaultValue={question.correctAnswer} disabled>
+                  {question.options?.map((option, index) => (
+                    <div className="flex items-center space-x-2" key={index}>
+                      <RadioGroupItem
+                        value={mapOption[index]}
+                        id={mapOption[index]}
+                      />
+                      <Label htmlFor={mapOption[index]}>
+                        {mapOption[index]}.{option}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
                 <div>
-                  {question.serial} đáp án đúng là 
+                  Đáp án đúng là
                   {question.correctAnswer}
                 </div>
+                {question.answerExplanation && (
+                  <div>
+                    Giải thích đáp án
+                    {question.answerExplanation}
+                  </div>
+                )}
               </div>
             ))}
           </div>

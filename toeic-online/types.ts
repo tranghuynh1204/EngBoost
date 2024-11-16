@@ -31,9 +31,11 @@ export interface Comment {
 
 export interface UserExam {
   _id: string;
+  exam: Exam;
   startTime: string;
   duration: string;
   result: string;
+  sections: Section[];
 }
 
 export interface Question {

@@ -47,9 +47,11 @@ export const AnswerModal = () => {
             <span key={index}># {tag}</span>
           ))}
         </div>
-        <div>{group.audio}</div>
-        <div>{group.image}</div>
-        <div dangerouslySetInnerHTML={{ __html: group.documentText }} />
+        {group.audio && <div>{group.audio}</div>}
+        {group.image && <div>{group.image}</div>}
+        {group.documentText && (
+          <div dangerouslySetInnerHTML={{ __html: group.documentText }} />
+        )}
         <div>{group.transcript}</div>
         <div>{question.content}</div>
         <div>

@@ -221,7 +221,17 @@ export class ExamService {
 
     return result;
   }
-
+  async getAnswerDetail(userExamId: string, userId: string) {
+    const userExam = await this.userExamService.findOne(userExamId, userId);
+    if (!userExam) {
+      throw new NotFoundException(`Không tìm thấy bài thi`);
+    }
+    return {
+      exam: userExam.exam,
+      sections: userExam.sections,
+      answer: userExam.answers,
+    };
+  }
   async searchExams(
     category: string,
     title: string,

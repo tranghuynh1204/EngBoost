@@ -1,9 +1,11 @@
 "use client";
 import { ResultSectionContainer } from "@/components/result/result-section-container";
+import { Button } from "@/components/ui/button";
 import { setMapGroup, setMapQuestion } from "@/lib/store/data-slice";
 import { openModal } from "@/lib/store/modal-slice";
 import { UserExamResult } from "@/types";
 import axios from "axios";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -13,6 +15,7 @@ import {
   ClockIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
+import { link } from "fs";
 const UserExamIdPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
@@ -114,7 +117,15 @@ const UserExamIdPage = () => {
           )
         )}
       </div>
-
+      <div>
+        <Button variant="link">
+          <Link
+            href={`/exams/${params.examId}/result/${params.userExamId}/details`}
+          >
+            Xem chi tiết đáp án
+          </Link>
+        </Button>
+      </div>
       {/* Sections and Questions */}
       <ResultSectionContainer sections={result.sections} />
 

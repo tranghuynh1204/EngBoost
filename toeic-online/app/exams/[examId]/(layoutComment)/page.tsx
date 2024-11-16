@@ -1,5 +1,6 @@
 // pages/exams/[examId].tsx
 "use client";
+import { CommentContainer } from "@/components/comment/comment-container";
 import { ExamSection } from "@/components/exam/exam-section";
 import { UserExamContainer } from "@/components/user-exam/user-exam-container";
 import { Exam } from "@/types"; // Assume you have defined the Exam type here
@@ -10,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LinkIcon } from "lucide-react";
 
 const ExamIdPage = () => {
   const params = useParams();
@@ -76,13 +78,19 @@ const ExamIdPage = () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
-        requestBody // Send the data directly in the body
+        requestBody
       );
-      setSubmissionResult("Practice mode started successfully!");
-      console.log("Practice mode started successfully!");
-      // Optionally, redirect to the practice session page
-      // For example:
-      // router.push(`/practice/${response.data.practiceId}`);
+
+      // Extract the practiceSessionId from the response
+      const practiceSessionId = response.data.practiceSessionId;
+
+      if (!practiceSessionId) {
+        setSubmissionResult(
+          "Failed to start practice mode. No session ID returned."
+        );
+        setIsSubmitting(false);
+        return;
+      }
     } catch (error: any) {
       console.error("Error submitting selection:", error);
       if (
@@ -204,14 +212,24 @@ const ExamIdPage = () => {
               {/* Submit Button */}
               <div className="mb-6">
                 <Button
-                  onClick={handleSubmitSelection}
+                  // onClick={handleSubmitSelection}
                   disabled={
                     isSubmitting ||
                     (!isEntireExamSelected && selectedSections.length === 0)
                   }
                   className="w-full"
+                  variant="link"
                 >
-                  {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
+                  <Link
+                    href={{
+                      pathname: `/exams/${params.examId}/practice`,
+                      query: {
+                        sectionId: selectedSections,
+                      },
+                    }}
+                  >
+                    {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
+                  </Link>
                 </Button>
               </div>
               {submissionResult && (

@@ -15,7 +15,7 @@ import {
   ClockIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
-import { link } from "fs";
+
 const UserExamIdPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
@@ -151,7 +151,7 @@ const UserExamIdPage = () => {
                       <span className="font-medium text-gray-800">
                         Câu {serial}
                       </span>
-                      {result.mapQuestion[serial].answer === "" ? (
+                      {!result.mapQuestion[serial].answer ? (
                         <ClockIcon
                           className="h-6 w-6 font-medium text-yellow-500"
                           aria-hidden="true"

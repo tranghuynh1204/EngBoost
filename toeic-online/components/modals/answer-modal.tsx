@@ -53,7 +53,7 @@ export const AnswerModal = () => {
         <div>
           <div>{question.serial}</div>
           <div>
-            <RadioGroup defaultValue={question.answer} disabled>
+            <RadioGroup defaultValue={question.answer}>
               {question.options.map((option, index) => (
                 <div className="flex items-center space-x-2" key={index}>
                   <RadioGroupItem

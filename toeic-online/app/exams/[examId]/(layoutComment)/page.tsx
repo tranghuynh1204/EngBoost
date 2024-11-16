@@ -1,21 +1,18 @@
 // pages/exams/[examId].tsx
 "use client";
-import { CommentContainer } from "@/components/comment/comment-container";
 import { ExamSection } from "@/components/exam/exam-section";
 import { UserExamContainer } from "@/components/user-exam/user-exam-container";
 import { Exam } from "@/types"; // Assume you have defined the Exam type here
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LinkIcon } from "lucide-react";
 
 const ExamIdPage = () => {
   const params = useParams();
-  const router = useRouter();
   const [exam, setExam] = useState<Exam | null>(null);
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);

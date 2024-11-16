@@ -25,7 +25,8 @@ export class UserExamService {
       string,
       { correct: number; questionCount: number }
     >();
-    let correct = 0;
+    let correct = 0,
+      questionCount = 0;
     for (const section of sections) {
       if (!mapSectionCategory.has(section.category)) {
         mapSectionCategory.set(section.category, {
@@ -37,6 +38,7 @@ export class UserExamService {
       for (const group of section.groups) {
         for (const question of group.questions) {
           categoryData.questionCount++;
+          questionCount++;
           if (
             question.correctAnswer ===
             answersMap.get(question.serial.toString())
@@ -51,7 +53,7 @@ export class UserExamService {
       ...createUserExamDto,
       exam: new Types.ObjectId(createUserExamDto.exam),
       user: userId,
-      result: correct + '/' + answersMap.size,
+      result: correct + '/' + questionCount,
       mapSectionCategory,
     });
     return newUserExam.save();

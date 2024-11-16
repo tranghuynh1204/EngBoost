@@ -37,7 +37,7 @@ export const TagItem = ({
           <button
             className={cn(
               "m-2  border-[1px] rounded-full w-8 h-8 flex items-center justify-center",
-              mapQuestion[question]?.answer === ""
+              !mapQuestion[question]?.answer
                 ? "border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white"
                 : mapQuestion[question]?.answer ===
                   mapQuestion[question]?.correctAnswer

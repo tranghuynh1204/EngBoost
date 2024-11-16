@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LinkIcon } from "lucide-react";
 
 const ExamIdPage = () => {
   const params = useParams();
@@ -90,13 +91,6 @@ const ExamIdPage = () => {
         setIsSubmitting(false);
         return;
       }
-
-      const examId = params.examId as string;
-      // Redirect to the practice session page
-      router.push({
-        pathname: `/exams/${examId}/practice`,
-        state: { examData }, // Dữ liệu bạn muốn truyền
-      });
     } catch (error: any) {
       console.error("Error submitting selection:", error);
       if (
@@ -159,23 +153,23 @@ const ExamIdPage = () => {
                   Chi tiết đề thi
                 </h2>
                 <p className="text-gray-700">
-                  <span className="font-medium">Thời gian làm bài:</span>{" "}
+                  <span className="font-medium">Thời gian làm bài:</span>
                   {exam.duration} phút
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Phần thi:</span>{" "}
+                  <span className="font-medium">Phần thi:</span>
                   {exam.sectionCount} phần
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Câu hỏi:</span>{" "}
+                  <span className="font-medium">Câu hỏi:</span>
                   {exam.questionCount} câu
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Bình luận:</span>{" "}
+                  <span className="font-medium">Bình luận:</span>
                   {exam.commentCount} bình luận
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Người luyện:</span>{" "}
+                  <span className="font-medium">Người luyện:</span>
                   {exam.userCount} người
                 </p>
               </div>
@@ -218,14 +212,24 @@ const ExamIdPage = () => {
               {/* Submit Button */}
               <div className="mb-6">
                 <Button
-                  onClick={handleSubmitSelection}
+                  // onClick={handleSubmitSelection}
                   disabled={
                     isSubmitting ||
                     (!isEntireExamSelected && selectedSections.length === 0)
                   }
                   className="w-full"
+                  variant="link"
                 >
-                  {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
+                  <Link
+                    href={{
+                      pathname: `/exams/${params.examId}/practice`,
+                      query: {
+                        sectionId: selectedSections,
+                      },
+                    }}
+                  >
+                    {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
+                  </Link>
                 </Button>
               </div>
               {submissionResult && (

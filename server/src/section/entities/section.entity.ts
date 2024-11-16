@@ -8,6 +8,9 @@ export class Section {
   @Prop()
   name: string;
 
+  @Prop()
+  category: string;
+
   @Prop({ type: [String] })
   tags: string[];
 

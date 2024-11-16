@@ -103,6 +103,19 @@ const UserExamIdPage = () => {
             {result.skipped}
           </span>
         </div>
+        {Object.entries(result.mapSectionCategory).map(
+          ([category, { correct, questionCount }]) => (
+            <div
+              className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center"
+              key={category}
+            >
+              <span className="text-sm text-gray-500">{category}</span>
+              <span className="mt-2 text-2xl font-bold text-yellow-600">
+                {correct}/{questionCount}
+              </span>
+            </div>
+          )
+        )}
       </div>
       <div>
         <Button variant="link">

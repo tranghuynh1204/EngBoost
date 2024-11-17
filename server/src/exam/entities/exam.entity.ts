@@ -21,7 +21,6 @@ export class Exam {
 
   @Prop()
   questionCount: number;
-
   @Prop()
   sectionCount: number;
 }

@@ -41,9 +41,9 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
           <div key={section._id}>
             {section.groups.map((group, index) => (
               <React.Fragment key={index}>
-                {group.questions.map((question, index) => (
+                {group.questions.map((question) => (
                   <button
-                    key={index}
+                    key={question.serial}
                     onClick={() => onNavigate(question.serial, section._id)}
                     className={`w-full flex items-center justify-center px-2 py-1 border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
                       answeredQuestions[question.serial]

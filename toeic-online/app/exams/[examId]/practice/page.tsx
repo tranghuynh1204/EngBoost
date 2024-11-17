@@ -17,6 +17,8 @@ const PracticeExamPage = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState<
     Record<string, boolean>
   >({});
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
@@ -28,6 +30,7 @@ const PracticeExamPage = () => {
           }
         );
         setExam(response.data);
+        setStartTime(new Date());
       } catch (error) {
         console.error("Error fetching practice session data:", error);
       }
@@ -37,7 +40,19 @@ const PracticeExamPage = () => {
       fetchPracticeSession();
     }
   }, []);
+  useEffect(() => {
+    if (!startTime) return;
 
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diffInSeconds = Math.floor(
+        (now.getTime() - startTime.getTime()) / 1000
+      );
+      setElapsedTime(diffInSeconds);
+    }, 1000); // Update every second
+
+    return () => clearInterval(timer); // Cleanup on unmount
+  }, [startTime]);
   const handleNavigate = useCallback((questionSerial: string) => {
     const element = document.getElementById(`question-${questionSerial}`);
     if (element) {

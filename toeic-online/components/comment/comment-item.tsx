@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/form";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { memo, useState } from "react";
 import axios from "axios";
+import { Textarea } from "../ui/textarea";
 export interface CommentItemProps {
   id: string;
   user: {
@@ -102,7 +102,7 @@ export const CommentItem = memo(
                       <FormItem>
                         <FormLabel className="sr-only">Bình luận</FormLabel>
                         <FormControl>
-                          <textarea
+                          <Textarea
                             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-32"
                             placeholder="Chia sẻ cảm nghĩ của bạn..."
                             {...field}

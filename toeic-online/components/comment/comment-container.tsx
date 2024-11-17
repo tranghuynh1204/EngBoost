@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useParams } from "next/navigation";
+import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
   content: z.string().min(1, {
@@ -100,7 +101,7 @@ export const CommentContainer = () => {
                 <FormItem>
                   <FormLabel className="sr-only">Bình luận</FormLabel>
                   <FormControl>
-                    <textarea
+                    <Textarea
                       className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-32"
                       placeholder="Chia sẻ cảm nghĩ của bạn..."
                       {...field}

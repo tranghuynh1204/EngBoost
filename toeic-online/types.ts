@@ -33,7 +33,7 @@ export interface UserExam {
   _id: string;
   exam: Exam;
   startTime: string;
-  duration: string;
+  duration: { h: number; m: number; s: number };
   result: string;
   sections: Section[];
 }
@@ -68,7 +68,7 @@ export interface UserExamResult {
   incorrect: number;
   skipped: number;
   result: string;
-  duration: string;
+  duration: { h: number; m: number; s: number };
   sections: {
     name: string;
     mapTagQuestion: {

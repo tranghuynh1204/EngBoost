@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PracticeExamPage = () => {
   const { examId } = useParams();
-  const ref = useRef<Record<string, string>>({});
+  const answers = useRef<Record<string, string>>({});
   const sectionIds = useSearchParams().getAll("sectionId");
   const [exam, setExam] = useState<Exam | null>(null);
   useEffect(() => {
@@ -26,24 +26,39 @@ const PracticeExamPage = () => {
         );
         setExam(response.data);
       } catch (error) {
-        console.error("Error fetching practice session data:", error);
+        console.log("Error fetching practice session data:", error);
       }
     };
 
     if (sectionIds && examId) {
       fetchPracticeSession();
     }
-  }, []);
+  }, [examId, sectionIds]);
 
   const onSubmit = async () => {
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user-exam`, {
-        exam: examId,
-        answers: ref.current,
-        sections: sectionIds,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-exams`,
+        {
+          exam: examId,
+          answers: answers.current,
+          sections: sectionIds,
+          duration: {
+            h: 1,
+            m: 2,
+            s: 3,
+          },
+          startTime: "2024-11-04T12:30:00Z",
+        },
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMTI0MjIyOSwiZXhwIjoxNzMxODQ3MDI5fQ.-_UYPlJhdXbwuoEO2HhW1oLb_RI0sLsz76IZUOwYLq0`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } catch (error) {
-      console.error("Error submitting answers:", error);
+      console.log("Error submitting answers:", error);
     }
   };
 
@@ -95,7 +110,7 @@ const PracticeExamPage = () => {
                     <p className="mb-2">{question.content}</p>
                     <RadioGroup
                       onValueChange={(value) => {
-                        ref.current[question.serial] = value;
+                        answers.current[question.serial] = value;
                       }}
                     >
                       {question.options.map((option, index) => (

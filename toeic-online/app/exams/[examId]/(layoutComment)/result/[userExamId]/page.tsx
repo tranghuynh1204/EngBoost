@@ -82,7 +82,7 @@ const UserExamIdPage = () => {
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center">
           <span className="text-sm text-gray-500">Thời gian hoàn thành</span>
           <span className="mt-2 text-2xl font-bold text-yellow-600">
-            {result.duration}
+            {result.duration.h}:{result.duration.m}:{result.duration.s}
           </span>
         </div>
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center">

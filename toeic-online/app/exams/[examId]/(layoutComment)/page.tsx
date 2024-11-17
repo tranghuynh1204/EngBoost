@@ -1,6 +1,6 @@
 // pages/exams/[examId].tsx
 "use client";
-import { ExamSection } from "@/components/exam/exam-section";
+import { ExamSectionInfo } from "@/components/exam/exam-section-info";
 import { UserExamContainer } from "@/components/user-exam/user-exam-container";
 import { Exam } from "@/types"; // Assume you have defined the Exam type here
 import axios from "axios";
@@ -193,7 +193,7 @@ const ExamIdPage = () => {
                 </div>
                 <div className="flex flex-col space-y-4">
                   {exam.sections.map((section) => (
-                    <ExamSection
+                    <ExamSectionInfo
                       id={section._id}
                       name={section.name}
                       questionCount={section.questionCount}

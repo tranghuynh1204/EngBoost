@@ -12,7 +12,7 @@ interface ExamSectionProps {
   disabled?: boolean;
 }
 
-export const ExamSection: React.FC<ExamSectionProps> = ({
+export const ExamSectionInfo: React.FC<ExamSectionProps> = ({
   id,
   name,
   tags,

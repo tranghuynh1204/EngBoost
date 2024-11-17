@@ -60,7 +60,10 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
                 {formatDate(userExam.startTime)}
               </TableCell>
               <TableCell>{userExam.result}</TableCell>
-              <TableCell>{userExam.duration}</TableCell>
+              <TableCell>
+                {userExam.duration.h}:{userExam.duration.m}:
+                {userExam.duration.s}
+              </TableCell>
               <TableCell className="text-right">
                 <Button variant="link">
                   <Link href={`/exams/${examId}/result/${userExam._id}`}>

@@ -1,6 +1,6 @@
 // pages/exams/[examId]/practice/[practiceSessionId]/page.tsx
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
 import { Exam, mapOption } from "@/types"; // Define your types accordingly
@@ -11,14 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuestionTracker from "@/components/tracker/QuestionTracker";
 const PracticeExamPage = () => {
   const { examId } = useParams();
-  const ref = useRef<Record<string, string>>({});
   const sectionIds = useSearchParams().getAll("sectionId");
   const [exam, setExam] = useState<Exam | null>(null);
   const [answeredQuestions, setAnsweredQuestions] = useState<
-    Record<string, boolean>
+    Record<string, string>
   >({});
-  const [startTime, setStartTime] = useState<Date | null>(null);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [currentSection, setCurrentSection] = useState<string>();
+
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
@@ -30,7 +29,6 @@ const PracticeExamPage = () => {
           }
         );
         setExam(response.data);
-        setStartTime(new Date());
       } catch (error) {
         console.error("Error fetching practice session data:", error);
       }
@@ -40,57 +38,68 @@ const PracticeExamPage = () => {
       fetchPracticeSession();
     }
   }, []);
-  useEffect(() => {
-    if (!startTime) return;
 
-    const timer = setInterval(() => {
-      const now = new Date();
-      const diffInSeconds = Math.floor(
-        (now.getTime() - startTime.getTime()) / 1000
-      );
-      setElapsedTime(diffInSeconds);
-    }, 1000); // Update every second
-
-    return () => clearInterval(timer); // Cleanup on unmount
-  }, [startTime]);
-  const handleNavigate = useCallback((questionSerial: string) => {
-    const element = document.getElementById(`question-${questionSerial}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
-      // Optionally, highlight the question
-      element.classList.add("ring-2", "ring-blue-500");
-      setTimeout(() => {
-        element.classList.remove("ring-2", "ring-blue-500");
-      }, 2000);
-    }
-  }, []);
+  const handleNavigate = useCallback(
+    async (questionSerial: string, sectionId: string) => {
+      await setCurrentSection(sectionId);
+      const element = document.getElementById(`question-${questionSerial}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Optionally, highlight the question
+        element.classList.add("ring-2", "ring-blue-500");
+        setTimeout(() => {
+          element.classList.remove("ring-2", "ring-blue-500");
+        }, 2000);
+      }
+    },
+    []
+  );
   const onSubmit = async () => {
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user-exam`, {
-        exam: examId,
-        answers: ref.current,
-        sections: sectionIds,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-exams`,
+        {
+          exam: examId,
+          answers: answeredQuestions,
+          sections: sectionIds,
+          duration: {
+            h: 1,
+            m: 2,
+            s: 3,
+          },
+          startTime: "2024-11-04T12:30:00Z",
+        },
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMTI0MjIyOSwiZXhwIjoxNzMxODQ3MDI5fQ.-_UYPlJhdXbwuoEO2HhW1oLb_RI0sLsz76IZUOwYLq0`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      // code chuyển đến trang kết quả
     } catch (error) {
-      console.error("Error submitting answers:", error);
+      console.log("Error submitting answers:", error);
     }
   };
 
   if (!exam) {
     return <div>Loading...</div>;
   }
-  const allQuestions = exam.sections.flatMap((section) =>
-    section.groups.flatMap((group) => group.questions)
-  );
+
   return (
     <div className="container mx-auto p-6 flex">
       {/* Main Content */}
       <div className="flex-1 mr-6 overflow-y-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
-        <Tabs defaultValue={exam.sections[0]._id} className="w-full">
+        <Tabs className="w-full" value={currentSection}>
           <TabsList className="mb-4">
             {exam.sections.map((section) => (
-              <TabsTrigger value={section._id} key={section._id}>
+              <TabsTrigger
+                value={section._id}
+                key={section._id}
+                onClick={() => setCurrentSection(section._id)}
+              >
                 {section.name}
               </TabsTrigger>
             ))}
@@ -100,12 +109,12 @@ const PracticeExamPage = () => {
               <h2 className="text-2xl font-semibold mb-4">{section.name}</h2>
               {section.groups.map((group, index) => (
                 <div key={index} className="mb-6">
-                  {group.audio && (
+                  {/* {group.audio && (
                     <audio controls className="w-full mb-4">
                       <source src={group.audio} type="audio/mpeg" />
                       Your browser does not support the audio element.
                     </audio>
-                  )}
+                  )} */}
                   {group.image && (
                     <Image
                       src={group.image}
@@ -135,13 +144,11 @@ const PracticeExamPage = () => {
                       </p>
                       <RadioGroup
                         onValueChange={(value) => {
-                          ref.current[question.serial] = value;
-                          setAnsweredQuestions((prev) => ({
-                            ...prev,
-                            [question.serial]: true,
-                          }));
+                          setAnsweredQuestions({
+                            ...answeredQuestions,
+                            [question.serial]: value,
+                          });
                         }}
-                        value={ref.current[question.serial] || ""}
                       >
                         <div className="space-y-2">
                           {question.options.map((option, oIndex) => (
@@ -175,7 +182,7 @@ const PracticeExamPage = () => {
       {/* Sidebar: Question Tracker */}
       <div className="w-64 hidden lg:block sticky top-4 self-start">
         <QuestionTracker
-          questions={allQuestions}
+          sections={exam.sections}
           answeredQuestions={answeredQuestions}
           onNavigate={handleNavigate}
           onSubmit={onSubmit} // Pass onSubmit function

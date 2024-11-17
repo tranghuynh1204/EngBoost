@@ -5,17 +5,8 @@ import { Button } from "../ui/button";
 // Adjust based on actual shadcn-ui components
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Exam } from "@/types";
 
-interface Exam {
-  _id: string;
-  title: string;
-  duration: number; // in minutes
-  category: string;
-  questionCount: number;
-  sectionCount: number;
-  commentCount: number;
-  userCount: number;
-}
 interface ExamCardProps {
   exam: Exam; // Define exam as the prop
 }

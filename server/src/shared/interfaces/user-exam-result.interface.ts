@@ -4,7 +4,7 @@ export interface UserExamResult {
   incorrect: number;
   skipped: number;
   result: string;
-  duration: string;
+  duration: { h: number; m: number; s: number };
   mapSectionCategory: {
     [category: string]: {
       correct: number;

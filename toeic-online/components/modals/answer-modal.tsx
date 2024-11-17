@@ -14,7 +14,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { closeModal } from "@/lib/store/modal-slice";
 import { mapOption } from "@/types";
 
-
 export const AnswerModal = () => {
   const dispatch = useDispatch();
   const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
@@ -53,7 +52,7 @@ export const AnswerModal = () => {
         <div>
           <div>{question.serial}</div>
           <div>
-            <RadioGroup defaultValue={question.answer}>
+            <RadioGroup defaultValue={question.answer} disabled>
               {question.options.map((option, index) => (
                 <div className="flex items-center space-x-2" key={index}>
                   <RadioGroupItem

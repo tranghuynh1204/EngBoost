@@ -6,7 +6,7 @@ import ExamCard from "../../components/exam/exam-card";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 import { Exam } from "@/types";
-
+import Link from "next/link";
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
@@ -127,13 +127,13 @@ const ExamPage: React.FC = () => {
           ) : exams.length > 0 ? (
             // Exam Cards
             exams.map((exam) => (
-              <div
+              <Link
                 key={exam._id}
-                className="bg-[#FAF0E6] rounded-md shadow-sm p-2 hover:shadow-md transition-shadow duration-300"
-                style={{ width: "200px", height: "150px" }}
+                href={`/exams/${exam._id}`}
+                className="block bg-[#FAF0E6] rounded-md shadow-sm p-4 hover:shadow-md transition-shadow duration-300 cursor-pointer"
               >
                 <ExamCard exam={exam} />
-              </div>
+              </Link>
             ))
           ) : (
             // No Exams Found

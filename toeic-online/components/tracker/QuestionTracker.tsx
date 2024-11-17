@@ -36,38 +36,41 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
       </div>
 
       {/* Questions Grid */}
-      <div className="grid grid-cols-3 gap-2 flex-grow overflow-y-auto">
+      <div className="flex flex-col space-y-4 flex-grow overflow-y-auto">
         {sections.map((section) => (
           <div key={section._id}>
-            {section.groups.map((group, index) => (
-              <React.Fragment key={index}>
-                {group.questions.map((question) => (
-                  <button
-                    key={question.serial}
-                    onClick={() => onNavigate(question.serial, section._id)}
-                    className={`w-full flex items-center justify-center px-2 py-1 border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
-                      answeredQuestions[question.serial]
-                        ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"
-                        : "border-gray-400 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500"
-                    }`}
-                    aria-label={`Question ${question.serial}, ${
-                      answeredQuestions[question.serial]
-                        ? "answered"
-                        : "not answered"
-                    }`}
-                  >
-                    <span className="mr-1 text-sm font-medium text-gray-700">
-                      {question.serial}.
-                    </span>
-                    {answeredQuestions[question.serial] ? (
-                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircleIcon className="h-5 w-5 text-gray-500" />
-                    )}
-                  </button>
-                ))}
-              </React.Fragment>
-            ))}
+            <h3 className="text-xl font-semibold mb-2">{section.name}</h3>
+            <div className="grid grid-cols-4 gap-2">
+              {section.groups.map((group, index) => (
+                <React.Fragment key={index}>
+                  {group.questions.map((question) => (
+                    <button
+                      key={question.serial}
+                      onClick={() => onNavigate(question.serial, section._id)}
+                      className={`w-full h-12 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
+                        answeredQuestions[question.serial]
+                          ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"
+                          : "border-gray-400 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500"
+                      }`}
+                      aria-label={`Question ${question.serial}, ${
+                        answeredQuestions[question.serial]
+                          ? "answered"
+                          : "not answered"
+                      }`}
+                    >
+                      <span className="text-sm font-medium text-gray-700">
+                        {question.serial}
+                      </span>
+                      {answeredQuestions[question.serial] ? (
+                        <CheckCircleIcon className="h-5 w-5 text-green-500 mt-1" />
+                      ) : (
+                        <XCircleIcon className="h-5 w-5 text-gray-500 mt-1" />
+                      )}
+                    </button>
+                  ))}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         ))}
       </div>

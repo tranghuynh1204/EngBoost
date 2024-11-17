@@ -39,12 +39,6 @@ const PracticeExamPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (exam) {
-      setCurrentSection(exam.sections[0]._id);
-    }
-  }, [exam]);
-
   const handleNavigate = useCallback(
     async (questionSerial: string, sectionId: string) => {
       await setCurrentSection(sectionId);
@@ -98,7 +92,11 @@ const PracticeExamPage = () => {
       {/* Main Content */}
       <div className="flex-1 mr-6 overflow-y-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
-        <Tabs className="w-full" value={currentSection}>
+        <Tabs
+          className="w-full"
+          value={currentSection}
+          defaultValue={exam.sections[0]._id}
+        >
           <TabsList className="mb-4">
             {exam.sections.map((section) => (
               <TabsTrigger

@@ -64,4 +64,11 @@ export class UserExamController {
       user.sub,
     );
   }
+
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Post('/analytics')
+  async analytics(@User() user, @Body('days') days: number) {
+    return this.userExamService.analytics(user.sub, days);
+  }
 }

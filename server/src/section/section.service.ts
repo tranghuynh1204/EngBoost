@@ -13,8 +13,8 @@ export class SectionService {
     const newSection = new this.sectionModel(section);
     return newSection.save();
   }
-  async findByIds(sectionIds: string[]): Promise<SectionDocument[]> {
-    const objectIds = sectionIds.map((id) => new Types.ObjectId(id)); // Convert string IDs to ObjectId
-    return this.sectionModel.find({ _id: { $in: objectIds } }).exec();
+  async findByIds(sectionIds: Types.ObjectId[]): Promise<SectionDocument[]> {
+    // Convert string IDs to ObjectId
+    return this.sectionModel.find({ _id: { $in: sectionIds } }).exec();
   }
 }

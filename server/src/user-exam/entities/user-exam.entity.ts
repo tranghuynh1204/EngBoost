@@ -30,12 +30,6 @@ export class UserExam {
 
   @Prop({ required: true })
   result: string;
-
-  x(): string {
-    const { h, m, s } = this.duration;
-    const format = (value: number) => value.toString().padStart(2, '0'); // Định dạng thành "02" nếu giá trị là 2
-    return `${format(h)}:${format(m)}:${format(s)}`;
-  }
 }
 
 export const UserExamSchema = SchemaFactory.createForClass(UserExam);

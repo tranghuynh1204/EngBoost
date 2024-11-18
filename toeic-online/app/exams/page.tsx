@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Header from "../../components/Header";
+
 import ExamCard from "../../components/exam/exam-card";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
@@ -84,7 +84,6 @@ const ExamPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

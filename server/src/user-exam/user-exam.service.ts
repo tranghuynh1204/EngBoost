@@ -14,9 +14,10 @@ export class UserExamService {
   ) {}
 
   async create(createUserExamDto: CreateUserExamDto, userId: string) {
-    const sections = await this.sectionService.findByIds(
-      createUserExamDto.sections,
+    const objectIds = createUserExamDto.sections.map(
+      (id) => new Types.ObjectId(id),
     );
+    const sections = await this.sectionService.findByIds(objectIds);
     const answersMap: Map<string, string> = new Map(
       Object.entries(createUserExamDto.answers),
     );
@@ -51,6 +52,7 @@ export class UserExamService {
     }
     const newUserExam = new this.userExamModel({
       ...createUserExamDto,
+      sections: objectIds,
       exam: new Types.ObjectId(createUserExamDto.exam),
       user: userId,
       result: correct + '/' + questionCount,
@@ -173,4 +175,106 @@ export class UserExamService {
       pageSize,
     };
   }
+
+  async analytics(userId: string, days: number) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const result: {
+      [key: string]: {
+        // key là "TOEIC" hoặc "ELIT"
+        exams: Set<string>; // Set chứa các examId duy nhất
+        section: {
+          [key: string]: {
+            // key là "Listening", "Reading" trong mỗi nhóm
+            exams: Set<string>;
+            precision: {
+              correct: number;
+              questionCount: number;
+            };
+          };
+        };
+        duration: number;
+      };
+    } = {};
+    const userExams = await this.userExamModel
+      .find({
+        user: userId,
+        startTime: { $gte: startDate },
+      })
+      .populate('exam', 'category')
+      .exec();
+
+    for (const userExam of userExams) {
+      if (!result[userExam.exam.category]) {
+        result[userExam.exam.category] = {
+          exams: new Set(),
+          section: {}, // Map danh mục với Set các examId
+          duration: 0,
+        };
+      }
+
+      result[userExam.exam.category].exams.add(userExam.exam.toString());
+      result[userExam.exam.category].duration =
+        result[userExam.exam.category].duration +
+        userExam.duration.h * 3600 +
+        userExam.duration.m * 60 +
+        userExam.duration.s;
+      if (userExam.mapSectionCategory) {
+        userExam.mapSectionCategory.forEach((value, category) => {
+          if (!result[userExam.exam.category].section[category]) {
+            result[userExam.exam.category].section[category] = {
+              exams: new Set(),
+              precision: {
+                correct: 0,
+                questionCount: 0,
+              },
+            };
+          }
+
+          result[userExam.exam.category].section[category].exams.add(
+            userExam.exam.toString(),
+          );
+          result[userExam.exam.category].section[category].precision.correct +=
+            userExam.mapSectionCategory.get(category).correct;
+          result[userExam.exam.category].section[
+            category
+          ].precision.questionCount +=
+            userExam.mapSectionCategory.get(category).questionCount;
+        });
+      }
+    }
+
+    const transformedResult = Object.keys(result).reduce(
+      (acc, examCategory) => {
+        const categoryData = result[examCategory];
+        acc[examCategory] = {
+          examsCount: categoryData.exams.size, // Độ dài của Set exams
+          categorExamCount: Object.keys(categoryData.section).reduce(
+            (catAcc, categoryName) => {
+              catAcc[categoryName] = {
+                examCount: categoryData.section[categoryName].exams.size,
+                precision: categoryData.section[categoryName].precision,
+              };
+              // Độ dài của Set trong categorExam
+              return catAcc;
+            },
+            {},
+          ),
+          duration: categoryData.duration,
+        };
+        return acc;
+      },
+      {},
+    );
+
+    return transformedResult;
+  }
+
+  // convertSecondsToHMS(totalSeconds: number): string {
+  //   const hours = Math.floor(totalSeconds / 3600); // Tính số giờ
+  //   const minutes = Math.floor((totalSeconds % 3600) / 60); // Tính số phút
+  //   const seconds = totalSeconds % 60; // Tính số giây
+
+  //   return `${hours}:${minutes}:${seconds}`;
+  // }
 }

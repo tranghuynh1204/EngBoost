@@ -191,6 +191,14 @@ export class UserExamService {
               correct: number;
               questionCount: number;
             };
+            data: {
+              [key: string]: {
+                precision: {
+                  correct: number;
+                  questionCount: number;
+                };
+              };
+            };
           };
         };
         duration: number;
@@ -205,43 +213,59 @@ export class UserExamService {
       .exec();
 
     for (const userExam of userExams) {
-      if (!result[userExam.exam.category]) {
-        result[userExam.exam.category] = {
+      // 1. Khởi tạo category trong result nếu chưa tồn tại
+      const category = userExam.exam.category;
+      if (!result[category]) {
+        result[category] = {
           exams: new Set(),
-          section: {}, // Map danh mục với Set các examId
+          section: {}, // Chứa các danh mục (Listening, Reading, etc.)
           duration: 0,
         };
       }
 
-      result[userExam.exam.category].exams.add(userExam.exam.toString());
-      result[userExam.exam.category].duration =
-        result[userExam.exam.category].duration +
+      // 2. Cập nhật thông tin tổng quan cho category
+      const categoryData = result[category]; //toetic, vv...
+      categoryData.exams.add(userExam.exam.toString());
+      categoryData.duration +=
         userExam.duration.h * 3600 +
         userExam.duration.m * 60 +
         userExam.duration.s;
-      if (userExam.mapSectionCategory) {
-        userExam.mapSectionCategory.forEach((value, category) => {
-          if (!result[userExam.exam.category].section[category]) {
-            result[userExam.exam.category].section[category] = {
-              exams: new Set(),
-              precision: {
-                correct: 0,
-                questionCount: 0,
-              },
-            };
-          }
 
-          result[userExam.exam.category].section[category].exams.add(
-            userExam.exam.toString(),
-          );
-          result[userExam.exam.category].section[category].precision.correct +=
-            userExam.mapSectionCategory.get(category).correct;
-          result[userExam.exam.category].section[
-            category
-          ].precision.questionCount +=
-            userExam.mapSectionCategory.get(category).questionCount;
-        });
-      }
+      // 3. Duyệt qua từng danh mục trong mapSectionCategory
+      userExam.mapSectionCategory.forEach((value, section) => {
+        // Khởi tạo section trong category nếu chưa tồn tại
+        if (!categoryData.section[section]) {
+          categoryData.section[section] = {
+            exams: new Set(),
+            precision: {
+              correct: 0,
+              questionCount: 0,
+            },
+            data: {}, // Nếu cần lưu dữ liệu khác
+          };
+        }
+
+        // Cập nhật thông tin cho section
+        const sectionData = categoryData.section[section];
+        const date = userExam.startTime;
+        // Chuyển đổi ngày, tháng, năm thành định dạng YYYY-MM-DD
+        const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+        // Kiểm tra nếu key chưa tồn tại
+        if (!sectionData.data[key]) {
+          sectionData.data[key] = {
+            precision: {
+              correct: 0,
+              questionCount: 0,
+            },
+          };
+        }
+        sectionData.data[key].precision.correct += value.correct;
+        sectionData.data[key].precision.questionCount += value.questionCount;
+        sectionData.exams.add(userExam.exam.toString());
+        sectionData.precision.correct += value.correct;
+        sectionData.precision.questionCount += value.questionCount;
+      });
     }
 
     const transformedResult = Object.keys(result).reduce(
@@ -249,18 +273,28 @@ export class UserExamService {
         const categoryData = result[examCategory];
         acc[examCategory] = {
           examsCount: categoryData.exams.size, // Độ dài của Set exams
-          categorExamCount: Object.keys(categoryData.section).reduce(
+          secions: Object.keys(categoryData.section).reduce(
             (catAcc, categoryName) => {
               catAcc[categoryName] = {
                 examCount: categoryData.section[categoryName].exams.size,
                 precision: categoryData.section[categoryName].precision,
+                data: Object.keys(categoryData.section[categoryName].data).map(
+                  (key) => {
+                    const { correct, questionCount } =
+                      categoryData.section[categoryName].data[key].precision;
+                    return {
+                      date: key,
+                      precision: (correct * 100) / questionCount,
+                    };
+                  },
+                ),
               };
               // Độ dài của Set trong categorExam
               return catAcc;
             },
             {},
           ),
-          duration: categoryData.duration,
+          duration: this.convertSecondsToHMS(categoryData.duration),
         };
         return acc;
       },
@@ -270,11 +304,11 @@ export class UserExamService {
     return transformedResult;
   }
 
-  // convertSecondsToHMS(totalSeconds: number): string {
-  //   const hours = Math.floor(totalSeconds / 3600); // Tính số giờ
-  //   const minutes = Math.floor((totalSeconds % 3600) / 60); // Tính số phút
-  //   const seconds = totalSeconds % 60; // Tính số giây
+  convertSecondsToHMS(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600); // Tính số giờ
+    const minutes = Math.floor((totalSeconds % 3600) / 60); // Tính số phút
+    const seconds = totalSeconds % 60; // Tính số giây
 
-  //   return `${hours}:${minutes}:${seconds}`;
-  // }
+    return `${hours}:${minutes}:${seconds}`;
+  }
 }

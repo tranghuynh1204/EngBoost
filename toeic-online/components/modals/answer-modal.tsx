@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { closeModal } from "@/lib/store/modal-slice";
 import { mapOption } from "@/types";
 import Image from "next/image";
+import { GroupItem } from "../group/group-item";
 export const AnswerModal = () => {
   const dispatch = useDispatch();
   const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
@@ -42,33 +43,11 @@ export const AnswerModal = () => {
             <span key={index}># {tag}</span>
           ))}
         </div>
-        {group.audio && (
-          <audio controls className="w-full mb-4">
-            <source src={group.audio} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
-        )}
-        {group.image && (
-          <Image
-            src={group.image}
-            width="500"
-            height="0"
-            sizes="100vw"
-            className="h-auto mb-4"
-            alt="Group Image"
-            loading="lazy"
-          />
-        )}
-        {group.documentText && (
-          <div
-            className="mb-4 text-gray-700"
-            dangerouslySetInnerHTML={{ __html: group.documentText }}
-          ></div>
-        )}
-
-        <div>{question.content}</div>
+        <GroupItem group={group} />
         <div>
-          <div>{question.serial}</div>
+          <div>
+            {question.serial}. {question.content}
+          </div>
           <div>
             <RadioGroup defaultValue={question.answer} disabled>
               {question.options.map((option, index) => (

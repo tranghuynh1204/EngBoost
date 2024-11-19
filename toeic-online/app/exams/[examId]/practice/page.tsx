@@ -10,6 +10,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuestionTracker from "@/components/tracker/QuestionTracker";
+import { GroupItem } from "@/components/group/group-item";
 const PracticeExamPage = () => {
   const { examId } = useParams();
   const searchParams = useSearchParams();
@@ -143,30 +144,7 @@ const PracticeExamPage = () => {
               <h2 className="text-2xl font-semibold mb-4">{section.name}</h2>
               {section.groups.map((group, index) => (
                 <div key={index} className="mb-6">
-                  {group.audio && (
-                    <audio controls className="w-full mb-4">
-                      <source src={group.audio} type="audio/mpeg" />
-                      Your browser does not support the audio element.
-                    </audio>
-                  )}
-                  {group.image && (
-                    <Image
-                      src={group.image}
-                      width="500"
-                      height="0"
-                      sizes="100vw"
-                      className="h-auto mb-4"
-                      alt="Group Image"
-                      loading="lazy"
-                    />
-                  )}
-                  {group.documentText && (
-                    <div
-                      className="mb-4 text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: group.documentText }}
-                    ></div>
-                  )}
-
+                  <GroupItem group={group} />
                   {group.questions.map((question) => (
                     <div
                       key={question.serial} // Use unique serial as key

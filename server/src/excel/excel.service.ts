@@ -50,6 +50,9 @@ export class ExcelService {
 
     let currentSection = null;
     let currentGroup = null;
+    let mapTagQuestion = null;
+    let mapQuestion = null;
+
     let i = 6; // Khởi tạo biến đếm cho hàng bắt đầu từ hàng thứ 6
 
     // Vòng lặp while để kiểm tra hàng rỗng và lặp qua dữ liệu
@@ -85,9 +88,29 @@ export class ExcelService {
           questionCount: 0,
         };
         currentGroup = null;
+        if (mapTagQuestion) {
+          mapTagQuestion.forEach((value, key) => {
+            value.forEach((serial) => {
+              mapQuestion.get(serial).tags.push(key);
+            });
+          });
+        }
+        mapQuestion = new Map();
+        mapTagQuestion = new Map();
       }
       if (row[2]) {
         currentSection.tags.push(row[2]);
+        if (!row[3]) {
+          throw new HttpException(
+            'Tồn tại 1 tag không có câu hỏi nào.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        mapTagQuestion.set(
+          row[2],
+          typeof row[3] === 'string' ? row[3].split(' ') : [row[3].toString()],
+        );
       }
       if (row[12] || row[13] || row[14]) {
         currentGroup = {
@@ -101,25 +124,20 @@ export class ExcelService {
       }
       if (currentSection) {
         const question = {
-          serial: row[3],
-          content: row[4], // Câu hỏi
-          options: [row[5] ?? '', row[6] ?? '', row[7] ?? '', row[8] ?? ''],
-          correctAnswer: row[9], // Đáp án đúng
-          tags:
-            typeof row[10] === 'string' && row[10] ? row[10].split('|') : [],
+          serial: row[4],
+          content: row[5], // Câu hỏi
+          options: [row[6], row[7], row[8], row[9]].filter(
+            (x) => x !== null && x !== undefined,
+          ),
+          correctAnswer: row[10],
           answerExplanation: row[11],
+          tags: [],
         };
+        mapQuestion.set(row[4].toString(), question);
 
         if (!question.serial) {
           throw new HttpException(
             'Số thứ tự không được để trống.',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        if (!question.content) {
-          throw new HttpException(
-            'Câu hỏi không được để trống.',
             HttpStatus.BAD_REQUEST,
           );
         }
@@ -131,12 +149,6 @@ export class ExcelService {
           );
         }
 
-        if (question.tags.length < 1 && currentSection.tags.length > 0) {
-          throw new HttpException(
-            'Nếu phần thi có tag thì câu hỏi phải có ít nhất 1 tag',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
         if (!currentGroup) {
           currentGroup = {
             questions: [],
@@ -155,6 +167,11 @@ export class ExcelService {
       exam.sectionCount++;
       exam.questionCount += currentSection.questionCount;
       exam.sections.push(currentSection);
+      mapTagQuestion.forEach((value, key) => {
+        value.forEach((serial) => {
+          mapQuestion.get(serial).tags.push(key);
+        });
+      });
     }
 
     // Kiểm tra xem bài thi có phần thi nào không

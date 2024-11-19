@@ -29,9 +29,7 @@ export const SolutionItem = ({ groups }: SolutionItemProps) => {
                         value={mapOption[index]}
                         id={mapOption[index]}
                       />
-                      <Label htmlFor={mapOption[index]}>
-                        {mapOption[index]}.{option}
-                      </Label>
+                      <Label htmlFor={mapOption[index]}>{option}</Label>
                     </div>
                   ))}
                 </RadioGroup>

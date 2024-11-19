@@ -31,6 +31,16 @@ export class VocabularyController {
 
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
+  @Post('bulk-create')
+  async bulkCreate(
+    @Body() createVocabularyDtos: CreateVocabularyDto[],
+    @User() user,
+  ) {
+    return this.vocabularyService.createBulk(createVocabularyDtos, user.sub);
+  }
+
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,

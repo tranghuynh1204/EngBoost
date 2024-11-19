@@ -168,7 +168,7 @@ const PracticeExamPage = () => {
                                 htmlFor={`${question.serial}-${mapOption[oIndex]}`}
                                 className="cursor-pointer"
                               >
-                                {mapOption[oIndex]}. {option}
+                                {option}
                               </Label>
                             </div>
                           ))}

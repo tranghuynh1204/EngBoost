@@ -52,6 +52,23 @@ export class VocabularyService {
     return createdVocabulary.save();
   }
 
+  async createBulk(
+    createVocabularyDtos: CreateVocabularyDto[],
+    userId: string,
+  ) {
+    const flashcardId = createVocabularyDtos[0].flashcard;
+    await this.flashcardService.findOne(flashcardId.toString(), userId);
+
+    const vocabulariesToInsert = createVocabularyDtos.map((vocab) => ({
+      ...vocab,
+      flashcard: new Types.ObjectId(flashcardId),
+    }));
+
+    // Sử dụng insertMany để thêm hàng loạt
+    const result = await this.vocabularyModel.insertMany(vocabulariesToInsert);
+    return result;
+  }
+
   async update(
     id: string,
     updateVocabularyDto: UpdateVocabularyDto,

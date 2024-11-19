@@ -49,17 +49,13 @@ const ExamPage: React.FC = () => {
             },
           }
         );
-        console.log(response.data);
         if (response.data && Array.isArray(response.data.data)) {
           setExams(response.data.data); // Use response.data.data for the array of exams
         } else {
           setExams([]);
-          console.error("API response data is not an array");
         }
-      } catch (error) {
+      } catch {
         setError("Lỗi khi gọi API");
-        console.error("Lỗi khi gọi API:", error);
-        setExams([]); // Reset exams to avoid map error
       } finally {
         setLoading(false);
       }

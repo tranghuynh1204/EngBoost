@@ -136,10 +136,6 @@ export class VocabularyService {
 
     const totalPages = Math.ceil(totalVocabularies / pageSize);
 
-    if (currentPage > totalPages) {
-      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
-    }
-
     const vocabularies = await this.vocabularyModel
       .find({ flashcard: flashcardObjectId })
       .skip((currentPage - 1) * pageSize)

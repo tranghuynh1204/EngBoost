@@ -249,9 +249,7 @@ export class ExamService {
     }
     const totalItems = await this.examModel.countDocuments(query).exec();
     const totalPages = Math.ceil(totalItems / pageSize);
-    if (currentPage > totalPages) {
-      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
-    }
+
     const exams = await this.examModel.aggregate([
       { $match: query },
       {

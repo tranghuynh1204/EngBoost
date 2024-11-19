@@ -3,7 +3,7 @@ import React from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Label } from "@/components/ui/label";
-
+import Image from "next/image";
 interface SolutionItemProps {
   groups: Group[];
 }
@@ -12,12 +12,28 @@ export const SolutionItem = ({ groups }: SolutionItemProps) => {
     <div>
       {groups.map((group, index) => (
         <div key={index}>
-          {group.audio && <div>{group.audio}</div>}
-          {group.image && <div>{group.image}</div>}
-          {group.documentText && (
-            <div dangerouslySetInnerHTML={{ __html: group.documentText }} />
+          {group.audio && (
+            <audio controls>
+              <source src={group.audio} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
           )}
-          <div>{group.transcript}</div>
+          {group.image && (
+            <Image
+              src={group.image}
+              width="0"
+              height="0"
+              sizes="100vw"
+              alt="Group Image"
+              loading="lazy"
+            />
+          )}
+          {group.documentText && (
+            <div dangerouslySetInnerHTML={{ __html: group.documentText }}></div>
+          )}
+          {group.transcript && (
+            <div dangerouslySetInnerHTML={{ __html: group.transcript }}></div>
+          )}
           <div>
             {group.questions.map((question) => (
               <div key={question.serial}>

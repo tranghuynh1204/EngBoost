@@ -130,9 +130,6 @@ export class UserExamService {
 
     const totalPages = Math.ceil(totalUserExams / pageSize);
 
-    if (currentPage > totalPages) {
-      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
-    }
     const results = await this.userExamModel
       .find({ user: userId })
       .select('startTime duration result sections') // Lấy thêm sections từ userExam

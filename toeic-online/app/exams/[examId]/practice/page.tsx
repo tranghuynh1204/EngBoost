@@ -19,11 +19,14 @@ const PracticeExamPage = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState<
     Record<string, string>
   >({});
-  const [currentSection, setCurrentSection] = useState<string>();
+
+  const [indexSection, setIndexSection] = useState<number>(0);
+
   const [timeLeft, setTimeLeft] = useState<number | null>(
     selectedTime ? parseInt(selectedTime) * 60 : null
   ); // Time in seconds
   const [elapsedTime, setElapsedTime] = useState<number>(0);
+
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
@@ -67,8 +70,8 @@ const PracticeExamPage = () => {
     return () => clearInterval(timerId);
   }, [timeLeft]);
   const handleNavigate = useCallback(
-    async (questionSerial: string, sectionId: string) => {
-      await setCurrentSection(sectionId);
+    async (questionSerial: string, index: number) => {
+      await setIndexSection(index);
       const element = document.getElementById(`question-${questionSerial}`);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -121,15 +124,15 @@ const PracticeExamPage = () => {
         <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
         <Tabs
           className="w-full"
-          value={currentSection}
+          value={exam.sections[indexSection]._id}
           defaultValue={exam.sections[0]._id}
         >
           <TabsList className="mb-4">
-            {exam.sections.map((section) => (
+            {exam.sections.map((section, index) => (
               <TabsTrigger
                 value={section._id}
                 key={section._id}
-                onClick={() => setCurrentSection(section._id)}
+                onClick={() => setIndexSection(index)}
               >
                 {section.name}
               </TabsTrigger>
@@ -140,28 +143,28 @@ const PracticeExamPage = () => {
               <h2 className="text-2xl font-semibold mb-4">{section.name}</h2>
               {section.groups.map((group, index) => (
                 <div key={index} className="mb-6">
-                  {/* {group.audio && (
+                  {group.audio && (
                     <audio controls className="w-full mb-4">
                       <source src={group.audio} type="audio/mpeg" />
                       Your browser does not support the audio element.
                     </audio>
-                  )} */}
+                  )}
                   {group.image && (
                     <Image
                       src={group.image}
-                      width={500}
-                      height={500}
+                      width="500"
+                      height="0"
+                      sizes="100vw"
+                      className="h-auto mb-4"
                       alt="Group Image"
-                      className="mb-4"
+                      loading="lazy"
                     />
                   )}
                   {group.documentText && (
-                    <p className="mb-4 text-gray-700">{group.documentText}</p>
-                  )}
-                  {group.transcript && (
-                    <p className="italic text-gray-600 mb-4">
-                      {group.transcript}
-                    </p>
+                    <div
+                      className="mb-4 text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: group.documentText }}
+                    ></div>
                   )}
 
                   {group.questions.map((question) => (
@@ -207,53 +210,23 @@ const PracticeExamPage = () => {
               ))}
               {/* Previous and Next Buttons */}
               <div className="flex justify-between mt-8">
-                <Button
-                  onClick={() =>
-                    setCurrentSection(
-                      exam.sections[
-                        Math.max(
-                          exam.sections.findIndex(
-                            (sec) => sec._id === section._id
-                          ) - 1,
-                          0
-                        )
-                      ]?._id
-                    )
-                  }
-                  disabled={exam.sections[0]._id === section._id} // Disable if first section
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    exam.sections[0]._id === section._id
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gray-700 text-white hover:bg-black"
-                  }`}
-                >
-                  Previous
-                </Button>
+                {indexSection !== 0 && (
+                  <Button
+                    onClick={() => setIndexSection(indexSection - 1)}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black"
+                  >
+                    Previous
+                  </Button>
+                )}
 
-                <Button
-                  onClick={() =>
-                    setCurrentSection(
-                      exam.sections[
-                        Math.min(
-                          exam.sections.findIndex(
-                            (sec) => sec._id === section._id
-                          ) + 1,
-                          exam.sections.length - 1
-                        )
-                      ]?._id
-                    )
-                  }
-                  disabled={
-                    exam.sections[exam.sections.length - 1]._id === section._id
-                  } // Disable if last section
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    exam.sections[exam.sections.length - 1]._id === section._id
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gray-700 text-white hover:bg-black"
-                  }`}
-                >
-                  Next
-                </Button>
+                {indexSection < exam.sections.length - 1 && (
+                  <Button
+                    onClick={() => setIndexSection(indexSection + 1)}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black"
+                  >
+                    Next
+                  </Button>
+                )}
               </div>
             </TabsContent>
           ))}

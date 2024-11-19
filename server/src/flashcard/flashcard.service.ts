@@ -39,10 +39,6 @@ export class FlashcardService {
 
     const totalPages = Math.ceil(totalFlashcards / pageSize);
 
-    if (currentPage > totalPages) {
-      throw new NotFoundException('Trang hiện tại vượt quá tổng số trang');
-    }
-
     const flashcards = await this.flashcardModel.aggregate([
       { $match: { user: userId } },
       {

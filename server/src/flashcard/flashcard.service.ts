@@ -28,11 +28,11 @@ export class FlashcardService {
     return newFlashcard.save();
   }
 
-  async findAll(
-    userId: string,
-    currentPage: number = 1,
-    pageSize: number = 10,
-  ) {
+  async findAll(userId: string) {
+    return await this.flashcardModel.find({ user: userId });
+  }
+
+  async search(userId: string, currentPage: number = 1, pageSize: number = 10) {
     const totalFlashcards = await this.flashcardModel
       .countDocuments({ user: userId })
       .exec();

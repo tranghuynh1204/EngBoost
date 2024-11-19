@@ -13,7 +13,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { closeModal } from "@/lib/store/modal-slice";
 import { mapOption } from "@/types";
-import Image from "next/image";
 import { GroupItem } from "../group/group-item";
 export const AnswerModal = () => {
   const dispatch = useDispatch();

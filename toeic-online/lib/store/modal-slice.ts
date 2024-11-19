@@ -1,6 +1,6 @@
 "use client";
 
-import { Group, Question } from "@/types";
+import { Group, Question, Vocabulary } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ModalState {
@@ -8,10 +8,12 @@ interface ModalState {
   data: ModalData;
   isOpen: boolean;
 }
-type ModalType = "Answer" | "FlashCard" | null;
+type ModalType = "Answer" | "CreateVocabulary" | null;
 interface ModalData {
+  length: number;
   question?: Question;
   group?: Group;
+  vocabulary?: Vocabulary;
 }
 const initialState: ModalState = {
   type: null,
@@ -20,7 +22,7 @@ const initialState: ModalState = {
 };
 
 export const modalSlice = createSlice({
-  name: "popup",
+  name: "modal",
   initialState,
   reducers: {
     openModal: (

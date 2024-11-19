@@ -94,6 +94,32 @@ export interface UserExamResult {
     };
   };
 }
+
+export interface Vocabulary {
+  _id: string;
+
+  word: string;
+
+  mean: string;
+
+  image: string;
+
+  example: string;
+
+  notes: string;
+
+  Pronunciation: string;
+
+  partOfSpeech: string;
+
+  flashcard: Flashcard;
+}
+
+export interface Flashcard {
+  _id: string;
+  title: string;
+  description: string;
+}
 export interface MapQuestion {
   [serial: string]: Question;
 }

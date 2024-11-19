@@ -17,13 +17,7 @@ export class UpdateVocabularyDto {
 
   @IsOptional()
   @IsString()
-  image?: string;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMaxSize(10)
-  examples?: string[];
+  example?: string;
 
   @IsOptional()
   @IsString()

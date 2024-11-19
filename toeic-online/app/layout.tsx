@@ -4,6 +4,7 @@ import "./globals.css";
 import StoreProvider from "./store-provider";
 import { AnswerModal } from "@/components/modals/answer-modal";
 import Header from "@/components/Header";
+import { CreateAnswerModal } from "@/components/modals/create-vocabulary-modal";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Header />
           {children}
           <AnswerModal />
+          <CreateAnswerModal />
         </body>
       </StoreProvider>
     </html>

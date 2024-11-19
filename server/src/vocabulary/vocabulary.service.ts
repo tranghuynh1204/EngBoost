@@ -14,7 +14,6 @@ import { Model, Types } from 'mongoose';
 import { Vocabulary } from './entities/vocabulary.entity';
 import { FlashcardService } from 'src/flashcard/flashcard.service';
 import { CreateFlashcardDto } from 'src/flashcard/dto/create-flashcard.dto';
-import { console } from 'inspector';
 
 @Injectable()
 export class VocabularyService {

@@ -15,30 +15,11 @@ export const SolutionItem = ({ groups }: SolutionItemProps) => {
           <GroupItem group={group} />
           {group.questions.map((question) => (
             <div key={question.serial}>
-              <span>{question.serial}</span>
-              <RadioGroup defaultValue={question.correctAnswer} disabled>
-                {question.options?.map((option, index) => (
-                  <div className="flex items-center space-x-2" key={index}>
-                    <RadioGroupItem
-                      value={mapOption[index]}
-                      id={mapOption[index]}
-                    />
-                    <Label htmlFor={mapOption[index]}>{option}</Label>
-                  </div>
-                ))}
-              </RadioGroup>
               <div>
+                {question.serial}
                 Đáp án đúng là
                 {question.correctAnswer}
               </div>
-              {question.answerExplanation && (
-                <div
-                  className="mb-4 text-gray-700"
-                  dangerouslySetInnerHTML={{
-                    __html: question.answerExplanation,
-                  }}
-                ></div>
-              )}
             </div>
           ))}
         </div>

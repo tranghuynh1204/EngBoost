@@ -1,4 +1,5 @@
 // pages/exams/[examId]/practice/[practiceSessionId]/page.tsx
+
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuestionTracker from "@/components/tracker/QuestionTracker";
 import { GroupItem } from "@/components/group/group-item";
+
 const PracticeExamPage = () => {
   const { examId } = useParams();
   const searchParams = useSearchParams();
@@ -47,7 +49,8 @@ const PracticeExamPage = () => {
     if (sectionIds && examId) {
       fetchPracticeSession();
     }
-  }, []);
+  }, [examId, sectionIds]);
+
   // Countdown Timer
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -70,6 +73,14 @@ const PracticeExamPage = () => {
 
     return () => clearInterval(timerId);
   }, [timeLeft]);
+
+  const scrollToQuestion = (questionId: string) => {
+    const element = document.getElementById(questionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   const handleNavigate = useCallback(
     async (questionSerial: string, index: number) => {
       await setIndexSection(index);
@@ -85,6 +96,8 @@ const PracticeExamPage = () => {
     },
     []
   );
+
+  // Handler for submitting answers
   const onSubmit = async () => {
     try {
       const response = await axios.post(
@@ -102,16 +115,28 @@ const PracticeExamPage = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMTUwODk5MywiZXhwIjoxNzMyMTEzNzkzfQ.uRCQcTvVFsftkViaiGz_w_amjPLj19j21I88V3eACD4`,
+            Authorization: `Bearer YOUR_TOKEN_HERE`, // Replace with dynamic token if necessary
             "Content-Type": "application/json",
           },
         }
       );
       console.log(response.data);
-      // code chuyển đến trang kết quả
+      // Redirect to the results page or handle post-submission logic
     } catch (error) {
       console.log("Error submitting answers:", error);
     }
+  };
+
+  // Handler for navigating to the next section
+  const handleNext = () => {
+    setIndexSection((prev) => prev + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Handler for navigating to the previous section
+  const handlePrevious = () => {
+    setIndexSection((prev) => prev - 1);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
 
   if (!exam) {
@@ -187,10 +212,14 @@ const PracticeExamPage = () => {
                 </div>
               ))}
               {/* Previous and Next Buttons */}
-              <div className="flex justify-between mt-8">
+              <div
+                className={`flex mt-8 ${
+                  indexSection !== 0 ? "justify-between" : "justify-end"
+                }`}
+              >
                 {indexSection !== 0 && (
                   <Button
-                    onClick={() => setIndexSection(indexSection - 1)}
+                    onClick={handlePrevious}
                     className="px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black"
                   >
                     Previous
@@ -199,8 +228,10 @@ const PracticeExamPage = () => {
 
                 {indexSection < exam.sections.length - 1 && (
                   <Button
-                    onClick={() => setIndexSection(indexSection + 1)}
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black"
+                    onClick={handleNext}
+                    className={`px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black ${
+                      indexSection === 0 ? "" : ""
+                    }`}
                   >
                     Next
                   </Button>

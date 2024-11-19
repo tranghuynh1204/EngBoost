@@ -70,7 +70,7 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
                       <button
                         key={question.serial}
                         onClick={() => onNavigate(question.serial, sIndex)}
-                        className={`w-full h-12 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
+                        className={`w-8 h-8 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
                           answeredQuestions[question.serial]
                             ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"
                             : "border-gray-400 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500"
@@ -81,14 +81,9 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
                             : "not answered"
                         }`}
                       >
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-xs font-medium text-gray-700">
                           {question.serial}
                         </span>
-                        {answeredQuestions[question.serial] ? (
-                          <CheckCircleIcon className="h-5 w-5 text-green-500 mt-1" />
-                        ) : (
-                          <XCircleIcon className="h-5 w-5 text-gray-500 mt-1" />
-                        )}
                       </button>
                     ))}
                   </React.Fragment>

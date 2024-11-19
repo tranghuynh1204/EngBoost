@@ -10,6 +10,8 @@ interface QuestionTrackerProps {
   answeredQuestions: Record<string, string>;
   onNavigate: (questionSerial: string, index: number) => void;
   onSubmit: () => void;
+  timeLeft: number | null; // New prop for time left in seconds
+  elapsedTime?: number;
 }
 
 const QuestionTracker: React.FC<QuestionTrackerProps> = ({
@@ -17,21 +19,39 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
   answeredQuestions,
   onNavigate,
   onSubmit,
+  timeLeft,
+  elapsedTime,
 }) => {
+  // Helper function to format timeLeft into MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
-      {/* Header */}
+      {/* Header: Timer */}
       <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-        Question Tracker
+        {timeLeft !== null ? (
+          <span>
+            Thời gian còn lại:{" "}
+            <span className="font-bold">{formatTime(timeLeft)}</span>
+          </span>
+        ) : (
+          <span>
+            Thời gian làm bài:{" "}
+            <span className="font-bold">{formatTime(elapsedTime || 0)}</span>
+          </span>
+        )}
       </h2>
-
       {/* Submit Button */}
       <div className="mb-6">
         <Button
           onClick={onSubmit}
           className="w-full flex items-center justify-center px-4 py-2 border border-white bg-black text-white rounded-lg shadow hover:bg-gray-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
-          Submit Answers
+          Nộp bài
         </Button>
       </div>
 

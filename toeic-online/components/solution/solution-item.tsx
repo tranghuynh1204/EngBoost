@@ -1,27 +1,32 @@
-import { Group, mapOption } from "@/types";
+import { Group } from "@/types";
 import React from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-import { Label } from "@/components/ui/label";
 import { GroupItem } from "../group/group-item";
+
 interface SolutionItemProps {
   groups: Group[];
 }
+
 export const SolutionItem = ({ groups }: SolutionItemProps) => {
   return (
-    <div>
+    <div className="space-y-6">
       {groups.map((group, index) => (
-        <div key={index}>
+        <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm">
+          {/* Group Content */}
           <GroupItem group={group} />
-          {group.questions.map((question) => (
-            <div key={question.serial}>
-              <div>
-                {question.serial}
-                Đáp án đúng là
-                {question.correctAnswer}
+
+          {/* Questions and Solutions */}
+          <div className="mt-4">
+            {group.questions.map((question) => (
+              <div key={question.serial} className="mb-4">
+                <div className="flex items-center mb-1">
+                  <span className="font-semibold mr-2">{question.serial}.</span>
+                  <span className="text-lg">
+                    Đáp án đúng là: {question.correctAnswer}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ))}
     </div>

@@ -77,8 +77,11 @@ export const CommentItem = memo(
           </span>
         </div>
 
-        {/* Comment Content */}
-        <div className="text-gray-700 mb-4">{content}</div>
+        <Textarea
+          value={content}
+          readOnly
+          className="w-full p-4 border border-gray-200 rounded-lg resize-none bg-white text-black cursor-default"
+        />
 
         {/* Reply Section */}
         <div className="mb-4">

@@ -16,7 +16,7 @@ const PracticeExamPage = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState<
     Record<string, string>
   >({});
-  const [currentSection, setCurrentSection] = useState<string>();
+  const [indexSection, setIndexSection] = useState<number>(0);
 
   useEffect(() => {
     const fetchPracticeSession = async () => {
@@ -40,8 +40,8 @@ const PracticeExamPage = () => {
   }, []);
 
   const handleNavigate = useCallback(
-    async (questionSerial: string, sectionId: string) => {
-      await setCurrentSection(sectionId);
+    async (questionSerial: string, index: number) => {
+      await setIndexSection(index);
       const element = document.getElementById(`question-${questionSerial}`);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -94,15 +94,15 @@ const PracticeExamPage = () => {
         <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
         <Tabs
           className="w-full"
-          value={currentSection}
+          value={exam.sections[indexSection]._id}
           defaultValue={exam.sections[0]._id}
         >
           <TabsList className="mb-4">
-            {exam.sections.map((section) => (
+            {exam.sections.map((section, index) => (
               <TabsTrigger
                 value={section._id}
                 key={section._id}
-                onClick={() => setCurrentSection(section._id)}
+                onClick={() => setIndexSection(index)}
               >
                 {section.name}
               </TabsTrigger>
@@ -113,28 +113,28 @@ const PracticeExamPage = () => {
               <h2 className="text-2xl font-semibold mb-4">{section.name}</h2>
               {section.groups.map((group, index) => (
                 <div key={index} className="mb-6">
-                  {/* {group.audio && (
+                  {group.audio && (
                     <audio controls className="w-full mb-4">
                       <source src={group.audio} type="audio/mpeg" />
                       Your browser does not support the audio element.
                     </audio>
-                  )} */}
+                  )}
                   {group.image && (
                     <Image
                       src={group.image}
-                      width={500}
-                      height={500}
+                      width="500"
+                      height="0"
+                      sizes="100vw"
+                      className="h-auto mb-4"
                       alt="Group Image"
-                      className="mb-4"
+                      loading="lazy"
                     />
                   )}
                   {group.documentText && (
-                    <p className="mb-4 text-gray-700">{group.documentText}</p>
-                  )}
-                  {group.transcript && (
-                    <p className="italic text-gray-600 mb-4">
-                      {group.transcript}
-                    </p>
+                    <div
+                      className="mb-4 text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: group.documentText }}
+                    ></div>
                   )}
 
                   {group.questions.map((question) => (

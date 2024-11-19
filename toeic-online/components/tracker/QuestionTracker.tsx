@@ -8,7 +8,7 @@ import { Section } from "@/types";
 interface QuestionTrackerProps {
   sections: Section[];
   answeredQuestions: Record<string, string>;
-  onNavigate: (questionSerial: string, sectionId: string) => void;
+  onNavigate: (questionSerial: string, index: number) => void;
   onSubmit: () => void;
 }
 
@@ -37,7 +37,7 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
 
       {/* Questions Grid */}
       <div className="flex flex-col space-y-4 flex-grow overflow-y-auto">
-        {sections.map((section) => (
+        {sections.map((section, sIndex) => (
           <div key={section._id}>
             <h3 className="text-xl font-semibold mb-2">{section.name}</h3>
             <div className="grid grid-cols-4 gap-2">
@@ -46,7 +46,7 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
                   {group.questions.map((question) => (
                     <button
                       key={question.serial}
-                      onClick={() => onNavigate(question.serial, section._id)}
+                      onClick={() => onNavigate(question.serial, sIndex)}
                       className={`w-full h-12 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
                         answeredQuestions[question.serial]
                           ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"

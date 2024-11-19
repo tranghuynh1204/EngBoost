@@ -1,16 +1,15 @@
-// components/tracker/QuestionTracker.tsx
-
 import React from "react";
-import { Button } from "../ui/button"; // Ensure Button is correctly exported
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid"; // Import Heroicons
+import { Button } from "../ui/button";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { Section } from "@/types";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface QuestionTrackerProps {
   sections: Section[];
   answeredQuestions: Record<string, string>;
   onNavigate: (questionSerial: string, index: number) => void;
   onSubmit: () => void;
-  timeLeft: number | null; // New prop for time left in seconds
+  timeLeft: number | null;
   elapsedTime?: number;
 }
 
@@ -45,6 +44,7 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
           </span>
         )}
       </h2>
+
       {/* Submit Button */}
       <div className="mb-6">
         <Button
@@ -55,45 +55,49 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
         </Button>
       </div>
 
-      {/* Questions Grid */}
-      <div className="flex flex-col space-y-4 flex-grow overflow-y-auto">
-        {sections.map((section, sIndex) => (
-          <div key={section._id}>
-            <h3 className="text-xl font-semibold mb-2">{section.name}</h3>
-            <div className="grid grid-cols-4 gap-2">
-              {section.groups.map((group, index) => (
-                <React.Fragment key={index}>
-                  {group.questions.map((question) => (
-                    <button
-                      key={question.serial}
-                      onClick={() => onNavigate(question.serial, sIndex)}
-                      className={`w-full h-12 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
-                        answeredQuestions[question.serial]
-                          ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"
-                          : "border-gray-400 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500"
-                      }`}
-                      aria-label={`Question ${question.serial}, ${
-                        answeredQuestions[question.serial]
-                          ? "answered"
-                          : "not answered"
-                      }`}
-                    >
-                      <span className="text-sm font-medium text-gray-700">
-                        {question.serial}
-                      </span>
-                      {answeredQuestions[question.serial] ? (
-                        <CheckCircleIcon className="h-5 w-5 text-green-500 mt-1" />
-                      ) : (
-                        <XCircleIcon className="h-5 w-5 text-gray-500 mt-1" />
-                      )}
-                    </button>
-                  ))}
-                </React.Fragment>
-              ))}
+      {/* Questions Grid with Scroll */}
+      <ScrollArea className="h-[500px] rounded-md border p-3">
+        {" "}
+        {/* Set a fixed height */}
+        <div className="flex flex-col space-y-4">
+          {sections.map((section, sIndex) => (
+            <div key={section._id}>
+              <h3 className="text-xl font-semibold mb-2">{section.name}</h3>
+              <div className="grid grid-cols-4 gap-2">
+                {section.groups.map((group, index) => (
+                  <React.Fragment key={index}>
+                    {group.questions.map((question) => (
+                      <button
+                        key={question.serial}
+                        onClick={() => onNavigate(question.serial, sIndex)}
+                        className={`w-full h-12 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
+                          answeredQuestions[question.serial]
+                            ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"
+                            : "border-gray-400 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500"
+                        }`}
+                        aria-label={`Question ${question.serial}, ${
+                          answeredQuestions[question.serial]
+                            ? "answered"
+                            : "not answered"
+                        }`}
+                      >
+                        <span className="text-sm font-medium text-gray-700">
+                          {question.serial}
+                        </span>
+                        {answeredQuestions[question.serial] ? (
+                          <CheckCircleIcon className="h-5 w-5 text-green-500 mt-1" />
+                        ) : (
+                          <XCircleIcon className="h-5 w-5 text-gray-500 mt-1" />
+                        )}
+                      </button>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };

@@ -7,17 +7,23 @@ import { Exam, mapOption } from "@/types"; // Define your types accordingly
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuestionTracker from "@/components/tracker/QuestionTracker";
 const PracticeExamPage = () => {
   const { examId } = useParams();
+  const searchParams = useSearchParams();
   const sectionIds = useSearchParams().getAll("sectionId");
+  const selectedTime = searchParams.get("time");
   const [exam, setExam] = useState<Exam | null>(null);
   const [answeredQuestions, setAnsweredQuestions] = useState<
     Record<string, string>
   >({});
   const [currentSection, setCurrentSection] = useState<string>();
-
+  const [timeLeft, setTimeLeft] = useState<number | null>(
+    selectedTime ? parseInt(selectedTime) * 60 : null
+  ); // Time in seconds
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
@@ -38,7 +44,28 @@ const PracticeExamPage = () => {
       fetchPracticeSession();
     }
   }, []);
+  // Countdown Timer
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
 
+    if (timeLeft !== null) {
+      // Countdown Timer
+      if (timeLeft <= 0) {
+        onSubmit();
+        return;
+      }
+      timerId = setInterval(() => {
+        setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
+      }, 1000);
+    } else {
+      // Count-Up Timer for Unlimited Time
+      timerId = setInterval(() => {
+        setElapsedTime((prev) => prev + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(timerId);
+  }, [timeLeft]);
   const handleNavigate = useCallback(
     async (questionSerial: string, sectionId: string) => {
       await setCurrentSection(sectionId);
@@ -67,7 +94,7 @@ const PracticeExamPage = () => {
             m: 2,
             s: 3,
           },
-          startTime: "2024-11-04T12:30:00Z",
+          startTime: new Date().toISOString(),
         },
         {
           headers: {
@@ -178,6 +205,56 @@ const PracticeExamPage = () => {
                   ))}
                 </div>
               ))}
+              {/* Previous and Next Buttons */}
+              <div className="flex justify-between mt-8">
+                <Button
+                  onClick={() =>
+                    setCurrentSection(
+                      exam.sections[
+                        Math.max(
+                          exam.sections.findIndex(
+                            (sec) => sec._id === section._id
+                          ) - 1,
+                          0
+                        )
+                      ]?._id
+                    )
+                  }
+                  disabled={exam.sections[0]._id === section._id} // Disable if first section
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    exam.sections[0]._id === section._id
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-gray-700 text-white hover:bg-black"
+                  }`}
+                >
+                  Previous
+                </Button>
+
+                <Button
+                  onClick={() =>
+                    setCurrentSection(
+                      exam.sections[
+                        Math.min(
+                          exam.sections.findIndex(
+                            (sec) => sec._id === section._id
+                          ) + 1,
+                          exam.sections.length - 1
+                        )
+                      ]?._id
+                    )
+                  }
+                  disabled={
+                    exam.sections[exam.sections.length - 1]._id === section._id
+                  } // Disable if last section
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    exam.sections[exam.sections.length - 1]._id === section._id
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-gray-700 text-white hover:bg-black"
+                  }`}
+                >
+                  Next
+                </Button>
+              </div>
             </TabsContent>
           ))}
         </Tabs>
@@ -190,6 +267,8 @@ const PracticeExamPage = () => {
           answeredQuestions={answeredQuestions}
           onNavigate={handleNavigate}
           onSubmit={onSubmit} // Pass onSubmit function
+          timeLeft={timeLeft} // Pass the timeLeft prop
+          elapsedTime={elapsedTime}
         />
       </div>
     </div>

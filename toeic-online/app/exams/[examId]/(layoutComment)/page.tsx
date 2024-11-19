@@ -10,7 +10,13 @@ import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"; // Assume you have a Select component
 const ExamIdPage = () => {
   const params = useParams();
   const [exam, setExam] = useState<Exam | null>(null);
@@ -18,7 +24,7 @@ const ExamIdPage = () => {
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<string | null>(null);
-
+  const [selectedTime, setSelectedTime] = useState<number | null>(null);
   useEffect(() => {
     const fetchExam = async () => {
       try {
@@ -66,12 +72,13 @@ const ExamIdPage = () => {
     setIsSubmitting(true);
     setSubmissionResult(null);
 
-    // Prepare the request body
-    const requestBody: any = { id: exam._id };
+    const requestBody: any = {
+      id: exam._id,
+      selectedTime, // Include selected time
+    };
     if (!isEntireExamSelected && selectedSections.length > 0) {
       requestBody.sectionIds = selectedSections;
     }
-
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
@@ -206,6 +213,41 @@ const ExamIdPage = () => {
                   ))}
                 </div>
               </div>
+              {/* Time Selection Dropdown */}
+              {/* Time Selection Dropdown */}
+              <div className="mb-6">
+                <label
+                  htmlFor="time-select"
+                  className="block text-lg font-medium text-gray-700 mb-2"
+                >
+                  Chọn thời gian luyện tập:
+                </label>
+                <Select
+                  value={
+                    selectedTime !== null ? selectedTime.toString() : undefined
+                  } // Use undefined instead of empty string
+                  onValueChange={
+                    (value) =>
+                      setSelectedTime(
+                        value && value !== "0" ? parseInt(value) : null
+                      ) // Handle 'Không giới hạn'
+                  }
+                >
+                  {/* Assign 'id' to SelectTrigger */}
+                  <SelectTrigger id="time-select" className="w-full">
+                    <SelectValue placeholder="Chọn thời gian" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Không giới hạn</SelectItem>{" "}
+                    {/* Use '0' instead of empty string */}
+                    <SelectItem value="10">10 phút</SelectItem>
+                    <SelectItem value="20">20 phút</SelectItem>
+                    <SelectItem value="30">30 phút</SelectItem>
+                    <SelectItem value="45">45 phút</SelectItem>
+                    <SelectItem value="60">60 phút</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {/* Submit Button */}
               <div className="mb-6">
                 <Button
@@ -221,6 +263,7 @@ const ExamIdPage = () => {
                     href={{
                       pathname: `/exams/${params.examId}/practice`,
                       query: {
+                        time: selectedTime,
                         sectionId: selectedSections,
                       },
                     }}

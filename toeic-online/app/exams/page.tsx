@@ -7,6 +7,13 @@ import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 import { Exam } from "@/types";
 import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");

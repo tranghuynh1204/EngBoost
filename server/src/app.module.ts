@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { FlashcardModule } from './flashcard/flashcard.module';
 import { VocabularyModule } from './vocabulary/vocabulary.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -26,6 +27,7 @@ import jwtConfig from './config/jwt.config';
     AuthModule,
     FlashcardModule,
     VocabularyModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

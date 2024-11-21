@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { UserExam, UserExamDocument } from './entities/user-exam.entity';
+import {
+  UserExam,
+  UserExamDocument,
+  UserExamInprocessDocument as UserExamInProcessDocument,
+} from './entities/user-exam.entity';
 import { Model, Types } from 'mongoose';
 import { SectionService } from 'src/section/section.service';
 
@@ -11,6 +15,8 @@ export class UserExamService {
   constructor(
     private readonly sectionService: SectionService,
     @InjectModel(UserExam.name) private userExamModel: Model<UserExamDocument>,
+    @InjectModel(UserExam.name)
+    private userExamInProcessModal: Model<UserExamInProcessDocument>,
   ) {}
 
   async create(createUserExamDto: CreateUserExamDto, userId: string) {

@@ -8,7 +8,7 @@ interface ModalState {
   data: ModalData;
   isOpen: boolean;
 }
-type ModalType = "Answer" | "CreateVocabulary" | null;
+type ModalType = "Answer" | "CreateVocabulary" | "UpdateVocabulary" | null;
 interface ModalData {
   length: number;
   question?: Question;

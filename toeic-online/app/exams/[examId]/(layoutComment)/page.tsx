@@ -24,7 +24,7 @@ const ExamIdPage = () => {
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<number | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>("0");
   useEffect(() => {
     const fetchExam = async () => {
       try {
@@ -223,28 +223,44 @@ const ExamIdPage = () => {
                   Chọn thời gian luyện tập:
                 </label>
                 <Select
-                  value={
-                    selectedTime !== null ? selectedTime.toString() : undefined
-                  } // Use undefined instead of empty string
-                  onValueChange={
-                    (value) =>
-                      setSelectedTime(
-                        value && value !== "0" ? parseInt(value) : null
-                      ) // Handle 'Không giới hạn'
-                  }
+                  onValueChange={(value) => {
+                    setSelectedTime(value);
+                  }}
+                  defaultValue="0"
                 >
                   {/* Assign 'id' to SelectTrigger */}
                   <SelectTrigger id="time-select" className="w-full">
                     <SelectValue placeholder="Chọn thời gian" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0">Không giới hạn</SelectItem>{" "}
-                    {/* Use '0' instead of empty string */}
-                    <SelectItem value="10">10 phút</SelectItem>
-                    <SelectItem value="20">20 phút</SelectItem>
-                    <SelectItem value="30">30 phút</SelectItem>
-                    <SelectItem value="45">45 phút</SelectItem>
-                    <SelectItem value="60">60 phút</SelectItem>
+                    <SelectItem value="0">Không giới hạn</SelectItem>
+                    <SelectItem value="10">5 phút</SelectItem>
+                    <SelectItem value="600">10 phút</SelectItem>
+                    <SelectItem value="900">15 phút</SelectItem>
+                    <SelectItem value="1200">20 phút</SelectItem>
+                    <SelectItem value="1500">25 phút</SelectItem>
+                    <SelectItem value="1800">30 phút</SelectItem>
+                    <SelectItem value="2100">35 phút</SelectItem>
+                    <SelectItem value="2400">40 phút</SelectItem>
+                    <SelectItem value="2700">45 phút</SelectItem>
+                    <SelectItem value="3000">50 phút</SelectItem>
+                    <SelectItem value="3300">55 phút</SelectItem>
+                    <SelectItem value="3600">60 phút</SelectItem>
+                    <SelectItem value="3900">65 phút</SelectItem>
+                    <SelectItem value="4200">70 phút</SelectItem>
+                    <SelectItem value="4500">75 phút</SelectItem>
+                    <SelectItem value="4800">80 phút</SelectItem>
+                    <SelectItem value="5100">85 phút</SelectItem>
+                    <SelectItem value="5400">90 phút</SelectItem>
+                    <SelectItem value="5700">95 phút</SelectItem>
+                    <SelectItem value="6000">100 phút</SelectItem>
+                    <SelectItem value="6300">105 phút</SelectItem>
+                    <SelectItem value="6600">110 phút</SelectItem>
+                    <SelectItem value="6900">115 phút</SelectItem>
+                    <SelectItem value="7200">120 phút</SelectItem>
+                    <SelectItem value="7500">125 phút</SelectItem>
+                    <SelectItem value="7800">130 phút</SelectItem>
+                    <SelectItem value="8100">135 phút</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

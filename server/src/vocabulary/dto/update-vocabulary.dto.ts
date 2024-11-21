@@ -19,6 +19,10 @@ export class UpdateVocabularyDto {
   @IsString()
   example?: string;
 
+  file: Express.Multer.File;
+
+  image: string;
+
   @IsOptional()
   @IsString()
   notes?: string;

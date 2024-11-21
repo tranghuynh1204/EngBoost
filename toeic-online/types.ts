@@ -108,7 +108,7 @@ export interface Vocabulary {
 
   notes: string;
 
-  Pronunciation: string;
+  pronunciation: string;
 
   partOfSpeech: string;
 

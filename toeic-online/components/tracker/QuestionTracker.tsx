@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { Section } from "@/types";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -8,9 +7,7 @@ interface QuestionTrackerProps {
   sections: Section[];
   answeredQuestions: Record<string, string>;
   onNavigate: (questionSerial: string, index: number) => void;
-  onSubmit: () => void;
-  timeLeft: number | null;
-  elapsedTime?: number;
+  onSubmit?: () => void;
 }
 
 const QuestionTracker: React.FC<QuestionTrackerProps> = ({
@@ -18,31 +15,32 @@ const QuestionTracker: React.FC<QuestionTrackerProps> = ({
   answeredQuestions,
   onNavigate,
   onSubmit,
-  timeLeft,
-  elapsedTime,
 }) => {
-  // Helper function to format timeLeft into MM:SS
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+    const hours = Math.floor(seconds / 3600); // Tính giờ
+    const mins = Math.floor((seconds % 3600) / 60); // Tính phút
+    const secs = seconds % 60; // Tính giây
+    return `${hours < 10 ? "0" : ""}${hours}:${mins < 10 ? "0" : ""}${mins}:${
+      secs < 10 ? "0" : ""
+    }${secs}`;
   };
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+  console.log("a");
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
       {/* Header: Timer */}
       <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-        {timeLeft !== null ? (
-          <span>
-            Thời gian còn lại:{" "}
-            <span className="font-bold">{formatTime(timeLeft)}</span>
-          </span>
-        ) : (
-          <span>
-            Thời gian làm bài:{" "}
-            <span className="font-bold">{formatTime(elapsedTime || 0)}</span>
-          </span>
-        )}
+        <span>
+          <span className="font-bold">{formatTime(count)}</span>
+        </span>
       </h2>
 
       {/* Submit Button */}

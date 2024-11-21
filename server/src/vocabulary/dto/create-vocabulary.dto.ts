@@ -33,5 +33,8 @@ export class CreateVocabularyDto {
   flashcard: Types.ObjectId;
 
   @IsOptional()
-  createFlashcardDto: CreateFlashcardDto;
+  title: string;
+
+  @IsOptional()
+  description: string;
 }

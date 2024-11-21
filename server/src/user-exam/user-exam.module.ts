@@ -10,6 +10,7 @@ import { UserModule } from 'src/user/user.module';
   imports: [
     MongooseModule.forFeature([
       { name: UserExam.name, schema: UserExamSchema },
+      { name: 'UserExamInProcess', schema: UserExamSchema },
     ]),
     SectionModule,
     UserModule,

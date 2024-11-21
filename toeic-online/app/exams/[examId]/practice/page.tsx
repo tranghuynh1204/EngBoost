@@ -1,13 +1,12 @@
 // pages/exams/[examId]/practice/[practiceSessionId]/page.tsx
 
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
 import { Exam, mapOption } from "@/types"; // Define your types accordingly
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuestionTracker from "@/components/tracker/QuestionTracker";
@@ -17,19 +16,27 @@ const PracticeExamPage = () => {
   const { examId } = useParams();
   const searchParams = useSearchParams();
   const sectionIds = useSearchParams().getAll("sectionId");
-  const selectedTime = searchParams.get("time");
+  const selectedTime = Number(searchParams.get("time"));
+  const countRef = useRef(0);
+  const startTime = new Date().toISOString();
   const [exam, setExam] = useState<Exam | null>(null);
   const [answeredQuestions, setAnsweredQuestions] = useState<
     Record<string, string>
   >({});
+  console.log("a");
 
   const [indexSection, setIndexSection] = useState<number>(0);
 
-  const [timeLeft, setTimeLeft] = useState<number | null>(
-    selectedTime ? parseInt(selectedTime) * 60 : null
-  ); // Time in seconds
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (countRef.current === selectedTime) {
+        onSubmit();
+      }
+      countRef.current += 1;
+    }, 1000);
 
+    return () => clearInterval(interval);
+  }, []);
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
@@ -42,44 +49,14 @@ const PracticeExamPage = () => {
         );
         setExam(response.data);
       } catch (error) {
-        console.error("Error fetching practice session data:", error);
+        console.log("Error fetching practice session data:", error);
       }
     };
 
     if (sectionIds && examId) {
       fetchPracticeSession();
     }
-  }, [examId, sectionIds]);
-
-  // Countdown Timer
-  useEffect(() => {
-    let timerId: NodeJS.Timeout;
-
-    if (timeLeft !== null) {
-      // Countdown Timer
-      if (timeLeft <= 0) {
-        onSubmit();
-        return;
-      }
-      timerId = setInterval(() => {
-        setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
-      }, 1000);
-    } else {
-      // Count-Up Timer for Unlimited Time
-      timerId = setInterval(() => {
-        setElapsedTime((prev) => prev + 1);
-      }, 1000);
-    }
-
-    return () => clearInterval(timerId);
-  }, [timeLeft]);
-
-  const scrollToQuestion = (questionId: string) => {
-    const element = document.getElementById(questionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
+  }, []);
 
   const handleNavigate = useCallback(
     async (questionSerial: string, index: number) => {
@@ -107,21 +84,19 @@ const PracticeExamPage = () => {
           answers: answeredQuestions,
           sections: sectionIds,
           duration: {
-            h: 1,
-            m: 2,
-            s: 3,
+            h: Math.floor(countRef.current / 3600),
+            m: Math.floor((countRef.current % 3600) / 60),
+            s: countRef.current % 60,
           },
-          startTime: new Date().toISOString(),
+          startTime,
         },
         {
           headers: {
-            Authorization: `Bearer YOUR_TOKEN_HERE`, // Replace with dynamic token if necessary
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`, // Replace with dynamic token if necessary
             "Content-Type": "application/json",
           },
         }
       );
-      console.log(response.data);
-      // Redirect to the results page or handle post-submission logic
     } catch (error) {
       console.log("Error submitting answers:", error);
     }
@@ -248,9 +223,8 @@ const PracticeExamPage = () => {
           sections={exam.sections}
           answeredQuestions={answeredQuestions}
           onNavigate={handleNavigate}
-          onSubmit={onSubmit} // Pass onSubmit function
-          timeLeft={timeLeft} // Pass the timeLeft prop
-          elapsedTime={elapsedTime}
+          onSubmit={onSubmit}
+          selectedTime={selectedTime}
         />
       </div>
     </div>

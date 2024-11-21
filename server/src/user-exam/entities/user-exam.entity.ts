@@ -4,6 +4,7 @@ import { Exam } from 'src/exam/entities/exam.entity';
 import { Section } from 'src/section/entities/section.entity';
 
 export type UserExamDocument = HydratedDocument<UserExam>;
+export type UserExamInprocessDocument = HydratedDocument<UserExam>;
 
 @Schema()
 export class UserExam {

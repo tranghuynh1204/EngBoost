@@ -14,29 +14,36 @@ import { Model, Types } from 'mongoose';
 import { Vocabulary } from './entities/vocabulary.entity';
 import { FlashcardService } from 'src/flashcard/flashcard.service';
 import { CreateFlashcardDto } from 'src/flashcard/dto/create-flashcard.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class VocabularyService {
   constructor(
     @Inject(forwardRef(() => FlashcardService))
     private readonly flashcardService: FlashcardService,
+    private readonly cloudinaryService: CloudinaryService,
     @InjectModel(Vocabulary.name) private vocabularyModel: Model<Vocabulary>,
   ) {}
 
-  async create(createVocabularyDto: CreateVocabularyDto, userId: string) {
+  async create(
+    createVocabularyDto: CreateVocabularyDto,
+    file: any,
+    userId: string,
+  ) {
     let flashcardId = createVocabularyDto.flashcard;
 
     if (!flashcardId) {
-      const createFlashcardDto: CreateFlashcardDto =
-        createVocabularyDto.createFlashcardDto;
-      if (!createFlashcardDto.title || !createFlashcardDto.description) {
+      if (!createVocabularyDto.title) {
         throw new HttpException(
           'Vui lòng điền đầy đủ thông tin của list từ vựng',
           HttpStatus.BAD_REQUEST,
         );
       }
       const flashcard = await this.flashcardService.create(
-        createFlashcardDto,
+        {
+          title: createVocabularyDto.title,
+          description: createVocabularyDto.description,
+        },
         userId,
       );
       flashcardId = flashcard.id;
@@ -47,7 +54,10 @@ export class VocabularyService {
       ...createVocabularyDto,
       flashcard: new Types.ObjectId(flashcardId),
     });
-
+    if (file) {
+      const { secure_url } = await this.cloudinaryService.uploadFile(file);
+      createdVocabulary.image = secure_url;
+    }
     return createdVocabulary.save();
   }
 

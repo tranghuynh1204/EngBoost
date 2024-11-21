@@ -9,8 +9,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import QuestionTracker from "@/components/tracker/QuestionTracker";
+import QuestionTracker from "@/components/tracker/question-tracker";
 import { GroupItem } from "@/components/group/group-item";
+import { HightLightControl } from "@/components/hight-light-control";
 
 const PracticeExamPage = () => {
   const { examId } = useParams();
@@ -23,8 +24,6 @@ const PracticeExamPage = () => {
   const [answeredQuestions, setAnsweredQuestions] = useState<
     Record<string, string>
   >({});
-  console.log("a");
-
   const [indexSection, setIndexSection] = useState<number>(0);
 
   useEffect(() => {
@@ -120,7 +119,7 @@ const PracticeExamPage = () => {
 
   return (
     <div className="container mx-auto p-6 flex">
-      {/* Main Content */}
+      <HightLightControl />
       <div className="flex-1 mr-6 overflow-y-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
         <Tabs
@@ -224,7 +223,6 @@ const PracticeExamPage = () => {
           answeredQuestions={answeredQuestions}
           onNavigate={handleNavigate}
           onSubmit={onSubmit}
-          selectedTime={selectedTime}
         />
       </div>
     </div>

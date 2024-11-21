@@ -1,7 +1,6 @@
 // create-vocabulary.dto.ts
 import { IsString, IsOptional, IsNotEmpty, IsMongoId } from 'class-validator';
 import { Types } from 'mongoose';
-import { CreateFlashcardDto } from 'src/flashcard/dto/create-flashcard.dto';
 
 export class CreateVocabularyDto {
   @IsNotEmpty({ message: 'Từ vựng không được để trống.' })

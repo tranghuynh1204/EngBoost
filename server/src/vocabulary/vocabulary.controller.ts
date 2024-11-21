@@ -50,10 +50,12 @@ export class VocabularyController {
 
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateVocabularyDto: UpdateVocabularyDto,
+    @UploadedFile() file: Express.Multer.File,
     @User() user,
   ) {
     return this.vocabularyService.update(id, updateVocabularyDto, user.sub);

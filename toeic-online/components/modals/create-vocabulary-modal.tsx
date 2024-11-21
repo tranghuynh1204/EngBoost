@@ -54,8 +54,9 @@ export const CreateVocabularyModal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
   const { vocabulary } = data;
-  const flashcardId = vocabulary?.flashcard._id;
+  const flashcardId = vocabulary?.flashcard?._id;
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+
   const isModalOpen = isOpen && type === "CreateVocabulary";
   const [createFlashCard, setCreateFlashCard] = useState<boolean>();
 
@@ -84,7 +85,12 @@ export const CreateVocabularyModal = () => {
     if (!flashcardId) {
       fetchVocabulary();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen]);
+  useEffect(() => {
+    form.setValue("word", vocabulary?.word ?? ""); // Cập nhật giá trị trong form
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vocabulary?.word]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -185,7 +191,7 @@ export const CreateVocabularyModal = () => {
 
   return (
     <Dialog
-      open={false}
+      open={isModalOpen}
       onOpenChange={() => {
         dispatch(closeModal());
       }}

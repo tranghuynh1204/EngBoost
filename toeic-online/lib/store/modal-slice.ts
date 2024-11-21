@@ -10,7 +10,6 @@ interface ModalState {
 }
 type ModalType = "Answer" | "CreateVocabulary" | "UpdateVocabulary" | null;
 interface ModalData {
-  length: number;
   question?: Question;
   group?: Group;
   vocabulary?: Vocabulary;

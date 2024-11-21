@@ -1,10 +1,4 @@
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateVocabularyDto {
   @IsNotEmpty({ message: 'Từ vựng không được để trống.' })
@@ -18,8 +12,6 @@ export class UpdateVocabularyDto {
   @IsOptional()
   @IsString()
   example?: string;
-
-  file: Express.Multer.File;
 
   image: string;
 

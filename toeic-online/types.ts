@@ -96,23 +96,23 @@ export interface UserExamResult {
 }
 
 export interface Vocabulary {
-  _id: string;
+  _id?: string;
 
-  word: string;
+  word?: string;
 
-  mean: string;
+  mean?: string;
 
-  image: string;
+  image?: string;
 
-  example: string;
+  example?: string;
 
-  notes: string;
+  notes?: string;
 
-  pronunciation: string;
+  pronunciation?: string;
 
-  partOfSpeech: string;
+  partOfSpeech?: string;
 
-  flashcard: Flashcard;
+  flashcard?: Flashcard;
 }
 
 export interface Flashcard {

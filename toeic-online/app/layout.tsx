@@ -4,7 +4,7 @@ import "./globals.css";
 import StoreProvider from "./store-provider";
 import { AnswerModal } from "@/components/modals/answer-modal";
 import Header from "@/components/Header";
-
+import { Toaster } from "@/components/ui/toaster";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -34,6 +34,7 @@ export default function RootLayout({
         >
           <Header />
           {children}
+          <Toaster />
           <AnswerModal />
         </body>
       </StoreProvider>

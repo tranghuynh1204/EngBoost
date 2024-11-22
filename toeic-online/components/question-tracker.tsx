@@ -5,19 +5,24 @@ import { ScrollArea } from "./ui/scroll-area";
 interface QuestionTrackerProps {
   sections: Section[];
   onNavigate: (questionSerial: string, index: number) => void;
+  answeredQuestionsRef: Record<string, string>;
 }
 
 const QuestionTracker = forwardRef(
-  ({ sections, onNavigate }: QuestionTrackerProps, ref) => {
+  (
+    { sections, onNavigate, answeredQuestionsRef }: QuestionTrackerProps,
+    ref
+  ) => {
     const [answeredQuestions, setAnsweredQuestions] = useState<
-      Record<string, true>
-    >({});
+      Record<string, string>
+    >(answeredQuestionsRef ?? {});
     const callMe = (serial: string) => {
       setAnsweredQuestions({
         ...answeredQuestions,
-        [serial]: true,
+        [serial]: "1",
       });
     };
+
     useImperativeHandle(ref, () => ({
       callMe,
     }));

@@ -3,9 +3,10 @@ import { Button } from "./ui/button";
 import { formatTime } from "@/types";
 interface CounterProps {
   onSubmit: () => void;
+  counter: number;
 }
-export const Counter = ({ onSubmit }: CounterProps) => {
-  const [count, setCount] = useState(0);
+export const Counter = ({ onSubmit, counter }: CounterProps) => {
+  const [count, setCount] = useState(counter);
   useEffect(() => {
     const interval = setInterval(() => {
       setCount((prev) => prev + 1);

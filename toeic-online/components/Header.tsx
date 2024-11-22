@@ -2,7 +2,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
@@ -21,6 +21,15 @@ const Header: React.FC = () => {
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
   const accessToken = useAppSelector((state) => state.auth.accessToken);
 
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true); // Indicate that hydration has completed
+  }, []);
+  if (!isHydrated) {
+    // Render nothing or a loading skeleton until hydration is complete
+    return null;
+  }
   const handleTabChange = (selectedTab: string) => {
     router.push(`/?tab=${selectedTab}`);
   };

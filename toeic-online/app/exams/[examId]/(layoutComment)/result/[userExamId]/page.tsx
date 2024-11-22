@@ -63,7 +63,7 @@ const UserExamIdPage = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 font-sans text-gray-800">
+    <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
       <header className="text-center mb-8">
         <h1 className="text-3xl font-semibold text-blue-600">

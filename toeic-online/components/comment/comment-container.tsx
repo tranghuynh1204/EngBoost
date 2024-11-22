@@ -96,9 +96,9 @@ export const CommentContainer = () => {
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto px-4 py-8">
       {/* Comment Form */}
-      <div className="bg-white shadow-lg rounded-xl p-6 mb-8">
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h2 className="text-2xl font-semibold mb-4 text-black">Bình luận</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

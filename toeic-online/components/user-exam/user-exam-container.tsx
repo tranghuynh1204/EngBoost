@@ -31,8 +31,15 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           }
         );
         setUserExams(response.data);
-      } catch (error) {
-        console.log("Error fetching exam data:", error.response.data.message);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "Error fetching exam data:",
+            error.response?.data.message
+          );
+        } else {
+          console.error("An unexpected error occurred:", error);
+        }
       }
     };
     fetchComments();
@@ -41,28 +48,40 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
     return null;
   }
   return (
-    <div>
-      <h2>Kết quả làm bài của bạn:</h2>
+    <div className="bg-white border border-gray-100 rounded-lg p-6 mt-8">
+      <h2 className="font-bold text-gray-800 mb-4">Kết quả làm bài của bạn:</h2>
 
-      <Table>
+      <Table className="w-full text-left">
         <TableHeader>
-          <TableRow>
-            <TableHead>Ngày làm</TableHead>
-            <TableHead>Kết quả</TableHead>
-            <TableHead>Thời gian làm bài</TableHead>
-            <TableHead></TableHead>
+          <TableRow className="border-b border-gray-100">
+            <TableHead className="px-4 py-2 text-gray-600">Ngày làm</TableHead>
+            <TableHead className="px-4 py-2 text-gray-600">Kết quả</TableHead>
+            <TableHead className="px-4 py-2 text-gray-600">
+              Thời gian làm bài
+            </TableHead>
+            <TableHead className="px-4 py-2 text-gray-600"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {userExams.map((userExam) => (
-            <TableRow key={userExam._id}>
-              <TableCell className="font-medium">
+            <TableRow
+              key={userExam._id}
+              className="hover:bg-gray-100 border-b border-gray-200"
+            >
+              <TableCell className="px-4 py-2 font-medium text-gray-800">
                 {formatDate(userExam.startTime)}
               </TableCell>
-              <TableCell>{userExam.result}</TableCell>
-              <TableCell>{formatTime(userExam.duration)}</TableCell>
-              <TableCell className="text-right">
-                <Button variant="link">
+              <TableCell className="px-4 py-2 text-gray-700">
+                {userExam.result}
+              </TableCell>
+              <TableCell className="px-4 py-2 text-gray-700">
+                {formatTime(userExam.duration)}
+              </TableCell>
+              <TableCell className="px-4 py-2 text-right">
+                <Button
+                  variant="link"
+                  className="text-blue-600 hover:underline"
+                >
                   <Link href={`/exams/${examId}/result/${userExam._id}`}>
                     Xem chi tiết
                   </Link>

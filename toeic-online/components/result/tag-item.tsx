@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import { openModal } from "@/lib/store/modal-slice";
 import { cn } from "@/lib/utils";
+
 interface TagItemProps {
   tag: string;
   correct: number;
@@ -11,6 +12,7 @@ interface TagItemProps {
   skipped: number;
   questions?: string[];
 }
+
 export const TagItem = ({
   correct,
   incorrect,
@@ -21,35 +23,39 @@ export const TagItem = ({
   const mapQuestion = useSelector((state: RootState) => state.data.mapQuestion);
   const mapGroup = useSelector((state: RootState) => state.data.mapGroup);
   const dispatch = useDispatch();
+
   const onclick = (serial: string) => {
     const question = { ...mapQuestion[serial], serial };
     const group = mapGroup[question.group];
     dispatch(openModal({ type: "Answer", data: { group, question } }));
   };
+
   return (
-    <TableRow>
-      <TableCell>{tag}</TableCell>
-      <TableCell>{correct}</TableCell>
-      <TableCell>{incorrect}</TableCell>
-      <TableCell>{skipped}</TableCell>
+    <TableRow className="hover:bg-gray-50">
+      <TableCell className="font-semibold text-gray-800">{tag}</TableCell>
+      <TableCell className="text-green-600 font-medium">{correct}</TableCell>
+      <TableCell className="text-red-600 font-medium">{incorrect}</TableCell>
+      <TableCell className="text-yellow-600 font-medium">{skipped}</TableCell>
       <TableCell>
-        {questions?.map((question, index) => (
-          <button
-            className={cn(
-              "m-2  border-[1px] rounded-full w-8 h-8 flex items-center justify-center",
-              !mapQuestion[question]?.answer
-                ? "border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white"
-                : mapQuestion[question]?.answer ===
-                  mapQuestion[question]?.correctAnswer
-                ? "border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
-                : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-            )}
-            onClick={() => onclick(question)}
-            key={index}
-          >
-            {question}
-          </button>
-        ))}
+        <div className="flex flex-wrap gap-2">
+          {questions?.map((question, index) => (
+            <button
+              key={index}
+              className={cn(
+                "border rounded-lg w-10 h-10 flex items-center justify-center text-sm font-medium transition duration-200",
+                !mapQuestion[question]?.answer
+                  ? "border-gray-400 text-gray-600 hover:bg-gray-400 hover:text-white"
+                  : mapQuestion[question]?.answer ===
+                    mapQuestion[question]?.correctAnswer
+                  ? "border-green-400 text-green-600 hover:bg-green-400 hover:text-white"
+                  : "border-red-400 text-red-600 hover:bg-red-400 hover:text-white"
+              )}
+              onClick={() => onclick(question)}
+            >
+              {question}
+            </button>
+          ))}
+        </div>
       </TableCell>
     </TableRow>
   );

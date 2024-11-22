@@ -27,7 +27,7 @@ const QuestionTracker = forwardRef(
         {/* Questions Grid with Scroll */}
         <ScrollArea className="h-[500px] rounded-md border p-3">
           {/* Set a fixed height */}
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-3">
             {sections.map((section, sIndex) => (
               <div key={section._id}>
                 <h3 className="text-xl font-semibold mb-2">{section.name}</h3>

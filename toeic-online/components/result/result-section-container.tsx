@@ -23,7 +23,7 @@ export const ResultSectionContainer = ({
   sections,
 }: ResultSectionContainerProps) => {
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="container border border-gray-100 rounded-lg mx-auto px-4 py-8">
       <h4 className="text-xl font-semibold text-gray-800 mb-4">
         Phân tích chi tiết
       </h4>

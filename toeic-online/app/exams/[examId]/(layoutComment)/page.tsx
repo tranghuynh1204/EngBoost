@@ -4,12 +4,23 @@ import { ExamSectionInfo } from "@/components/exam/exam-section-info";
 import { UserExamContainer } from "@/components/user-exam/user-exam-container";
 import { Exam } from "@/types"; // Assume you have defined the Exam type here
 import axios from "axios";
+import { TfiTimer } from "react-icons/tfi";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { AiOutlineComment } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+import { GiSpellBook } from "react-icons/gi";
+import { FaUserAstronaut } from "react-icons/fa6";
+import {
+  MdOutlineCategory,
+  MdOutlineComment,
+  MdOutlineQuestionAnswer,
+} from "react-icons/md";
+import { FaUserFriends } from "react-icons/fa";
+import { TbMessageCircleQuestion } from "react-icons/tb";
+
 import {
   Select,
   SelectTrigger,
@@ -123,7 +134,7 @@ const ExamIdPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* White Frame Container */}
-      <div className="bg-white shadow-md rounded-lg p-6">
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
         {/* Exam Header */}
         <div className="mb-6">
           <div className="flex items-center space-x-2 mb-2">
@@ -139,43 +150,45 @@ const ExamIdPage = () => {
           <TabsList className="border-b border-gray-200 mb-4">
             <TabsTrigger
               value="1"
-              className="px-4 py-2 text-lg font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
+              className="px-4 py-2  font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
             >
               Thông tin đề thi
             </TabsTrigger>
             <TabsTrigger
               value="2"
-              className="px-4 py-2 text-lg font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
+              className="px-4 py-2  font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
             >
               Đáp án/Transcript
             </TabsTrigger>
           </TabsList>
           <TabsContent value="1">
             <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              <div className="bg-white p-4 border border-gray-100 rounded-md shadow-sm">
+                <h2 className="font-semibold text-gray-800 mb-2">
                   Chi tiết đề thi
                 </h2>
-                <p className="text-gray-700">
-                  <span className="font-medium">Thời gian làm bài:</span>
-                  {exam.duration} phút
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-medium">Phần thi:</span>
-                  {exam.sectionCount} phần
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-medium">Câu hỏi:</span>
-                  {exam.questionCount} câu
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-medium">Bình luận:</span>
-                  {exam.commentCount} bình luận
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-medium">Người luyện:</span>
-                  {exam.userCount} người
-                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center text-gray-700">
+                    <TfiTimer className="mr-3 text-purple-300 w-5 h-5" />
+                    <span>Thời gian làm bài: {exam.duration} phút</span>
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <GiSpellBook className="mr-3 text-purple-400 w-5 h-5" />
+                    <span>Phần thi: {exam.sectionCount} phần</span>
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <TbMessageCircleQuestion className="mr-3 text-purple-400 w-5 h-5" />
+                    <span>Câu hỏi: {exam.questionCount} câu</span>
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <AiOutlineComment className="mr-3 text-purple-400 w-5 h-5" />
+                    <span>Bình luận: {exam.commentCount} bình luận</span>
+                  </li>
+                  <li className="flex items-center text-gray-700">
+                    <FaUserAstronaut className="mr-3 text-purple-400 w-5 h-5" />
+                    <span>Người luyện: {exam.userCount} người</span>
+                  </li>
+                </ul>
               </div>
               {/* User Exam Container */}
               <div className="mb-6">
@@ -265,15 +278,13 @@ const ExamIdPage = () => {
                 </Select>
               </div>
               {/* Submit Button */}
-              <div className="mb-6">
+              <div className="flex justify-center items-center mb-6">
                 <Button
-                  // onClick={handleSubmitSelection}
+                  className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
                   disabled={
                     isSubmitting ||
                     (!isEntireExamSelected && selectedSections.length === 0)
                   }
-                  className="w-full"
-                  variant="link"
                 >
                   <Link
                     href={{
@@ -288,6 +299,7 @@ const ExamIdPage = () => {
                   </Link>
                 </Button>
               </div>
+
               {submissionResult && (
                 <p className="mt-4 text-center text-green-600">
                   {submissionResult}

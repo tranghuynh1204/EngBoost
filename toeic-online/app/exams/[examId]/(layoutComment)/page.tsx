@@ -233,7 +233,7 @@ const ExamIdPage = () => {
                     <SelectValue placeholder="Chọn thời gian" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="10000000">Không giới hạn</SelectItem>
+                    <SelectItem value="0">Không giới hạn</SelectItem>
                     <SelectItem value="10">5 phút</SelectItem>
                     <SelectItem value="600">10 phút</SelectItem>
                     <SelectItem value="900">15 phút</SelectItem>

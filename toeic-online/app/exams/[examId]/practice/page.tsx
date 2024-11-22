@@ -18,6 +18,7 @@ interface ChildComponentRef {
 }
 const PracticeExamPage = () => {
   const { examId } = useParams();
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const sectionIds = useSearchParams().getAll("sectionId");
   const selectedTime = Number(searchParams.get("time"));
@@ -58,11 +59,41 @@ const PracticeExamPage = () => {
       fetchPracticeSession();
     }
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts/get`,
+          {
+            sections: sectionIds,
+            selectedTime: selectedTime,
+            exam: examId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`, // Replace with dynamic token if necessary
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = response.data;
+        if (data) {
+          answeredQuestions.current = response.data.answers;
+          countRef.current = response.data.duration;
+        }
+        setLoading(false);
+      } catch {}
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const handleTabClose = async (event: BeforeUnloadEvent) => {
       event.preventDefault();
       try {
-        const response = await axios.post(
+        await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts`,
           {
             exam: examId,
@@ -145,7 +176,7 @@ const PracticeExamPage = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
 
-  if (!exam) {
+  if (!exam || loading) {
     return <div>Loading...</div>;
   }
 
@@ -186,6 +217,9 @@ const PracticeExamPage = () => {
                         {question.serial}. {question.content}
                       </p>
                       <RadioGroup
+                        defaultValue={
+                          answeredQuestions.current?.[question.serial]
+                        }
                         onValueChange={(value) => {
                           if (childRef.current)
                             childRef.current.callMe(question.serial);
@@ -249,8 +283,9 @@ const PracticeExamPage = () => {
 
       {/* Sidebar: Question Tracker */}
       <div className="w-64 hidden lg:block sticky top-4 self-start">
-        <Counter onSubmit={onSubmit} />
+        <Counter onSubmit={onSubmit} counter={countRef.current} />
         <QuestionTracker
+          answeredQuestionsRef={answeredQuestions.current}
           ref={childRef}
           sections={exam.sections}
           onNavigate={handleNavigate}

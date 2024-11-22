@@ -11,24 +11,41 @@ import {
 export class UserexamdraftService {
   constructor(
     @InjectModel(UserExamDraft.name)
-    private userExamInProcessModal: Model<UserExamDraftDocument>,
+    private userExamDraftDocument: Model<UserExamDraftDocument>,
   ) {}
-  create(createUserexamdraftDto: CreateUserexamdraftDto, userId: string) {
+  async create(createUserexamdraftDto: CreateUserexamdraftDto, userId: string) {
+    const examId = new Types.ObjectId(createUserexamdraftDto.exam);
     const objectIds = createUserexamdraftDto.sections.map(
       (id) => new Types.ObjectId(id),
     );
 
-    const newUserExam = new this.userExamInProcessModal({
-      ...createUserexamdraftDto,
-      sections: objectIds,
-      exam: new Types.ObjectId(createUserexamdraftDto.exam),
-      user: userId,
-    });
+    // Check if the user already has a draft for the exam
+    const existingUserExam = await this.userExamDraftDocument.findOneAndUpdate(
+      { user: userId }, // Find by user and exam
+      {
+        ...createUserexamdraftDto,
+        sections: objectIds,
+        exam: examId,
+        user: userId,
+      }, // Update with new data
+      { new: true, upsert: true }, // Return the updated document, create if not found
+    );
 
-    return newUserExam.save();
+    return existingUserExam;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userexamdraft`;
+  async findOne(
+    sections: string[],
+    selectedTime: number,
+    exam: string,
+    userId: string,
+  ) {
+    const objectIds = sections.map((id) => new Types.ObjectId(id));
+    return await this.userExamDraftDocument.findOne({
+      sections: { $all: objectIds },
+      selectedTime,
+      exam: new Types.ObjectId(exam),
+      user: userId,
+    });
   }
 }

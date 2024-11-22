@@ -15,11 +15,22 @@ export class UserexamdraftController {
   @UseGuards(AuthGuard, RolesGuard)
   @Post()
   create(@Body() createUserexamdraftDto: CreateUserexamdraftDto, @User() user) {
-    return this.userexamdraftService.create(createUserexamdraftDto, user);
+    return this.userexamdraftService.create(createUserexamdraftDto, user.sub);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userexamdraftService.findOne(+id);
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Post('/get')
+  async findOne(
+    @Body() body: { sections: string[]; selectedTime: number; exam: string },
+    @User() user,
+  ) {
+    const { sections, selectedTime, exam } = body;
+    return this.userexamdraftService.findOne(
+      sections,
+      selectedTime,
+      exam,
+      user.sub,
+    );
   }
 }

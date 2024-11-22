@@ -3,9 +3,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 import StoreProvider from "./store-provider";
 import { AnswerModal } from "@/components/modals/answer-modal";
-import Header from "@/components/header";
+import Header from "@/components/Header";
 import { CreateVocabularyModal } from "@/components/modals/create-vocabulary-modal";
 import { UpdateVocabularyModal } from "@/components/modals/update-vocabulary-modal";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -36,6 +37,7 @@ export default function RootLayout({
         >
           <Header />
           {children}
+          <Toaster />
           <AnswerModal />
           <CreateVocabularyModal />
           <UpdateVocabularyModal />

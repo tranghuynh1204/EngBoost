@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { FlashcardModule } from './flashcard/flashcard.module';
 import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { UserexamdraftModule } from './userexamdraft/userexamdraft.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -28,6 +29,7 @@ import jwtConfig from './config/jwt.config';
     FlashcardModule,
     VocabularyModule,
     CloudinaryModule,
+    UserexamdraftModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

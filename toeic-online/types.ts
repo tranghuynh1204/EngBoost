@@ -33,7 +33,7 @@ export interface UserExam {
   _id: string;
   exam: Exam;
   startTime: string;
-  duration: { h: number; m: number; s: number };
+  duration: number;
   result: string;
   sections: Section[];
 }
@@ -68,7 +68,7 @@ export interface UserExamResult {
   incorrect: number;
   skipped: number;
   result: string;
-  duration: { h: number; m: number; s: number };
+  duration: number;
   sections: {
     name: string;
     mapTagQuestion: {
@@ -131,4 +131,12 @@ export const mapOption: { [key: number]: string } = {
   1: "B",
   2: "C",
   3: "D",
+};
+export const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600); // Tính giờ
+  const mins = Math.floor((seconds % 3600) / 60); // Tính phút
+  const secs = seconds % 60; // Tính giây
+  return `${hours < 10 ? "0" : ""}${hours}:${mins < 10 ? "0" : ""}${mins}:${
+    secs < 10 ? "0" : ""
+  }${secs}`;
 };

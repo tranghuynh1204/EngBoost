@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  UserExam,
-  UserExamDocument,
-  UserExamInprocessDocument as UserExamInProcessDocument,
-} from './entities/user-exam.entity';
+import { UserExam, UserExamDocument } from './entities/user-exam.entity';
 import { Model, Types } from 'mongoose';
 import { SectionService } from 'src/section/section.service';
 
@@ -15,8 +11,6 @@ export class UserExamService {
   constructor(
     private readonly sectionService: SectionService,
     @InjectModel(UserExam.name) private userExamModel: Model<UserExamDocument>,
-    @InjectModel(UserExam.name)
-    private userExamInProcessModal: Model<UserExamInProcessDocument>,
   ) {}
 
   async create(createUserExamDto: CreateUserExamDto, userId: string) {
@@ -229,10 +223,7 @@ export class UserExamService {
       // 2. Cập nhật thông tin tổng quan cho category
       const categoryData = result[category]; //toetic, vv...
       categoryData.exams.add(userExam.exam.toString());
-      categoryData.duration +=
-        userExam.duration.h * 3600 +
-        userExam.duration.m * 60 +
-        userExam.duration.s;
+      categoryData.duration += userExam.duration;
 
       // 3. Duyệt qua từng danh mục trong mapSectionCategory
       userExam.mapSectionCategory.forEach((value, section) => {
@@ -297,7 +288,7 @@ export class UserExamService {
             },
             {},
           ),
-          duration: this.convertSecondsToHMS(categoryData.duration),
+          duration: categoryData.duration,
         };
         return acc;
       },
@@ -305,13 +296,5 @@ export class UserExamService {
     );
 
     return transformedResult;
-  }
-
-  convertSecondsToHMS(totalSeconds: number): string {
-    const hours = Math.floor(totalSeconds / 3600); // Tính số giờ
-    const minutes = Math.floor((totalSeconds % 3600) / 60); // Tính số phút
-    const seconds = totalSeconds % 60; // Tính số giây
-
-    return `${hours}:${minutes}:${seconds}`;
   }
 }

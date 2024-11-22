@@ -1,4 +1,4 @@
-import { UserExam } from "@/types";
+import { formatTime, UserExam } from "@/types";
 import { formatDate } from "@/utils/dateUtils";
 import axios from "axios";
 import Link from "next/link";
@@ -60,10 +60,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
                 {formatDate(userExam.startTime)}
               </TableCell>
               <TableCell>{userExam.result}</TableCell>
-              <TableCell>
-                {userExam.duration.h}:{userExam.duration.m}:
-                {userExam.duration.s}
-              </TableCell>
+              <TableCell>{formatTime(userExam.duration)}</TableCell>
               <TableCell className="text-right">
                 <Button variant="link">
                   <Link href={`/exams/${examId}/result/${userExam._id}`}>

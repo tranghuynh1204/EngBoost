@@ -35,19 +35,26 @@ export class FlashcardController {
 
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
-  @Get()
-  findAll(
+  @Get('search')
+  search(
     @User() user,
     @Query('currentPage') currentPage?: number,
     @Query('pageSize') pageSize?: number,
   ) {
     const effectivePage = currentPage || 1;
     const effectivePageSize = pageSize || 10;
-    return this.flashcardService.findAll(
+    return this.flashcardService.search(
       user.sub,
       effectivePage,
       effectivePageSize,
     );
+  }
+
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get()
+  findAll(@User() user) {
+    return this.flashcardService.findAll(user.sub);
   }
 
   @Roles(Role.USER)

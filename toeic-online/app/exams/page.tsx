@@ -80,8 +80,6 @@ const ExamPage: React.FC = () => {
 
   if (!exams) {
     return;
-  } else {
-    console.log(exams);
   }
 
   return (

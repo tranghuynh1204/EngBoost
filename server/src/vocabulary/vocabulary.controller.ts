@@ -8,6 +8,9 @@ import {
   Delete,
   UseGuards,
   Query,
+  UploadedFile,
+  UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
@@ -17,6 +20,7 @@ import { Role } from 'src/shared/enums/role.enum';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { User } from 'src/decorator/user.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('vocabularies')
 export class VocabularyController {
@@ -24,9 +28,14 @@ export class VocabularyController {
 
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async create(@Body() createVocabularyDto: CreateVocabularyDto, @User() user) {
-    return this.vocabularyService.create(createVocabularyDto, user.sub);
+  async create(
+    @Body() createVocabularyDto: CreateVocabularyDto,
+    @UploadedFile() file: Express.Multer.File,
+    @User() user,
+  ) {
+    return this.vocabularyService.create(createVocabularyDto, file, user.sub);
   }
 
   @Roles(Role.USER)
@@ -41,10 +50,12 @@ export class VocabularyController {
 
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateVocabularyDto: UpdateVocabularyDto,
+    @UploadedFile() file: Express.Multer.File,
     @User() user,
   ) {
     return this.vocabularyService.update(id, updateVocabularyDto, user.sub);

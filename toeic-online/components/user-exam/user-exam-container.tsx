@@ -1,4 +1,4 @@
-import { UserExam } from "@/types";
+import { formatTime, UserExam } from "@/types";
 import { formatDate } from "@/utils/dateUtils";
 import axios from "axios";
 import Link from "next/link";
@@ -26,7 +26,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           `${process.env.NEXT_PUBLIC_API_URL}/user-exams/exam/${examId}`,
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMTUwODk5MywiZXhwIjoxNzMyMTEzNzkzfQ.uRCQcTvVFsftkViaiGz_w_amjPLj19j21I88V3eACD4`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`,
             },
           }
         );
@@ -60,10 +60,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
                 {formatDate(userExam.startTime)}
               </TableCell>
               <TableCell>{userExam.result}</TableCell>
-              <TableCell>
-                {userExam.duration.h}:{userExam.duration.m}:
-                {userExam.duration.s}
-              </TableCell>
+              <TableCell>{formatTime(userExam.duration)}</TableCell>
               <TableCell className="text-right">
                 <Button variant="link">
                   <Link href={`/exams/${examId}/result/${userExam._id}`}>

@@ -3,7 +3,7 @@ import { ResultSectionContainer } from "@/components/result/result-section-conta
 import { Button } from "@/components/ui/button";
 import { setMapGroup, setMapQuestion } from "@/lib/store/data-slice";
 import { openModal } from "@/lib/store/modal-slice";
-import { UserExamResult } from "@/types";
+import { formatTime, UserExamResult } from "@/types";
 import axios from "axios";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -82,7 +82,7 @@ const UserExamIdPage = () => {
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center">
           <span className="text-sm text-gray-500">Thời gian hoàn thành</span>
           <span className="mt-2 text-2xl font-bold text-yellow-600">
-            {result.duration.h}:{result.duration.m}:{result.duration.s}
+            {formatTime(result.duration)}
           </span>
         </div>
         <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center">

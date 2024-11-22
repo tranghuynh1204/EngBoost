@@ -3,10 +3,10 @@ import { HydratedDocument, Types } from 'mongoose';
 import { Exam } from 'src/exam/entities/exam.entity';
 import { Section } from 'src/section/entities/section.entity';
 
-export type UserExamDocument = HydratedDocument<UserExam>;
+export type UserExamDraftDocument = HydratedDocument<UserExamDraft>;
 
 @Schema()
-export class UserExam {
+export class UserExamDraft {
   @Prop({ required: true })
   user: string;
 
@@ -32,4 +32,4 @@ export class UserExam {
   result: string;
 }
 
-export const UserExamSchema = SchemaFactory.createForClass(UserExam);
+export const UserExamDraftSchema = SchemaFactory.createForClass(UserExamDraft);

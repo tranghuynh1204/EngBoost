@@ -1,14 +1,6 @@
 // create-vocabulary.dto.ts
-import {
-  IsString,
-  IsArray,
-  IsOptional,
-  IsNotEmpty,
-  ArrayMaxSize,
-  IsMongoId,
-} from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsMongoId } from 'class-validator';
 import { Types } from 'mongoose';
-import { CreateFlashcardDto } from 'src/flashcard/dto/create-flashcard.dto';
 
 export class CreateVocabularyDto {
   @IsNotEmpty({ message: 'Từ vựng không được để trống.' })
@@ -21,13 +13,7 @@ export class CreateVocabularyDto {
 
   @IsOptional()
   @IsString()
-  image?: string;
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMaxSize(10)
-  examples?: string[];
+  example?: string;
 
   @IsOptional()
   @IsString()
@@ -46,5 +32,8 @@ export class CreateVocabularyDto {
   flashcard: Types.ObjectId;
 
   @IsOptional()
-  createFlashcardDto: CreateFlashcardDto;
+  title: string;
+
+  @IsOptional()
+  description: string;
 }

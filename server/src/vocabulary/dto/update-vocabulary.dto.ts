@@ -1,10 +1,4 @@
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateVocabularyDto {
   @IsNotEmpty({ message: 'Từ vựng không được để trống.' })
@@ -17,13 +11,9 @@ export class UpdateVocabularyDto {
 
   @IsOptional()
   @IsString()
-  image?: string;
+  example?: string;
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMaxSize(10)
-  examples?: string[];
+  image: string;
 
   @IsOptional()
   @IsString()

@@ -16,6 +16,7 @@ export const dataSlice = createSlice({
     setMapGroup: (state, action: PayloadAction<MapGroup>) => {
       state.mapGroup = action.payload;
     },
+    
   },
 });
 

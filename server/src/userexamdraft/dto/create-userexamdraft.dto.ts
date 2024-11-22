@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateUserExamDto {
+export class CreateUserexamdraftDto {
   @IsNotEmpty()
   exam: string;
 
@@ -16,4 +16,6 @@ export class CreateUserExamDto {
   startTime: Date;
 
   duration: number;
+
+  selectedTime: number;
 }

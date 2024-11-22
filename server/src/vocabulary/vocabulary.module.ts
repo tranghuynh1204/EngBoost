@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Vocabulary, VocabularySchema } from './entities/vocabulary.entity';
 import { FlashcardModule } from 'src/flashcard/flashcard.module';
 import { UserModule } from 'src/user/user.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserModule } from 'src/user/user.module';
     ]),
     UserModule,
     forwardRef(() => FlashcardModule),
+    CloudinaryModule,
   ],
   controllers: [VocabularyController],
   providers: [VocabularyService],

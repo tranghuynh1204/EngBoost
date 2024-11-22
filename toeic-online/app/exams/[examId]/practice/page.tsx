@@ -1,35 +1,43 @@
 // pages/exams/[examId]/practice/[practiceSessionId]/page.tsx
 
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Exam, mapOption } from "@/types"; // Define your types accordingly
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import QuestionTracker from "@/components/tracker/QuestionTracker";
+import QuestionTracker from "@/components/question-tracker";
 import { GroupItem } from "@/components/group/group-item";
-
+import { HightLightControl } from "@/components/hight-light-control";
+import { Counter } from "@/components/counter";
+interface ChildComponentRef {
+  callMe: (serial: string) => void;
+}
 const PracticeExamPage = () => {
   const { examId } = useParams();
   const searchParams = useSearchParams();
   const sectionIds = useSearchParams().getAll("sectionId");
-  const selectedTime = searchParams.get("time");
+  const selectedTime = Number(searchParams.get("time"));
+  const countRef = useRef(0);
+  const startTime = new Date().toISOString();
   const [exam, setExam] = useState<Exam | null>(null);
-  const [answeredQuestions, setAnsweredQuestions] = useState<
-    Record<string, string>
-  >({});
-
+  const answeredQuestions = useRef<Record<string, string>>({});
   const [indexSection, setIndexSection] = useState<number>(0);
+  const childRef = useRef<ChildComponentRef>(null);
+  const router = useRouter();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (countRef.current === selectedTime) {
+        onSubmit();
+      }
+      countRef.current += 1;
+    }, 1000);
 
-  const [timeLeft, setTimeLeft] = useState<number | null>(
-    selectedTime ? parseInt(selectedTime) * 60 : null
-  ); // Time in seconds
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
-
+    return () => clearInterval(interval);
+  }, []);
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
@@ -42,44 +50,46 @@ const PracticeExamPage = () => {
         );
         setExam(response.data);
       } catch (error) {
-        console.error("Error fetching practice session data:", error);
+        console.log("Error fetching practice session data:", error);
       }
     };
 
     if (sectionIds && examId) {
       fetchPracticeSession();
     }
-  }, [examId, sectionIds]);
-
-  // Countdown Timer
+  }, []);
   useEffect(() => {
-    let timerId: NodeJS.Timeout;
-
-    if (timeLeft !== null) {
-      // Countdown Timer
-      if (timeLeft <= 0) {
-        onSubmit();
-        return;
+    const handleTabClose = async (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts`,
+          {
+            exam: examId,
+            answers: answeredQuestions.current,
+            sections: sectionIds,
+            duration: countRef.current,
+            startTime,
+            selectedTime,
+          },
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`, // Replace with dynamic token if necessary
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (error) {
+        console.log("Error submitting answers:", error);
       }
-      timerId = setInterval(() => {
-        setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
-      }, 1000);
-    } else {
-      // Count-Up Timer for Unlimited Time
-      timerId = setInterval(() => {
-        setElapsedTime((prev) => prev + 1);
-      }, 1000);
-    }
+    };
 
-    return () => clearInterval(timerId);
-  }, [timeLeft]);
+    window.addEventListener("beforeunload", handleTabClose);
 
-  const scrollToQuestion = (questionId: string) => {
-    const element = document.getElementById(questionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
+    return () => {
+      window.removeEventListener("beforeunload", handleTabClose);
+    };
+  }, []);
 
   const handleNavigate = useCallback(
     async (questionSerial: string, index: number) => {
@@ -104,24 +114,20 @@ const PracticeExamPage = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/user-exams`,
         {
           exam: examId,
-          answers: answeredQuestions,
+          answers: answeredQuestions.current,
           sections: sectionIds,
-          duration: {
-            h: 1,
-            m: 2,
-            s: 3,
-          },
-          startTime: new Date().toISOString(),
+          duration: countRef.current,
+          startTime,
         },
         {
           headers: {
-            Authorization: `Bearer YOUR_TOKEN_HERE`, // Replace with dynamic token if necessary
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`, // Replace with dynamic token if necessary
             "Content-Type": "application/json",
           },
         }
       );
       console.log(response.data);
-      // Redirect to the results page or handle post-submission logic
+      router.push(`result/${response.data._id}`);
     } catch (error) {
       console.log("Error submitting answers:", error);
     }
@@ -145,7 +151,7 @@ const PracticeExamPage = () => {
 
   return (
     <div className="container mx-auto p-6 flex">
-      {/* Main Content */}
+      <HightLightControl />
       <div className="flex-1 mr-6 overflow-y-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
         <Tabs
@@ -181,10 +187,9 @@ const PracticeExamPage = () => {
                       </p>
                       <RadioGroup
                         onValueChange={(value) => {
-                          setAnsweredQuestions({
-                            ...answeredQuestions,
-                            [question.serial]: value,
-                          });
+                          if (childRef.current)
+                            childRef.current.callMe(question.serial);
+                          answeredQuestions.current[question.serial] = value;
                         }}
                       >
                         <div className="space-y-2">
@@ -244,13 +249,11 @@ const PracticeExamPage = () => {
 
       {/* Sidebar: Question Tracker */}
       <div className="w-64 hidden lg:block sticky top-4 self-start">
+        <Counter onSubmit={onSubmit} />
         <QuestionTracker
+          ref={childRef}
           sections={exam.sections}
-          answeredQuestions={answeredQuestions}
           onNavigate={handleNavigate}
-          onSubmit={onSubmit} // Pass onSubmit function
-          timeLeft={timeLeft} // Pass the timeLeft prop
-          elapsedTime={elapsedTime}
         />
       </div>
     </div>

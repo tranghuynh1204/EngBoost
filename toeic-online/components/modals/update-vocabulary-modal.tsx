@@ -90,7 +90,7 @@ export const UpdateVocabularyModal = () => {
         pronunciation: "",
         notes: "",
         example: "",
-        imag,
+        image: "",
       });
       dispatch(closeModal());
     } catch (error) {

@@ -185,7 +185,7 @@ const PracticeExamPage = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
 
-  if (!isLogin) {
+  if (isLogin === false) {
     return redirect("/login");
   }
 

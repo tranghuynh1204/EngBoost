@@ -106,7 +106,7 @@ export const CommentItem = memo(
                         <FormLabel className="sr-only">Bình luận</FormLabel>
                         <FormControl>
                           <Textarea
-                            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-32"
+                            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 resize-none h-32"
                             placeholder="Chia sẻ cảm nghĩ của bạn..."
                             {...field}
                           />
@@ -118,7 +118,7 @@ export const CommentItem = memo(
                   <div className="flex justify-end">
                     <Button
                       type="submit"
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
                     >
                       Gửi
                     </Button>

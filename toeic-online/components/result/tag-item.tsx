@@ -42,7 +42,7 @@ export const TagItem = ({
             <button
               key={index}
               className={cn(
-                "border rounded-lg w-10 h-10 flex items-center justify-center text-sm font-medium transition duration-200",
+                "border rounded-xl w-10 h-10 flex items-center justify-center text-xs font-medium transition duration-200",
                 !mapQuestion[question]?.answer
                   ? "border-gray-400 text-gray-600 hover:bg-gray-400 hover:text-white"
                   : mapQuestion[question]?.answer ===

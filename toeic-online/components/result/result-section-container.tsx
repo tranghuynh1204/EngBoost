@@ -29,12 +29,12 @@ export const ResultSectionContainer = ({
       </h4>
 
       <Tabs defaultValue={sections[0].name} className="w-full">
-        <TabsList className="flex flex-wrap gap-2 mb-4 bg-gray-100 p-2 rounded-lg">
+        <TabsList className="flex flex-wrap gap-2 mb-4 h-15 text-base bg-gray-100 p-2 rounded-lg">
           {sections.map((section) => (
             <TabsTrigger
               key={section.name}
               value={section.name}
-              className="px-4 py-2 text-sm font-medium text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 text-base font-medium text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               {section.name || "Section"}
             </TabsTrigger>
@@ -45,7 +45,7 @@ export const ResultSectionContainer = ({
           <TabsContent
             key={section.name}
             value={section.name}
-            className="p-4 bg-gray-50 rounded-lg"
+            className="p-4 bg-gray-50  rounded-lg"
           >
             <ResultSectionItem
               correct={section.correct}

@@ -30,13 +30,13 @@ const QuestionTracker = forwardRef(
     return (
       <div>
         {/* Questions Grid with Scroll */}
-        <ScrollArea className="h-[500px] rounded-md border p-3">
+        <ScrollArea className="h-[542px] rounded-md border p-3">
           {/* Set a fixed height */}
           <div className="flex flex-col space-y-3">
             {sections.map((section, sIndex) => (
               <div key={section._id}>
-                <h3 className="text-xl font-semibold mb-2">{section.name}</h3>
-                <div className="grid grid-cols-4 gap-2">
+                <h3 className="text-lg font-semibold mb-2">{section.name}</h3>
+                <div className="grid grid-cols-6 gap-1">
                   {section.groups.map((group, index) => (
                     <React.Fragment key={index}>
                       {group.questions.map((question) => (

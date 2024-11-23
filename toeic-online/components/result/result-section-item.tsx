@@ -32,7 +32,7 @@ export const ResultSectionItem = ({
     <div>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="text-base">
             <TableHead>Phân loại câu hỏi</TableHead>
             <TableHead>Số câu đúng</TableHead>
             <TableHead>Số câu sai</TableHead>

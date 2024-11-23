@@ -122,7 +122,7 @@ export const CommentContainer = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 disabled={isSubmittingComment} // Disable button while submitting
               >
                 {isSubmittingComment ? "Đang gửi..." : "Gửi"}

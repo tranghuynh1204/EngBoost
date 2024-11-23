@@ -37,10 +37,8 @@ import { Flashcard } from "@/types";
 
 const formSchema = z.object({
   flashcard: z.string(),
-  createFlashcardDto: z.object({
-    title: z.string(),
-    description: z.string(),
-  }),
+  title: z.string(),
+  description: z.string(),
   word: z.string().min(2, { message: "Từ mới phải có ít nhất 2 ký tự." }),
   mean: z.string().min(2, { message: "Định nghĩa phải có ít nhất 2 ký tự." }),
   partOfSpeech: z.string(),
@@ -94,11 +92,9 @@ export const CreateVocabularyModal = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      flashcard: flashcardId ? flashcardId : "",
-      createFlashcardDto: {
-        title: "",
-        description: "",
-      },
+      flashcard: "",
+      title: "",
+      description: "",
       word: "",
       mean: "",
       partOfSpeech: "",
@@ -113,27 +109,26 @@ export const CreateVocabularyModal = () => {
 
     if (createFlashCard) {
       // Kiểm tra trường hợp khi tạo flashcard mới
-      if (
-        !values.createFlashcardDto?.title ||
-        values.createFlashcardDto.title.length < 2
-      ) {
-        form.setError("createFlashcardDto.title", {
-          type: "manual",
+      if (!values.title || values.title.length < 2) {
+        form.setError("title", {
+          type: "required",
           message: "Title phải có ít nhất 2 ký tự khi tạo mới danh sách.",
         });
+        form.setFocus("title");
         return;
       }
 
       // Thêm dữ liệu vào formData khi tạo flashcard mới
-      formData.append("title", values.createFlashcardDto.title);
-      formData.append("description", values.createFlashcardDto.description);
+      formData.append("title", values.title);
+      formData.append("description", values.description);
     } else {
       // Kiểm tra trường hợp khi không tạo flashcard mới
       if (!values.flashcard || values.flashcard.trim() === "") {
         form.setError("flashcard", {
-          type: "manual",
+          type: "required",
           message: "Phải chọn 1 list từ vựng",
         });
+        form.setFocus("flashcard");
         return;
       }
 
@@ -154,7 +149,7 @@ export const CreateVocabularyModal = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post(
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/vocabularies`,
         formData,
         {
@@ -164,15 +159,12 @@ export const CreateVocabularyModal = () => {
           },
         }
       );
-      console.log("Success:", response.data);
 
       // Reset form hoặc xử lý UI sau khi thành công
       form.reset({
         flashcard: values.flashcard,
-        createFlashcardDto: {
-          title: "",
-          description: "",
-        },
+        title: "",
+        description: "",
         word: "",
         mean: "",
         partOfSpeech: "",
@@ -197,29 +189,28 @@ export const CreateVocabularyModal = () => {
       }}
     >
       <DialogContent
-        aria-labelledby="dialog-title"
-        className="w-full max-w-screen-lg max-h-[90vh] overflow-y-auto p-6"
+        ria-labelledby="dialog-title"
+        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-scroll"
       >
+        {/* Chỉnh độ dài ở đây nè nhưng tuyệt đối không được bỏ cái max-w-full */}
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-gray-900">
-            Thêm từ vựng
-          </DialogTitle>
+          <DialogTitle>Thêm từ vựng</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Section: List từ vựng */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700">
-                Chọn hoặc tạo danh sách từ vựng
-              </h2>
+            <div>
               {flashcards && (
                 <Button
-                  onClick={() => setCreateFlashCard(!createFlashCard)}
+                  onClick={() => {
+                    setCreateFlashCard(!createFlashCard);
+                  }}
                   type="button"
                 >
                   + Tạo mới
                 </Button>
               )}
+            </div>
+            <div>
               {!flashcardId && flashcards.length > 0 && !createFlashCard && (
                 <FormField
                   control={form.control}
@@ -232,7 +223,7 @@ export const CreateVocabularyModal = () => {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger ref={field.ref}>
                             <SelectValue placeholder="Chọn list từ vựng" />
                           </SelectTrigger>
                         </FormControl>
@@ -247,16 +238,17 @@ export const CreateVocabularyModal = () => {
                           ))}
                         </SelectContent>
                       </Select>
+
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               )}
               {createFlashCard && !flashcardId && (
-                <div className="space-y-4">
+                <div>
                   <FormField
                     control={form.control}
-                    name="createFlashcardDto.title"
+                    name="title"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Tạo list từ mới</FormLabel>
@@ -269,13 +261,13 @@ export const CreateVocabularyModal = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="createFlashcardDto.description"
+                    name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mô tả</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
+
                         <FormMessage />
                       </FormItem>
                     )}
@@ -284,138 +276,115 @@ export const CreateVocabularyModal = () => {
               )}
             </div>
 
-            {/* Section: Thông tin từ mới */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700">
-                Thông tin từ mới
-              </h2>
-              <FormField
-                control={form.control}
-                name="word"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span>Từ mới </span>
-                      <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        className="border-red-100 "
-                        placeholder="Bắt buộc"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="mean"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center space-x-1">
-                      <span>Định nghĩa</span>
-                      <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        className="border-red-100 "
-                        placeholder="Bắt buộc"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="file"
-                render={({ field: { value, onChange, ...fieldProps } }) => (
-                  <FormItem>
-                    <FormLabel>Ảnh</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...fieldProps}
-                        type="file"
-                        accept="image/*"
-                        onChange={(event) =>
-                          onChange(event.target.files && event.target.files[0])
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="word"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Từ mới</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
 
-            {/* Section: Chi tiết bổ sung */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700">
-                Chi tiết bổ sung
-              </h2>
-              <FormField
-                control={form.control}
-                name="partOfSpeech"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Từ loại</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="pronunciation"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phiên âm</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="example"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ví dụ</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ghi chú</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mean"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Định nghĩa</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
 
-            {/* Submit button */}
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting}>
-                Submit
-              </Button>
-            </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="file"
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>Ảnh</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="partOfSpeech"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Từ loại</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="pronunciation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phiên âm</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="example"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ví dụ</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ghi chú</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={isSubmitting}>
+              Submit
+            </Button>
           </form>
         </Form>
       </DialogContent>

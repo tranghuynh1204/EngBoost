@@ -14,7 +14,6 @@ import {
   XCircleIcon,
   ClockIcon,
   CircleStackIcon,
-  ClipboardIcon,
   MinusCircleIcon,
 } from "@heroicons/react/24/solid";
 import { GiSpellBook } from "react-icons/gi";

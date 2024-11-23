@@ -29,6 +29,7 @@ const PracticeExamPage = () => {
   const [indexSection, setIndexSection] = useState<number>(0);
   const childRef = useRef<ChildComponentRef>(null);
   const router = useRouter();
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (countRef.current === selectedTime) {

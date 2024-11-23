@@ -19,6 +19,7 @@ interface UserExamContainerProps {
 
 export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
   const [userExams, setUserExams] = useState<UserExam[]>();
+
   useEffect(() => {
     const fetchComments = async () => {
       try {

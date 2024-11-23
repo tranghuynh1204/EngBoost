@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { openModal } from "@/lib/store/modal-slice";
 import { useDispatch } from "react-redux";
-
+import { MdOutlineLibraryAdd } from "react-icons/md";
 export const HightLightControl = () => {
   const dispatch = useDispatch();
   const [position, setPosition] = useState({
@@ -67,11 +67,12 @@ export const HightLightControl = () => {
         top: `${position.top}px`,
         left: `${position.left}px`,
       }}
-      className={`absolute bg-blue-500 text-white p-2 rounded ${
-        hidden ? "hidden" : ""
-      }`}
+      className={`absolute bg-blue-100
+       ${hidden ? "hidden" : ""}`}
     >
-      <Button onClick={onClick}>+</Button>
+      <Button onClick={onClick}>
+        <MdOutlineLibraryAdd size={22} />
+      </Button>
     </div>
   );
 };

@@ -86,9 +86,9 @@ export const CreateVocabularyModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen]);
   useEffect(() => {
-    form.setValue("word", vocabulary?.word ?? ""); // Cập nhật giá trị trong form
+    form.setValue("word", vocabulary?.word ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vocabulary?.word]);
+  }, [vocabulary]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

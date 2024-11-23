@@ -4,7 +4,6 @@ import { VocabularyController } from './vocabulary.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Vocabulary, VocabularySchema } from './entities/vocabulary.entity';
 import { FlashcardModule } from 'src/flashcard/flashcard.module';
-import { UserModule } from 'src/user/user.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
@@ -12,7 +11,6 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     MongooseModule.forFeature([
       { name: Vocabulary.name, schema: VocabularySchema },
     ]),
-    UserModule,
     forwardRef(() => FlashcardModule),
     CloudinaryModule,
   ],

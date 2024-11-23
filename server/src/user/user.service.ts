@@ -13,6 +13,10 @@ export class UserService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async findOneById(id: string) {
+    return this.userModel.findOne({ _id: id }).exec();
+  }
+
   async checkExists(id: string): Promise<boolean> {
     const exists = await this.userModel.exists({ _id: new Types.ObjectId(id) });
     return exists !== null;

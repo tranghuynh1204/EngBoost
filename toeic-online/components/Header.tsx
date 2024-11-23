@@ -2,87 +2,93 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Button } from "./ui/button";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import useAppSelector from "@/hooks/useAppSelector";
-import useAppDispatch from "@/hooks/useAppDispatch";
-import { setLogout } from "@/lib/store/auth-slice";
+import { RootState } from "@/lib/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { setIsLogin } from "@/lib/store/data-slice";
+import axios from "axios";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const Header: React.FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
-  const currentTab = tab || "toeic";
-  const dispatch = useAppDispatch();
+const Header = () => {
+  const isLogin = useSelector((state: RootState) => state.data.isLogin);
+  const dispatch = useDispatch();
+  const checkLoginStatus = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (refreshToken) {
+        // Gửi yêu cầu đến backend để refresh access token
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+          {
+            refresh_token: refreshToken,
+          }
+        );
+        const { access_token, refresh_token } = response.data;
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        dispatch(setIsLogin(true));
+      } else {
+        dispatch(setIsLogin(false));
+      }
+    } catch {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      dispatch(setIsLogin(false));
+    }
+  };
 
-  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
-
-  const [isHydrated, setIsHydrated] = useState(false);
-
+  // Kiểm tra trạng thái đăng nhập khi component được render
   useEffect(() => {
-    setIsHydrated(true); // Indicate that hydration has completed
+    checkLoginStatus(); // Kiểm tra và refresh token khi trang được tải
   }, []);
-  if (!isHydrated) {
-    // Render nothing or a loading skeleton until hydration is complete
-    return null;
-  }
-  const handleTabChange = (selectedTab: string) => {
-    router.push(`/?tab=${selectedTab}`);
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    dispatch(setIsLogin(false));
   };
-
-  const navigateToLogin = () => {
-    router.push("/login");
-  };
-
-  const navigateToProfile = () => {
-    router.push("/profile");
-  };
-
-  const handleLogout = () => {
-    // Remove token from storage
-    localStorage.removeItem("accessToken");
-    sessionStorage.removeItem("accessToken");
-    // Dispatch logout action
-    dispatch(setLogout());
-    router.push("/login");
-  };
-
   return (
     <header className="flex items-center justify-between p-4 bg-white shadow-md">
-      {/* Logo */}
       <div className="flex items-center">
         <Link href="/" className="text-2xl font-bold">
           TOEIC Online
         </Link>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={currentTab} onValueChange={handleTabChange}>
-        <TabsList className="flex space-x-4">
-          <TabsTrigger value="toeic">TOEIC Exams</TabsTrigger>
-          <TabsTrigger value="ielts">IELTS Exams</TabsTrigger>
-        </TabsList>
-      </Tabs>
-
       {/* Authentication */}
       <div className="flex items-center space-x-4">
-        {!isLoggedIn ? (
-          <Button variant="ghost" onClick={navigateToLogin}>
+        {!isLogin ? (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              redirect("/login");
+            }}
+          >
             Login
           </Button>
         ) : (
-          <>
-            <Button variant="ghost" onClick={navigateToProfile}>
-              Hello
-            </Button>
-            <Button variant="ghost" onClick={handleLogout}>
-              Logout
-            </Button>
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Trang cá nhân</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </header>

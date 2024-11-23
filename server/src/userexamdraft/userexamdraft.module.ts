@@ -6,14 +6,12 @@ import {
   UserExamDraft,
   UserExamDraftSchema,
 } from './entities/userexamdraft.entity';
-import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: UserExamDraft.name, schema: UserExamDraftSchema },
     ]),
-    UserModule,
   ],
   controllers: [UserexamdraftController],
   providers: [UserexamdraftService],

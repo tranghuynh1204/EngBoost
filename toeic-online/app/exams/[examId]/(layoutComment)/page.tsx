@@ -13,12 +13,6 @@ import { AiOutlineComment } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { GiSpellBook } from "react-icons/gi";
 import { FaUserAstronaut } from "react-icons/fa6";
-import {
-  MdOutlineCategory,
-  MdOutlineComment,
-  MdOutlineQuestionAnswer,
-} from "react-icons/md";
-import { FaUserFriends } from "react-icons/fa";
 import { TbMessageCircleQuestion } from "react-icons/tb";
 
 import {
@@ -28,13 +22,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"; // Assume you have a Select component
+import { RootState } from "@/lib/store/store";
+import { useSelector } from "react-redux";
 const ExamIdPage = () => {
   const params = useParams();
+  const isLogin = useSelector((state: RootState) => state.data.isLogin);
   const [exam, setExam] = useState<Exam | null>(null);
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionResult, setSubmissionResult] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("0");
   useEffect(() => {
     const fetchExam = async () => {
@@ -76,52 +71,6 @@ const ExamIdPage = () => {
     }
   };
 
-  const handleSubmitSelection = async () => {
-    console.log("Submit button clicked");
-    if (!exam) return;
-
-    setIsSubmitting(true);
-    setSubmissionResult(null);
-
-    const requestBody: any = {
-      id: exam._id,
-      selectedTime, // Include selected time
-    };
-    if (!isEntireExamSelected && selectedSections.length > 0) {
-      requestBody.sectionIds = selectedSections;
-    }
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
-        requestBody
-      );
-
-      // Extract the practiceSessionId from the response
-      const practiceSessionId = response.data.practiceSessionId;
-
-      if (!practiceSessionId) {
-        setSubmissionResult(
-          "Failed to start practice mode. No session ID returned."
-        );
-        setIsSubmitting(false);
-        return;
-      }
-    } catch (error: any) {
-      console.error("Error submitting selection:", error);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setSubmissionResult(`Error: ${error.response.data.message}`);
-      } else {
-        setSubmissionResult("Failed to start practice mode. Please try again.");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   // Show a loading state if exam data is not yet available
   if (!exam) {
     return (
@@ -154,12 +103,14 @@ const ExamIdPage = () => {
             >
               Thông tin đề thi
             </TabsTrigger>
-            <TabsTrigger
-              value="2"
-              className="px-4 py-2  font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
-            >
-              Đáp án/Transcript
-            </TabsTrigger>
+            {isLogin && (
+              <TabsTrigger
+                value="2"
+                className="px-4 py-2  font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
+              >
+                Đáp án/Transcript
+              </TabsTrigger>
+            )}
           </TabsList>
           <TabsContent value="1">
             <div className="space-y-4">
@@ -191,9 +142,11 @@ const ExamIdPage = () => {
                 </ul>
               </div>
               {/* User Exam Container */}
-              <div className="mb-6">
-                <UserExamContainer examId={params.examId as string} />
-              </div>
+              {isLogin && (
+                <div className="mb-6">
+                  <UserExamContainer examId={params.examId as string} />
+                </div>
+              )}
               {/* Exam Sections */}
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold text-gray-700 mb-4">
@@ -282,8 +235,7 @@ const ExamIdPage = () => {
                 <Button
                   className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
                   disabled={
-                    isSubmitting ||
-                    (!isEntireExamSelected && selectedSections.length === 0)
+                    !isEntireExamSelected && selectedSections.length === 0
                   }
                 >
                   <Link
@@ -295,16 +247,10 @@ const ExamIdPage = () => {
                       },
                     }}
                   >
-                    {isSubmitting ? "Đang gửi..." : "Bắt đầu luyện tập"}
+                    Bắt đầu luyện tập
                   </Link>
                 </Button>
               </div>
-
-              {submissionResult && (
-                <p className="mt-4 text-center text-green-600">
-                  {submissionResult}
-                </p>
-              )}
             </div>
           </TabsContent>
           <TabsContent value="2">

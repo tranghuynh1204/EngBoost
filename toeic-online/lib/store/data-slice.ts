@@ -8,6 +8,7 @@ export const dataSlice = createSlice({
   initialState: {
     mapQuestion: {} as MapQuestion,
     mapGroup: {} as MapGroup,
+    isLogin: false,
   },
   reducers: {
     setMapQuestion: (state, action: PayloadAction<MapQuestion>) => {
@@ -16,10 +17,12 @@ export const dataSlice = createSlice({
     setMapGroup: (state, action: PayloadAction<MapGroup>) => {
       state.mapGroup = action.payload;
     },
-    
+    setIsLogin: (state, action: PayloadAction<boolean>) => {
+      state.isLogin = action.payload;
+    },
   },
 });
 
 // Export actions và reducer
-export const { setMapQuestion, setMapGroup } = dataSlice.actions;
+export const { setMapQuestion, setMapGroup, setIsLogin } = dataSlice.actions;
 export default dataSlice.reducer;

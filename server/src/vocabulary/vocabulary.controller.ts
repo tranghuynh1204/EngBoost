@@ -58,7 +58,12 @@ export class VocabularyController {
     @UploadedFile() file: Express.Multer.File,
     @User() user,
   ) {
-    return this.vocabularyService.update(id, updateVocabularyDto, user.sub);
+    return this.vocabularyService.update(
+      id,
+      updateVocabularyDto,
+      file,
+      user.sub,
+    );
   }
 
   @Roles(Role.USER)

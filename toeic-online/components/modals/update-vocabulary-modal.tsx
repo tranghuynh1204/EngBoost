@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+import { ok } from "assert";
 
 const formSchema = z.object({
   word: z.string().min(2, { message: "Từ mới phải có ít nhất 2 ký tự." }),
@@ -71,10 +72,11 @@ export const UpdateVocabularyModal = () => {
     formData.append("pronunciation", values.pronunciation);
     formData.append("notes", values.notes);
     formData.append("example", values.example);
+    formData.append("image", values.image);
 
     try {
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/vocabularies`,
+        `${process.env.NEXT_PUBLIC_API_URL}/vocabularies/${vocabulary?._id}`,
         formData,
         {
           headers: {
@@ -91,6 +93,7 @@ export const UpdateVocabularyModal = () => {
         notes: "",
         example: "",
         image: "",
+        file: undefined,
       });
       dispatch(closeModal());
     } catch (error) {

@@ -8,12 +8,10 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
+import { useDispatch } from "react-redux";
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -29,9 +28,10 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
+  const dispatch = useDispatch();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,22 +44,18 @@ const LoginPage: React.FC = () => {
   // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      setLoading(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         values
       );
-      const { access_token } = response.data;
-      localStorage.setItem("accessToken", access_token);
-
+      const { access_token, refresh_token } = response.data;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
       toast({
         title: "Đăng nhập thành công!",
         description: "Bạn đã đăng nhập thành công.",
       });
-
-      // Redirect to home or desired page
-      setTimeout(() => {
-        router.back();
-      }, 3000);
     } catch (error: any) {
       if (error.response.status == 404) {
         form.setError("email", {
@@ -113,7 +109,9 @@ const LoginPage: React.FC = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={loading}>
+              Submit
+            </Button>
           </form>
         </Form>
       </div>

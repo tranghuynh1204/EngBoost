@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { memo, useState } from "react";
 import axios from "axios";
 import { Textarea } from "../ui/textarea";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store/store";
 export interface CommentItemProps {
   id: string;
   user: {
@@ -38,6 +40,7 @@ const formSchema = z.object({
 
 export const CommentItem = memo(
   ({ id, content, replies, user, createdAt, examId }: CommentItemProps) => {
+    const isLogin = useSelector((state: RootState) => state.data.isLogin);
     const [comments, setComments] = useState<Comment[]>(replies);
     const [isReplying, setIsReplying] = useState<boolean>(false);
     const form = useForm<z.infer<typeof formSchema>>({
@@ -54,7 +57,7 @@ export const CommentItem = memo(
         values,
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMTU5NjUzNywiZXhwIjoxNzMyMjAxMzM3fQ.YQvEJL2AdaIPzIbFgDhNMTOOu3YEgZQ-mY5n9_lNyfk`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
         }
@@ -85,12 +88,14 @@ export const CommentItem = memo(
 
         {/* Reply Section */}
         <div className="mb-4">
-          <button
-            onClick={() => setIsReplying(!isReplying)} // Toggle reply form visibility
-            className="text-blue-600 hover:underline cursor-pointer text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-          >
-            Trả lời
-          </button>
+          {isLogin && (
+            <button
+              onClick={() => setIsReplying(!isReplying)} // Toggle reply form visibility
+              className="text-blue-600 hover:underline cursor-pointer text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+            >
+              Trả lời
+            </button>
+          )}
           {isReplying && ( // Conditionally render the reply form
             <div className="mt-4">
               <Form {...form}>

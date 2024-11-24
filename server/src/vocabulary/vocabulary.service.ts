@@ -81,6 +81,7 @@ export class VocabularyService {
   async update(
     id: string,
     updateVocabularyDto: UpdateVocabularyDto,
+    file: any,
     userId: string,
   ) {
     const vocabulary = await this.vocabularyModel
@@ -97,6 +98,10 @@ export class VocabularyService {
       throw new ForbiddenException(
         `Bạn không có quyền cập nhật từ vựng này này`,
       );
+    }
+    if (file) {
+      const { secure_url } = await this.cloudinaryService.uploadFile(file);
+      updateVocabularyDto.image = secure_url;
     }
     return this.vocabularyModel
       .findByIdAndUpdate(id, updateVocabularyDto, { new: true })

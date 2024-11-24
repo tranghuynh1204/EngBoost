@@ -7,14 +7,10 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import jwtConfig from 'src/config/jwt.config';
-import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private jwtService: JwtService,
-    private userService: UserService,
-  ) {}
+  constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -28,9 +24,6 @@ export class AuthGuard implements CanActivate {
       });
 
       request['user'] = payload;
-      if (!(await this.userService.checkExists(payload.sub))) {
-        throw new UnauthorizedException('User not found');
-      }
     } catch {
       throw new UnauthorizedException();
     }

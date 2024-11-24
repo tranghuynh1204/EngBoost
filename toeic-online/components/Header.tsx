@@ -6,11 +6,13 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Button } from "./ui/button";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import useAppSelector from "@/hooks/useAppSelector";
-import useAppDispatch from "@/hooks/useAppDispatch";
-import { setLogout } from "@/lib/store/auth-slice";
+import { RootState } from "@/lib/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { setIsLogin } from "@/lib/store/data-slice";
+import axios from "axios";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -20,20 +22,45 @@ import {
   NavigationMenuLink,
   NavigationMenuViewport,
 } from "./ui/navigation-menu";
-const Header: React.FC = () => {
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+const Header = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
-  const currentTab = tab || "toeic";
-  const dispatch = useAppDispatch();
-
-  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
-
-  const [isHydrated, setIsHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const isLogin = useSelector((state: RootState) => state.data.isLogin);
+  const dispatch = useDispatch();
+
+  const checkLoginStatus = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (refreshToken) {
+        // Gửi yêu cầu đến backend để refresh access token
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+          {
+            refresh_token: refreshToken,
+          }
+        );
+        const { access_token, refresh_token } = response.data;
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        dispatch(setIsLogin(true));
+      } else {
+        dispatch(setIsLogin(false));
+      }
+    } catch {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      dispatch(setIsLogin(false));
+    }
+  };
+  // Kiểm tra trạng thái đăng nhập khi component được render
   useEffect(() => {
-    setIsHydrated(true); // Indicate that hydration has completed
+    checkLoginStatus(); // Indicate that hydration has completed
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true);
@@ -47,29 +74,10 @@ const Header: React.FC = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  if (!isHydrated) {
-    // Render nothing or a loading skeleton until hydration is complete
-    return null;
-  }
-  const handleTabChange = (selectedTab: string) => {
-    router.push(`/?tab=${selectedTab}`);
-  };
-
-  const navigateToLogin = () => {
-    router.push("/login");
-  };
-
-  const navigateToProfile = () => {
-    router.push("/profile");
-  };
-
-  const handleLogout = () => {
-    // Remove token from storage
-    localStorage.removeItem("accessToken");
-    sessionStorage.removeItem("accessToken");
-    // Dispatch logout action
-    dispatch(setLogout());
-    router.push("/login");
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    dispatch(setIsLogin(false));
   };
 
   return (
@@ -82,10 +90,10 @@ const Header: React.FC = () => {
       <div className="flex items-center ml-4">
         <Link href="/" className="flex items-center">
           <Image
-            src="/assets/draft_logo.jpg" // Đường dẫn đến logo
+            src="/assets/draft_logo.jpg"
             alt="Logo"
-            width={40} // Chiều rộng logo
-            height={40} // Chiều cao logo
+            width={40}
+            height={40}
             priority // Tải logo sớm hơn
           />
         </Link>
@@ -128,19 +136,28 @@ const Header: React.FC = () => {
 
       {/* Authentication */}
       <div className="flex items-center space-x-4">
-        {!isLoggedIn ? (
-          <Button variant="ghost" onClick={navigateToLogin}>
+        {!isLogin ? (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              redirect("/login");
+            }}
+          >
             Login
           </Button>
         ) : (
-          <>
-            <Button variant="ghost" onClick={navigateToProfile}>
-              Hello
-            </Button>
-            <Button variant="ghost" onClick={handleLogout}>
-              Logout
-            </Button>
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Trang cá nhân</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </header>

@@ -26,8 +26,8 @@ const ExamPage: React.FC = () => {
     async function fetchExamData(
       category: string,
       title: string,
-      currentPage = 1,
-      pageSize = 10
+      currentPage: number,
+      pageSize: number
     ) {
       setLoading(true);
       setError(null);
@@ -55,7 +55,7 @@ const ExamPage: React.FC = () => {
       }
     }
 
-    fetchExamData("", "", 0, 10);
+    fetchExamData("", "", 1, 10);
   }, [currentTab, offset]);
 
   // Xử lý tìm kiếm

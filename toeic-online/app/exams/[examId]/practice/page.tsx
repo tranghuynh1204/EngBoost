@@ -9,6 +9,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
+
 import { Exam, mapOption } from "@/types"; // Define your types accordingly
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
@@ -129,13 +130,9 @@ const PracticeExamPage = () => {
   };
 
   useEffect(() => {
-    window.addEventListener("popstate", handleTabClose);
-
     window.addEventListener("beforeunload", handleTabClose);
-
     return () => {
       window.removeEventListener("beforeunload", handleTabClose);
-      window.removeEventListener("popstate", handleTabClose);
     };
   }, []);
 
@@ -169,7 +166,7 @@ const PracticeExamPage = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`, // Replace with dynamic token if necessary
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
         }

@@ -94,7 +94,6 @@ const Header = () => {
             alt="Logo"
             width={40}
             height={40}
-            priority // Tải logo sớm hơn
           />
         </Link>
       </div>

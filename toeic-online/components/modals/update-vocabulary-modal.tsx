@@ -32,7 +32,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
-import { ok } from "assert";
 
 const formSchema = z.object({
   word: z.string().min(2, { message: "Từ mới phải có ít nhất 2 ký tự." }),
@@ -65,7 +64,6 @@ export const UpdateVocabularyModal = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
     const formData = new FormData();
 
     if (values.file) {
@@ -81,7 +79,8 @@ export const UpdateVocabularyModal = () => {
     formData.append("image", values.image);
 
     try {
-      const response = await axios.patch(
+      setIsSubmitting(true);
+      await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/vocabularies/${vocabulary?._id}`,
         formData,
         {
@@ -91,6 +90,7 @@ export const UpdateVocabularyModal = () => {
           },
         }
       );
+
       form.reset({
         word: "",
         mean: "",
@@ -102,6 +102,7 @@ export const UpdateVocabularyModal = () => {
         file: undefined,
       });
       dispatch(closeModal());
+      window.location.reload();
     } catch (error) {
       console.error("API Error:", error);
     } finally {

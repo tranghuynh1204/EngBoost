@@ -119,6 +119,8 @@ export interface Flashcard {
   _id: string;
   title: string;
   description: string;
+  owner: boolean;
+  vocabularyCount: number;
 }
 export interface MapQuestion {
   [serial: string]: Question;

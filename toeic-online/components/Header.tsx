@@ -4,7 +4,7 @@
 
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { RootState } from "@/lib/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,14 +15,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
   const dispatch = useDispatch();
+  const router = useRouter();
   const checkLoginStatus = async () => {
     try {
       const refreshToken = localStorage.getItem("refresh_token");
@@ -53,6 +52,7 @@ const Header = () => {
     checkLoginStatus(); // Kiểm tra và refresh token khi trang được tải
   }, []);
   const logout = () => {
+    router.push("/exams");
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     dispatch(setIsLogin(false));

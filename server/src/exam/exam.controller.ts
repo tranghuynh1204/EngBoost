@@ -72,6 +72,8 @@ export class ExamController {
     return this.examService.findSolution(id, sectionId);
   }
 
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard)
   @Post('/practice')
   async getPractice(
     @Body('id') id: string,

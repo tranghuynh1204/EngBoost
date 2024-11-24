@@ -4,8 +4,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import {
-  redirect,
   useParams,
+  usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
@@ -18,8 +18,6 @@ import QuestionTracker from "@/components/question-tracker";
 import { GroupItem } from "@/components/group/group-item";
 import { HightLightControl } from "@/components/hight-light-control";
 import { Counter } from "@/components/counter";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store/store";
 interface ChildComponentRef {
   callMe: (serial: string) => void;
 }
@@ -36,7 +34,7 @@ const PracticeExamPage = () => {
   const [indexSection, setIndexSection] = useState<number>(0);
   const childRef = useRef<ChildComponentRef>(null);
   const router = useRouter();
-  const isLogin = useSelector((state: RootState) => state.data.isLogin);
+  const pathname = usePathname();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,11 +54,19 @@ const PracticeExamPage = () => {
           {
             id: examId,
             sectionIds,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
+              "Content-Type": "application/json",
+            },
           }
         );
         setExam(response.data);
-      } catch (error) {
-        console.log("Error fetching practice session data:", error);
+      } catch (error: any) {
+        if (error.response.status === 401) {
+          router.replace(`/login?next=${pathname}?${searchParams}`);
+        }
       }
     };
 
@@ -97,37 +103,39 @@ const PracticeExamPage = () => {
     };
     fetchData();
   }, []);
+  const handleTabClose = async (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts`,
+        {
+          exam: examId,
+          answers: answeredQuestions.current,
+          sections: sectionIds,
+          duration: countRef.current,
+          startTime,
+          selectedTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.log("Error submitting answers:", error);
+    }
+  };
 
   useEffect(() => {
-    const handleTabClose = async (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts`,
-          {
-            exam: examId,
-            answers: answeredQuestions.current,
-            sections: sectionIds,
-            duration: countRef.current,
-            startTime,
-            selectedTime,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } catch (error) {
-        console.log("Error submitting answers:", error);
-      }
-    };
+    window.addEventListener("popstate", handleTabClose);
 
     window.addEventListener("beforeunload", handleTabClose);
 
     return () => {
       window.removeEventListener("beforeunload", handleTabClose);
+      window.removeEventListener("popstate", handleTabClose);
     };
   }, []);
 
@@ -184,10 +192,6 @@ const PracticeExamPage = () => {
     setIndexSection((prev) => prev - 1);
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
-
-  if (isLogin === false) {
-    return redirect("/login");
-  }
 
   if (!exam || loading) {
     return <div>Loading...</div>;

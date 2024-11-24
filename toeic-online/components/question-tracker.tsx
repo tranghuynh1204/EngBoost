@@ -26,7 +26,6 @@ const QuestionTracker = forwardRef(
     useImperativeHandle(ref, () => ({
       callMe,
     }));
-    console.log("b");
     return (
       <div>
         {/* Questions Grid with Scroll */}

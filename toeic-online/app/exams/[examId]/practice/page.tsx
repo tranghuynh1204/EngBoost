@@ -38,7 +38,7 @@ const PracticeExamPage = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (countRef.current === selectedTime) {
+      if (countRef.current === selectedTime && selectedTime !== 0) {
         onSubmit();
       }
       countRef.current += 1;

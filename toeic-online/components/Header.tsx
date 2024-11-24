@@ -2,9 +2,10 @@
 
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import Image from "next/image";
+import { useRouter, redirect } from "next/navigation";
 import { Button } from "./ui/button";
 import { RootState } from "@/lib/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,16 +13,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { setIsLogin } from "@/lib/store/data-slice";
 import axios from "axios";
 import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+  NavigationMenuViewport,
+} from "./ui/navigation-menu";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+} from "./ui/dropdown-menu";
 const Header = () => {
+  const router = useRouter();
+  const [isScrolled, setIsScrolled] = useState(false);
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
   const dispatch = useDispatch();
-  const router = useRouter();
+
   const checkLoginStatus = async () => {
     try {
       const refreshToken = localStorage.getItem("refresh_token");
@@ -46,10 +57,21 @@ const Header = () => {
       dispatch(setIsLogin(false));
     }
   };
-
   // Kiểm tra trạng thái đăng nhập khi component được render
   useEffect(() => {
-    checkLoginStatus(); // Kiểm tra và refresh token khi trang được tải
+    checkLoginStatus(); // Indicate that hydration has completed
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
   const logout = () => {
     router.push("/exams");
@@ -57,13 +79,60 @@ const Header = () => {
     localStorage.removeItem("refresh_token");
     dispatch(setIsLogin(false));
   };
+
   return (
-    <header className="flex items-center justify-between p-4 bg-white shadow-md">
-      <div className="flex items-center">
-        <Link href="/" className="text-2xl font-bold">
-          TOEIC Online
+    <header
+      className={`sticky top-0 z-50 flex items-center justify-between p-4 transition-colors duration-300 ${
+        isScrolled ? "bg-white/5 backdrop-blur-md shadow-sm" : "bg-white"
+      }`}
+    >
+      {/* Logo */}
+      <div className="flex items-center ml-4">
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/assets/draft_logo.jpg"
+            alt="Logo"
+            width={40}
+            height={40}
+            priority // Tải logo sớm hơn
+          />
         </Link>
       </div>
+
+      {/* Navigation Menu */}
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger
+              onClick={() => router.push("/exams")}
+              className="cursor-pointer font-semibold"
+            >
+              Exam
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="flex flex-col space-y-2 p-4 bg-white rounded-md shadow-lg">
+                <li>
+                  <NavigationMenuLink
+                    asChild
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  >
+                    <Link href="/exams/toeic">TOEIC Exams</Link>
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink
+                    asChild
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                  >
+                    <Link href="/exams/ielts">IELTS Exams</Link>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+        <NavigationMenuViewport />
+      </NavigationMenu>
 
       {/* Authentication */}
       <div className="flex items-center space-x-4">

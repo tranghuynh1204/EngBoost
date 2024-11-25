@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
-    domains: ["res.cloudinary.com"],
+    domains: ["res.cloudinary.com", "i.pinimg.com"], // Add i.pinimg.com here
   },
 };
 

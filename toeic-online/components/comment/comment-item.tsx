@@ -81,6 +81,8 @@ export const CommentItem = memo(
           <Image
             src={`https://i.pinimg.com/736x/12/4f/41/124f41d139c139f8c0a9e323c94176ca.jpg`}
             alt="User Avatar"
+            width={40} // Specify the width
+            height={40}
             className="w-10 h-10 rounded-full"
           />
 

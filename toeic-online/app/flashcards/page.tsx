@@ -48,29 +48,34 @@ const FlashcardPage = () => {
   }, []);
 
   return (
-    <div>
-      <button
-        onClick={() =>
-          dispatch(
-            openModal({
-              type: "CreateFlashcard",
-            })
-          )
-        }
-      >
-        tạo list từ
-      </button>
-      {flashcards && flashcards.length > 0 && (
-        <div>
+    <div className="max-w-6xl mx-auto p-6 sm:p-8 bg-[rgb(250,240,230)] rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-extrabold text-[rgb(53,47,68)]">
+          Flashcards
+        </h1>
+        <button
+          onClick={() =>
+            dispatch(
+              openModal({
+                type: "CreateFlashcard",
+              })
+            )
+          }
+          className="px-4 py-2 bg-[rgb(53,47,68)] text-white rounded-lg hover:bg-[rgb(92,84,112)] transition-colors"
+        >
+          Create Flashcard
+        </button>
+      </div>
+      {flashcards && flashcards.length > 0 ? (
+        <div className="space-y-4">
           {flashcards.map((flashcard) => (
             <FlashcardItem {...flashcard} key={flashcard._id} />
           ))}
-          <div>
-            <PaginationCustom
-              currentPage={currentPage}
-              totalPages={totalPages}
-            />
-          </div>
+          <PaginationCustom currentPage={currentPage} totalPages={totalPages} />
+        </div>
+      ) : (
+        <div className="text-center text-gray-500">
+          No flashcards available.
         </div>
       )}
     </div>

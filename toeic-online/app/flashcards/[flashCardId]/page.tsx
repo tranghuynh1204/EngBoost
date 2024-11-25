@@ -37,6 +37,7 @@ const FlashcardIdPage = () => {
         console.log(response);
         setFlashcard(response.data);
       } catch (error: any) {
+        console.log(error);
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
@@ -51,14 +52,16 @@ const FlashcardIdPage = () => {
     return <div>Loading</div>;
   }
   return (
-    <div className="p-4 sm:p-8">
+    <div className="max-w-4xl mx-auto p-6 sm:p-8 bg-[rgb(250,240,230)] rounded-lg shadow-lg">
+      {/* Header */}
       <div className="mb-6">
-        <div className="text-xl font-bold text-primary mb-2">
-          Flashcard: {flashcard.title}
-        </div>
-        <div className="flex gap-4">
+        <h1 className="text-2xl font-extrabold text-[rgb(53,47,68)]">
+          {flashcard.title}
+        </h1>
+
+        <div className="flex gap-4 mt-4">
           <Button
-            className="bg-primary hover:bg-primary-dark"
+            className="bg-[rgb(53,47,68)] text-white hover:bg-[rgb(92,84,112)] px-4 py-2 rounded-md shadow-sm"
             onClick={() =>
               dispatch(
                 openModal({
@@ -68,10 +71,10 @@ const FlashcardIdPage = () => {
               )
             }
           >
-            Edit
+            Edit Flashcard
           </Button>
           <Button
-            className="bg-secondary hover:bg-secondary-dark"
+            className="bg-[rgb(92,84,112)] text-white hover:bg-[rgb(53,47,68)] px-4 py-2 rounded-md shadow-sm"
             onClick={() =>
               dispatch(
                 openModal({
@@ -86,13 +89,27 @@ const FlashcardIdPage = () => {
           </Button>
         </div>
       </div>
+
+      {/* Description */}
       {flashcard.description && (
-        <div className="mb-6 text-gray-600">{flashcard.description}</div>
+        <div className="mb-6">
+          <textarea
+            className="w-full border rounded-md p-3 text-[rgb(53,47,68)] bg-white focus:ring-2 focus:ring-[rgb(92,84,112)]"
+            defaultValue={flashcard.description}
+            readOnly
+          />
+        </div>
       )}
-      <div className="mb-6 text-gray-700">
-        Vocabulary Count: {flashcard.vocabularyCount}
+
+      {/* Vocabulary Count */}
+      <div className="mb-6 text-[rgb(53,47,68)]">
+        <strong>Vocabulary Count:</strong> {flashcard.vocabularyCount}
       </div>
-      <VocabularyContainer owner={flashcard.owner} />
+
+      {/* Vocabulary List */}
+      <div>
+        <VocabularyContainer owner={flashcard.owner} />
+      </div>
     </div>
   );
 };

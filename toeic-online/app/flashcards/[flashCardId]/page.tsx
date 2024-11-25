@@ -82,9 +82,6 @@ const FlashcardIdPage = () => {
             Thêm từ mới
           </Button>
         </span>
-        {/* <span>
-          <Button>Thêm hàng loạt</Button>
-        </span> */}
       </div>
       {flashcard.description && <div>{flashcard.description}</div>}
       <div>List có {flashcard.vocabularyCount} từ</div>

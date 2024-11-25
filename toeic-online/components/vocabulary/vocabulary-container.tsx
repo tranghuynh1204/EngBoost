@@ -23,7 +23,7 @@ export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
         {
           params: {
             currentPage: page,
-            pageSize: 10,
+            pageSize: 1,
           },
 
           headers: {

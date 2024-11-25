@@ -1,40 +1,60 @@
 "use client";
 import { Exam } from "@/types";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import React, { useEffect, useState } from "react";
 import { SolutionItem } from "@/components/solution/solution-item";
+import Loading from "@/components/loading";
+import NotFound from "@/components/not-found";
 
 const SolutionsPage = () => {
   const params = useParams();
   const [exam, setExam] = useState<Exam | null>(null);
-
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>();
   useEffect(() => {
     const fetchExam = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/exams/${params.examId}/solutions`
+          `${process.env.NEXT_PUBLIC_API_URL}/exams/${params.examId}/solutions`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         setExam(response.data);
         console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching exam data:", error);
+      } catch (error: any) {
+        if (error.response.status === 401) {
+          router.replace(`/login?next=${pathname}?${searchParams}`);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (params.examId) {
       fetchExam();
     }
-  }, [params.examId]);
+  }, []);
 
+  if (isLoading) {
+    return <Loading />;
+  }
   if (!exam) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500 text-xl">Đang tải...</div>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (

@@ -30,7 +30,6 @@ const formSchema = z.object({
 export const CommentContainer = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
-
   const params = useParams();
   const offset = useRef(0);
   const [isFetchingComments, setIsFetchingComments] = useState<boolean>(false); // Separate loading for fetching comments

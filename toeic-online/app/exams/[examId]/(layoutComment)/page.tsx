@@ -91,52 +91,53 @@ const ExamIdPage = () => {
               #{exam.category}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          <h1 className="text-3xl text-center font-bold text-gray-800 mb-4">
             {exam.title}
           </h1>
         </div>
         <Tabs defaultValue="1">
-          <TabsList className="border-b border-gray-200 mb-4">
-            <TabsTrigger
-              value="1"
-              className="px-4 py-2  font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
-            >
-              Thông tin đề thi
-            </TabsTrigger>
-            {isLogin && (
+          <div className="flex justify-center mb-6">
+            <TabsList className="flex space-x-2 rounded-lg bg-gray-100 p-1">
+              <TabsTrigger
+                value="1"
+                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
+              >
+                Thông tin đề thi
+              </TabsTrigger>
               <TabsTrigger
                 value="2"
-                className="px-4 py-2  font-medium text-gray-700 hover:text-blue-300 focus:outline-none focus:ring-2 "
+                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
               >
-                Đáp án/Transcript
+                Đáp án Transcript
               </TabsTrigger>
-            )}
-          </TabsList>
+            </TabsList>
+          </div>
+
           <TabsContent value="1">
             <div className="space-y-4">
-              <div className="bg-white p-4 border border-gray-100 rounded-md shadow-sm">
+              <div className="bg-gradient-to-r from-gray-50 to-white p-4 border border-gray-100 rounded-md shadow-sm">
                 <h2 className="font-semibold text-gray-800 mb-2">
                   Chi tiết đề thi
                 </h2>
                 <ul className="space-y-3">
                   <li className="flex items-center text-gray-700">
-                    <TfiTimer className="mr-3 text-purple-300 w-5 h-5" />
+                    <TfiTimer className="mr-3 text-blue-600 w-5 h-5" />
                     <span>Thời gian làm bài: {exam.duration} phút</span>
                   </li>
                   <li className="flex items-center text-gray-700">
-                    <GiSpellBook className="mr-3 text-purple-400 w-5 h-5" />
+                    <GiSpellBook className="mr-3 text-blue-600 w-5 h-5" />
                     <span>Phần thi: {exam.sectionCount} phần</span>
                   </li>
                   <li className="flex items-center text-gray-700">
-                    <TbMessageCircleQuestion className="mr-3 text-purple-400 w-5 h-5" />
+                    <TbMessageCircleQuestion className="mr-3 text-blue-600 w-5 h-5" />
                     <span>Câu hỏi: {exam.questionCount} câu</span>
                   </li>
                   <li className="flex items-center text-gray-700">
-                    <AiOutlineComment className="mr-3 text-purple-400 w-5 h-5" />
+                    <AiOutlineComment className="mr-3 text-blue-600 w-5 h-5" />
                     <span>Bình luận: {exam.commentCount} bình luận</span>
                   </li>
                   <li className="flex items-center text-gray-700">
-                    <FaUserAstronaut className="mr-3 text-purple-400 w-5 h-5" />
+                    <FaUserAstronaut className="mr-3 text-blue-600 w-5 h-5" />
                     <span>Người luyện: {exam.userCount} người</span>
                   </li>
                 </ul>

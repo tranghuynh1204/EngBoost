@@ -1,4 +1,6 @@
 "use client";
+import Loading from "@/components/loading";
+import NotFound from "@/components/not-found";
 import { Button } from "@/components/ui/button";
 import { VocabularyContainer } from "@/components/vocabulary/vocabulary-container";
 import { openModal } from "@/lib/store/modal-slice";
@@ -20,11 +22,14 @@ const FlashcardIdPage = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>();
+
   const { flashcardId } = useParams();
 
   useEffect(() => {
     const fetchFlashcard = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/flashcards/${flashcardId}`,
           {
@@ -41,15 +46,19 @@ const FlashcardIdPage = () => {
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
+      } finally {
+        setIsLoading(false);
       }
     };
-    console.log(flashcardId);
     if (flashcardId) {
       fetchFlashcard();
     }
-  }, [flashcardId]);
+  }, []);
+  if (isLoading) {
+    return <Loading />;
+  }
   if (!flashcard) {
-    return <div>Loading</div>;
+    return <NotFound />;
   }
   return (
     <div className="max-w-4xl mx-auto p-6 sm:p-8 bg-[rgb(250,240,230)] rounded-lg shadow-lg">

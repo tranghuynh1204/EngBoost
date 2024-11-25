@@ -310,6 +310,63 @@ export class ExamService {
     };
   }
 
+  async getNew() {
+    const exams = await this.examModel.aggregate([
+      {
+        $lookup: {
+          from: 'comments', // Replace with your comments collection name
+          localField: '_id',
+          foreignField: 'exam',
+          as: 'comments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userexams',
+          localField: '_id',
+          foreignField: 'exam',
+          as: 'userExams',
+        },
+      },
+      {
+        $unwind: { path: '$userExams', preserveNullAndEmptyArrays: true }, // Unwind userExams to individual documents
+      },
+      {
+        $group: {
+          _id: '$_id', // Group by exam ID
+          title: { $first: '$title' },
+          category: { $first: '$category' },
+          duration: { $first: '$duration' },
+          sectionCount: { $first: '$sectionCount' },
+          questionCount: { $first: '$questionCount' },
+          comments: { $first: '$comments' },
+          userExams: { $addToSet: '$userExams.user' },
+          createAt: { $first: '$createAt' },
+        },
+      },
+      {
+        $addFields: {
+          commentCount: { $size: '$comments' }, // Count of comments
+          userCount: { $size: { $ifNull: ['$userExams', []] } }, // Count of users
+        },
+      },
+      {
+        $sort: { createAt: -1 }, // Now, sort by createAt after grouping
+      },
+      {
+        $limit: 8, // Limit to 8 exams
+      },
+      {
+        $project: {
+          comments: 0, // Optionally, remove the comments array
+          userExams: 0,
+        },
+      },
+    ]);
+
+    return exams;
+  }
+
   async findSolutions(id: string): Promise<Exam> {
     const [exam] = await this.examModel.aggregate([
       { $match: { _id: new Types.ObjectId(id) } }, // Lọc theo exam ID

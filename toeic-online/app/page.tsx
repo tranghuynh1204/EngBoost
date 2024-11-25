@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import axios, { AxiosResponse } from "axios";
-import { Exam } from "@/types";
+import { Exam, UserExam } from "@/types";
 import ExamCard from "@/components/exam/exam-card";
+import UserExamCard from "@/components/user-exam-card";
 
 const Home = () => {
-  const [recentlyAttemptedExams, setRecentlyAttemptedExams] = useState<Exam[]>(
-    []
-  );
+  const [recentlyAttemptedExams, setRecentlyAttemptedExams] = useState<
+    UserExam[]
+  >([]);
   const [recentlyCreatedExams, setRecentlyCreatedExams] = useState<Exam[]>([]);
 
   // Fetch recently attempted exams and created exams
@@ -16,12 +17,14 @@ const Home = () => {
     const fetchRecentlyAttemptedExams = async () => {
       try {
         const response: AxiosResponse = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/exams/recently-attempted`,
+          `${process.env.NEXT_PUBLIC_API_URL}/user-exams/new`,
           {
-            params: { limit: 4 },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
           }
         );
-        setRecentlyAttemptedExams(response.data.data || []);
+        setRecentlyAttemptedExams(response.data || []);
       } catch (error) {
         console.error("Error fetching recently attempted exams:", error);
       }
@@ -30,12 +33,9 @@ const Home = () => {
     const fetchRecentlyCreatedExams = async () => {
       try {
         const response: AxiosResponse = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/exams/recently-created`,
-          {
-            params: { limit: 8 },
-          }
+          `${process.env.NEXT_PUBLIC_API_URL}/exams/new`
         );
-        setRecentlyCreatedExams(response.data.data || []);
+        setRecentlyCreatedExams(response.data || []);
       } catch (error) {
         console.error("Error fetching recently created exams:", error);
       }
@@ -72,13 +72,13 @@ const Home = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {recentlyAttemptedExams.length > 0 ? (
-              recentlyAttemptedExams.map((exam) => (
+              recentlyAttemptedExams.map((userExam) => (
                 <Link
-                  key={exam._id}
-                  href={`/exams/${exam._id}`}
+                  key={userExam._id} // Use the userExamId here
+                  href={`/exams/${userExam.exam._id}/result/${userExam._id}`} // exam._id and userExamId
                   className="block"
                 >
-                  <ExamCard exam={exam} />
+                  <UserExamCard key={userExam._id} userExam={userExam} />
                 </Link>
               ))
             ) : (
@@ -124,7 +124,7 @@ const Home = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <Link
-              href="/practice-tests"
+              href="/exams"
               className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition"
             >
               <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">

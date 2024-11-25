@@ -18,6 +18,9 @@ import axios from "axios";
 import { Textarea } from "../ui/textarea";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
+import ChevronUpIcon from "@heroicons/react/24/solid/ChevronUpIcon";
+import ChevronDownIcon from "@heroicons/react/24/solid/ChevronDownIcon";
+import { ReplyIcon } from "lucide-react";
 export interface CommentItemProps {
   id: string;
   user: {
@@ -43,6 +46,7 @@ export const CommentItem = memo(
     const isLogin = useSelector((state: RootState) => state.data.isLogin);
     const [comments, setComments] = useState<Comment[]>(replies);
     const [isReplying, setIsReplying] = useState<boolean>(false);
+    const [isRepliesOpen, setIsRepliesOpen] = useState<boolean>(false);
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -69,85 +73,111 @@ export const CommentItem = memo(
     };
 
     return (
-      <div className="p-2 ">
+      <div className="space-y-4 p-4 border-b border-gray-200">
         {/* User Information */}
-        <div className="flex items-center mb-4">
-          <strong className="text-lg font-semibold text-gray-800">
-            {user.name}
-          </strong>
-          <span className="text-sm text-gray-500 ml-2">
-            {formatDate(createdAt)}
-          </span>
-        </div>
+        <div className="flex items-start space-x-4">
+          {/* User Avatar */}
+          <img
+            src={`https://i.pinimg.com/736x/12/4f/41/124f41d139c139f8c0a9e323c94176ca.jpg`}
+            alt="User Avatar"
+            className="w-10 h-10 rounded-full"
+          />
 
-        <Textarea
-          value={content}
-          readOnly
-          className="w-full p-4 border border-gray-200 rounded-lg resize-none bg-white text-black cursor-default"
-        />
-
-        {/* Reply Section */}
-        <div className="mb-4">
-          {isLogin && (
-            <button
-              onClick={() => setIsReplying(!isReplying)} // Toggle reply form visibility
-              className="text-blue-600 hover:underline cursor-pointer text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-            >
-              Trả lời
-            </button>
-          )}
-          {isReplying && ( // Conditionally render the reply form
-            <div className="mt-4">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="sr-only">Bình luận</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 resize-none h-32"
-                            placeholder="Chia sẻ cảm nghĩ của bạn..."
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      type="submit"
-                      className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
-                    >
-                      Gửi
-                    </Button>
-                  </div>
-                </form>
-              </Form>
+          {/* Comment Content */}
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <p className="text-base font-medium text-gray-900">{user.name}</p>
+              <span className="text-xs text-gray-500">
+                {formatDate(createdAt)}
+              </span>
             </div>
-          )}
+            <p className="text-gray-800 text-sm bg-white p-3 rounded-lg">
+              {content}
+            </p>
+
+            {/* Reply Button */}
+            {isLogin && (
+              <button
+                onClick={() => setIsReplying(!isReplying)}
+                className="mt-2 flex items-center text-sm text-blue-600 hover:underline"
+              >
+                <ReplyIcon className="w-5 h-5 mr-1" />
+                Trả lời
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Replies */}
+        {/* Reply Form */}
+        {isReplying && (
+          <div className="pl-14">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Viết câu trả lời của bạn..."
+                          className="w-full resize-none bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  >
+                    Gửi
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        )}
+
+        {/* Toggle Replies */}
         {comments.length > 0 && (
-          <div className="pl-6 border-l border-gray-200 mt-4 space-y-4">
-            {comments.map((reply) => (
-              <CommentItem
-                key={reply._id}
-                examId={examId}
-                id={reply._id}
-                content={reply.content}
-                replies={reply.replies}
-                user={reply.user}
-                createdAt={reply.createdAt}
-              />
-            ))}
+          <div>
+            <button
+              onClick={() => setIsRepliesOpen(!isRepliesOpen)}
+              className="flex items-center text-sm text-gray-500 hover:text-gray-700"
+            >
+              {isRepliesOpen ? (
+                <ChevronUpIcon className="w-5 h-5 mr-1" />
+              ) : (
+                <ChevronDownIcon className="w-5 h-5 mr-1" />
+              )}
+              {isRepliesOpen
+                ? "Ẩn phản hồi"
+                : `Xem ${comments.length} phản hồi`}
+            </button>
+
+            {/* Nested Replies */}
+            {isRepliesOpen && (
+              <div className="pl-14 space-y-4 mt-4">
+                {comments.map((reply) => (
+                  <CommentItem
+                    key={reply._id}
+                    id={reply._id}
+                    content={reply.content}
+                    replies={reply.replies}
+                    user={reply.user}
+                    createdAt={reply.createdAt}
+                    examId={examId}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

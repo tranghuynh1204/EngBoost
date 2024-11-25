@@ -155,6 +155,7 @@ const PracticeExamPage = () => {
   // Handler for submitting answers
   const onSubmit = async () => {
     try {
+      console.log(examId);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/user-exams`,
         {
@@ -195,39 +196,56 @@ const PracticeExamPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 flex">
+    <div className="container mx-auto p-6 flex space-x-6">
+      {/* Sidebar or Highlight Control */}
       <HightLightControl />
-      <div className="flex-1 mr-6 overflow-y-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">{exam.title}</h1>
+      <div className="flex-1 overflow-y-auto">
+        {/* Exam Title */}
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          {exam.title}
+        </h1>
+
+        {/* Tabs for Sections */}
         <Tabs
           className="w-full"
           value={exam.sections[indexSection]._id}
           defaultValue={exam.sections[0]._id}
         >
-          <TabsList className="mb-4">
+          {/* Tabs List */}
+          <TabsList className="flex space-x-2  p-2 rounded-lg mb-6 shadow">
             {exam.sections.map((section, index) => (
               <TabsTrigger
                 value={section._id}
                 key={section._id}
                 onClick={() => setIndexSection(index)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               >
                 {section.name}
               </TabsTrigger>
             ))}
           </TabsList>
+
+          {/* Tabs Content */}
           {exam.sections.map((section) => (
             <TabsContent value={section._id} key={section._id}>
-              <h2 className="text-2xl font-semibold mb-4">{section.name}</h2>
+              {/* Section Title */}
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                {section.name}
+              </h2>
+
+              {/* Groups */}
               {section.groups.map((group, index) => (
-                <div key={index} className="mb-6">
+                <div key={index} className="mb-8">
                   <GroupItem group={group} />
+
+                  {/* Questions */}
                   {group.questions.map((question) => (
                     <div
-                      key={question.serial} // Use unique serial as key
-                      id={`question-${question.serial}`} // Assign unique ID
-                      className="mb-6 p-4 border rounded-lg shadow-sm bg-gray-50"
+                      key={question.serial}
+                      id={`question-${question.serial}`}
+                      className="mb-6 p-4 border border-gray-200 rounded-lg shadow bg-white"
                     >
-                      <p className="mb-3 text-lg font-medium">
+                      <p className="mb-4 text-lg font-medium text-gray-900">
                         {question.serial}. {question.content}
                       </p>
                       <RadioGroup
@@ -240,19 +258,20 @@ const PracticeExamPage = () => {
                           answeredQuestions.current[question.serial] = value;
                         }}
                       >
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {question.options.map((option, oIndex) => (
                             <div
-                              className="flex items-center space-x-2"
+                              className="flex items-center space-x-3"
                               key={oIndex}
                             >
                               <RadioGroupItem
                                 value={mapOption[oIndex]}
                                 id={`${question.serial}-${mapOption[oIndex]}`}
+                                className="cursor-pointer"
                               />
                               <Label
                                 htmlFor={`${question.serial}-${mapOption[oIndex]}`}
-                                className="cursor-pointer"
+                                className="text-gray-700 cursor-pointer"
                               >
                                 {option}
                               </Label>
@@ -264,7 +283,8 @@ const PracticeExamPage = () => {
                   ))}
                 </div>
               ))}
-              {/* Previous and Next Buttons */}
+
+              {/* Navigation Buttons */}
               <div
                 className={`flex mt-8 ${
                   indexSection !== 0 ? "justify-between" : "justify-end"
@@ -273,18 +293,15 @@ const PracticeExamPage = () => {
                 {indexSection !== 0 && (
                   <Button
                     onClick={handlePrevious}
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black"
+                    className="px-6 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
                   >
                     Previous
                   </Button>
                 )}
-
                 {indexSection < exam.sections.length - 1 && (
                   <Button
                     onClick={handleNext}
-                    className={`px-4 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black ${
-                      indexSection === 0 ? "" : ""
-                    }`}
+                    className="px-6 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
                   >
                     Next
                   </Button>
@@ -296,7 +313,7 @@ const PracticeExamPage = () => {
       </div>
 
       {/* Sidebar: Question Tracker */}
-      <div className="w-64 hidden lg:block sticky top-4 self-start">
+      <div className="w-64 hidden lg:block sticky top-6 self-start space-y-6">
         <Counter onSubmit={onSubmit} counter={countRef.current} />
         <QuestionTracker
           answeredQuestionsRef={answeredQuestions.current}

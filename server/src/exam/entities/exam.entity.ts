@@ -25,13 +25,7 @@ export class Exam {
   @Prop()
   sectionCount: number;
 
-  @Prop({
-    default: () => {
-      const date = new Date();
-      date.setHours(date.getHours() + 7); // Cộng 7 giờ
-      return date;
-    },
-  })
+  @Prop({ default: Date.now })
   createAt: Date;
 }
 

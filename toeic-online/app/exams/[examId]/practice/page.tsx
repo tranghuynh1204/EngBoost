@@ -32,7 +32,6 @@ const PracticeExamPage = () => {
   const selectedTime = Number(searchParams.get("time"));
   const countRef = useRef(0);
   const startTime = new Date();
-  startTime.setHours(startTime.getHours() + 7);
   const [exam, setExam] = useState<Exam | null>(null);
   const answeredQuestions = useRef<Record<string, string>>({});
   const [indexSection, setIndexSection] = useState<number>(0);

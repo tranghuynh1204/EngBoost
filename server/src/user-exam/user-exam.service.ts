@@ -175,7 +175,6 @@ export class UserExamService {
 
   async analytics(userId: string, days: number) {
     const startDate = new Date();
-    startDate.setHours(startDate.getHours() + 7);
     startDate.setDate(startDate.getDate() - days);
     const result: {
       [key: string]: {
@@ -209,7 +208,7 @@ export class UserExamService {
       })
       .populate('exam', 'category')
       .exec();
-
+    console.log(userExams);
     for (const userExam of userExams) {
       // 1. Khởi tạo category trong result nếu chưa tồn tại
       const category = userExam.exam.category;

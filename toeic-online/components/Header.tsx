@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import { Button } from "./ui/button";
 import { RootState } from "@/lib/store/store";

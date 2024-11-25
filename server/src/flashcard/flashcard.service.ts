@@ -67,12 +67,9 @@ export class FlashcardService {
         },
       },
       {
-        $skip:
-          Number.isInteger(currentPage - 1) && Number.isInteger(pageSize)
-            ? (currentPage - 1) * pageSize
-            : 0,
+        $skip: (currentPage - 1) * pageSize,
       },
-      { $limit: pageSize > 0 && Number.isInteger(pageSize) ? pageSize : 10 },
+      { $limit: Number(pageSize) },
     ]);
 
     return {

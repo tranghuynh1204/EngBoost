@@ -231,7 +231,7 @@ const PracticeExamPage = () => {
                 value={section._id}
                 key={section._id}
                 onClick={() => setIndexSection(index)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
               >
                 {section.name}
               </TabsTrigger>
@@ -306,7 +306,7 @@ const PracticeExamPage = () => {
                 {indexSection !== 0 && (
                   <Button
                     onClick={handlePrevious}
-                    className="px-6 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                    className="px-6 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black transition"
                   >
                     Previous
                   </Button>
@@ -314,7 +314,7 @@ const PracticeExamPage = () => {
                 {indexSection < exam.sections.length - 1 && (
                   <Button
                     onClick={handleNext}
-                    className="px-6 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                    className="px-6 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black transition"
                   >
                     Next
                   </Button>

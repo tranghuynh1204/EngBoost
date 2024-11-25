@@ -8,10 +8,13 @@ interface GroupItemProps {
 
 export const GroupItem = ({ group }: GroupItemProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Audio Player */}
       {group.audio && (
-        <audio controls className="w-full bg-gray-100 rounded-md p-2">
+        <audio
+          controls
+          className="w-full bg-gray-50 rounded-lg p-2 shadow border border-gray-200"
+        >
           <source src={group.audio} type="audio/mpeg" />
           Your browser does not support the audio element.
         </audio>
@@ -19,14 +22,14 @@ export const GroupItem = ({ group }: GroupItemProps) => {
 
       {/* Image */}
       {group.image && (
-        <div className="relative w-full h-64 rounded-lg overflow-hidden shadow">
+        <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-md border">
           <Image
             src={group.image}
             layout="intrinsic"
             width="500"
             height="0"
             sizes="100vw"
-            className="h-auto mb-4"
+            className="object-cover"
             alt="Group Image"
             loading="lazy"
           />
@@ -36,7 +39,7 @@ export const GroupItem = ({ group }: GroupItemProps) => {
       {/* Document Text */}
       {group.documentText && (
         <div
-          className="bg-white p-4 rounded-lg shadow text-gray-800"
+          className="bg-white p-4 rounded-lg shadow border text-gray-800"
           dangerouslySetInnerHTML={{ __html: group.documentText }}
         ></div>
       )}
@@ -44,7 +47,7 @@ export const GroupItem = ({ group }: GroupItemProps) => {
       {/* Transcript */}
       {group.transcript && (
         <div
-          className="bg-gray-100 p-4 rounded-lg shadow text-gray-800"
+          className="bg-gray-100 p-4 rounded-lg shadow border text-gray-800"
           dangerouslySetInnerHTML={{ __html: group.transcript }}
         ></div>
       )}

@@ -10,14 +10,14 @@ import Link from "next/link";
 
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
   const tab = searchParams.get("tab");
   const currentTab = tab || "toeic";
 
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [offset, setOffset] = useState<number>(0);
-  const limit = 10; // Số lượng bài thi mỗi lần tải
+  // Số lượng bài thi mỗi lần tải
 
   // Cấu hình Axios
 
@@ -26,8 +26,7 @@ const ExamPage: React.FC = () => {
     async function fetchExamData(
       category: string,
       title: string,
-      currentPage: number,
-      pageSize: number
+      currentPage: number
     ) {
       setLoading(true);
       setError(null);
@@ -39,7 +38,7 @@ const ExamPage: React.FC = () => {
               category,
               title,
               currentPage,
-              pageSize,
+              pageSize: 2,
             },
           }
         );
@@ -55,22 +54,8 @@ const ExamPage: React.FC = () => {
       }
     }
 
-    fetchExamData("", "", 1, 10);
-  }, [currentTab, offset]);
-
-  // Xử lý tìm kiếm
-  const handleSearch = (newOffset: number = 0) => {
-    setOffset(newOffset);
-  };
-
-  // Xử lý phân trang
-  const handleNextPage = () => {
-    setOffset(offset + limit);
-  };
-
-  const handlePrevPage = () => {
-    setOffset(Math.max(offset - limit, 0));
-  };
+    fetchExamData("", "", page);
+  }, [currentTab]);
 
   if (!exams) {
     return;
@@ -136,34 +121,6 @@ const ExamPage: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Pagination Controls */}
-        {!loading && exams.length > 0 && (
-          <div className="flex justify-center mt-8 space-x-4">
-            <button
-              onClick={handlePrevPage}
-              disabled={offset === 0}
-              className={`px-5 py-2 rounded-md text-white ${
-                offset === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } transition-colors duration-200`}
-            >
-              Trước
-            </button>
-            <button
-              onClick={handleNextPage}
-              disabled={exams.length < limit}
-              className={`px-5 py-2 rounded-md text-white ${
-                exams.length < limit
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } transition-colors duration-200`}
-            >
-              Tiếp theo
-            </button>
-          </div>
-        )}
       </main>
     </div>
   );

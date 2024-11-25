@@ -59,99 +59,132 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
     }
   };
   return (
-    <div className="flex space-x-4">
-      <div>
-        <div>
-          <span> {vocabulary.word}</span>
-          {vocabulary.partOfSpeech && <span> ({vocabulary.partOfSpeech})</span>}
-          {vocabulary.pronunciation && <span> {vocabulary.pronunciation}</span>}
-
-          <span>
-            <button onClick={() => togglePlayPause(ukAudioRef.current)}>
+    <div className="flex flex-col space-y-4 p-4 border rounded-lg shadow-sm bg-white">
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+        <div className="flex-1">
+          <div className="text-lg font-semibold">
+            {vocabulary.word}
+            {vocabulary.partOfSpeech && (
+              <span className="ml-2 text-gray-500">
+                ({vocabulary.partOfSpeech})
+              </span>
+            )}
+          </div>
+          {vocabulary.pronunciation && (
+            <div className="text-gray-600">
+              Pronunciation: {vocabulary.pronunciation}
+            </div>
+          )}
+          <div className="flex items-center space-x-4 mt-2">
+            <button
+              className="flex items-center space-x-2 hover:text-primary"
+              onClick={() => togglePlayPause(ukAudioRef.current)}
+            >
+              <Volume2 className="w-4 h-4" />
+              <span>UK</span>
               <audio preload="none" ref={ukAudioRef}>
                 <source
                   src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=1`}
                 />
               </audio>
-              <Volume2 />
             </button>
-            <span>UK</span>
-          </span>
-          <span>
-            <button onClick={() => togglePlayPause(usAudioRef.current)}>
+            <button
+              className="flex items-center space-x-2 hover:text-primary"
+              onClick={() => togglePlayPause(usAudioRef.current)}
+            >
+              <Volume2 className="w-4 h-4" />
+              <span>US</span>
               <audio preload="none" ref={usAudioRef}>
                 <source
                   src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=2`}
                 />
               </audio>
-              <Volume2 />
             </button>
-            <span>US</span>
-          </span>
-
-          {owner && (
-            <button
-              onClick={() => {
-                dispatch(
-                  openModal({
-                    type: "UpdateVocabulary",
-                    data: { vocabulary },
-                  })
-                );
-              }}
-            >
-              chỉnh sửa
-            </button>
-          )}
-        </div>
-        <div>Định nghĩa:</div>
-        <textarea defaultValue={vocabulary.mean}></textarea>
-        {vocabulary.example && (
-          <div>
-            <div>Ví dụ:</div>
-            <textarea defaultValue={vocabulary.example}></textarea>
           </div>
-        )}
-        {vocabulary.notes && (
-          <div>
-            <div>Ghi chú:</div>
-            <textarea defaultValue={vocabulary.notes}></textarea>
+        </div>
+        {vocabulary.image && (
+          <div className="w-32 h-32 flex-shrink-0">
+            <Image
+              src={vocabulary.image}
+              width={128}
+              height={128}
+              alt="Vocabulary illustration"
+              className="rounded-md"
+            />
           </div>
         )}
       </div>
-      {vocabulary.image && (
+      <div>
+        <div className="font-medium">Definition:</div>
+        <textarea
+          className="w-full border h-20 rounded-md p-2 mt-1 text-sm"
+          defaultValue={vocabulary.mean}
+          readOnly
+        />
+      </div>
+      {vocabulary.example && (
         <div>
-          <Image
-            src={vocabulary.image}
-            width={500}
-            height={500}
-            alt="Picture of the author"
+          <div className="font-medium">Example:</div>
+          <textarea
+            className="w-full h-22 border rounded-md p-2 mt-1 text-sm"
+            defaultValue={vocabulary.example}
+            readOnly
           />
         </div>
       )}
-      <div>
-        {owner && (
+      {vocabulary.notes && (
+        <div>
+          <div className="font-medium">Notes:</div>
+          <textarea
+            className="w-full h-20 border rounded-md p-2 mt-1 text-sm"
+            defaultValue={vocabulary.notes}
+            readOnly
+          />
+        </div>
+      )}
+      {owner && (
+        <div className="flex justify-between items-center mt-4">
+          <button
+            className="text-primary hover:underline"
+            onClick={() =>
+              dispatch(
+                openModal({
+                  type: "UpdateVocabulary",
+                  data: { vocabulary },
+                })
+              )
+            }
+          >
+            Edit
+          </button>
           <AlertDialog>
-            <AlertDialogTrigger disabled={deleting}>Xoá</AlertDialogTrigger>
+            <AlertDialogTrigger
+              className="text-red-600 hover:underline"
+              disabled={deleting}
+            >
+              Delete
+            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Bạn có chắc là muốn xoá từ vựng này không?
-                </AlertDialogTitle>
+                <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Từ vựng sau khi bị xoá sẽ không thể khôi phục lại
+                  Are you sure you want to delete this vocabulary? This action
+                  cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={onClickDelete}>
-                  OK
+                <AlertDialogAction
+                  className="bg-red-600 text-white"
+                  onClick={onClickDelete}
+                >
+                  {deleting ? "Deleting..." : "Delete"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

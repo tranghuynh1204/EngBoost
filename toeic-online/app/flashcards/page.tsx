@@ -1,14 +1,17 @@
 "use client";
 import { FlashcardItem } from "@/components/flashcard/flashcard-item";
 import { PaginationCustom } from "@/components/pagination-custom";
+import { openModal } from "@/lib/store/modal-slice";
 import { Flashcard } from "@/types";
 import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const FlashcardPage = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>();
   const router = useRouter();
+  const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const page = Number(searchParams.get("page")) || 1;
@@ -46,7 +49,17 @@ const FlashcardPage = () => {
 
   return (
     <div>
-      <button>tạo list từ</button>
+      <button
+        onClick={() =>
+          dispatch(
+            openModal({
+              type: "CreateFlashcard",
+            })
+          )
+        }
+      >
+        tạo list từ
+      </button>
       {flashcards && flashcards.length > 0 && (
         <div>
           {flashcards.map((flashcard) => (

@@ -34,14 +34,16 @@ const FlashcardIdPage = () => {
             },
           }
         );
+        console.log(response);
         setFlashcard(response.data);
       } catch (error: any) {
+        console.log(error);
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
       }
     };
-
+    console.log(flashcardId);
     if (flashcardId) {
       fetchFlashcard();
     }
@@ -50,41 +52,47 @@ const FlashcardIdPage = () => {
     return <div>Loading</div>;
   }
   return (
-    <div>
-      <div>
-        <span>FlashCards:{flashcard.title}</span>
-        <span>
+    <div className="p-4 sm:p-8">
+      <div className="mb-6">
+        <div className="text-xl font-bold text-primary mb-2">
+          Flashcard: {flashcard.title}
+        </div>
+        <div className="flex gap-4">
           <Button
-            onClick={() => {
+            className="bg-primary hover:bg-primary-dark"
+            onClick={() =>
               dispatch(
                 openModal({
                   type: "UpdateFlashcard",
                   data: { flashcard },
                 })
-              );
-            }}
+              )
+            }
           >
-            Chỉnh sửa
+            Edit
           </Button>
-        </span>
-        <span>
           <Button
-            onClick={() => {
+            className="bg-secondary hover:bg-secondary-dark"
+            onClick={() =>
               dispatch(
                 openModal({
                   type: "CreateVocabulary",
                   data: { vocabulary: { flashcard } },
                   isReload: true,
                 })
-              );
-            }}
+              )
+            }
           >
-            Thêm từ mới
+            Add Vocabulary
           </Button>
-        </span>
+        </div>
       </div>
-      {flashcard.description && <div>{flashcard.description}</div>}
-      <div>List có {flashcard.vocabularyCount} từ</div>
+      {flashcard.description && (
+        <div className="mb-6 text-gray-600">{flashcard.description}</div>
+      )}
+      <div className="mb-6 text-gray-700">
+        Vocabulary Count: {flashcard.vocabularyCount}
+      </div>
       <VocabularyContainer owner={flashcard.owner} />
     </div>
   );

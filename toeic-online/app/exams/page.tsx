@@ -7,17 +7,20 @@ import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 import { Exam } from "@/types";
 import Link from "next/link";
+import { PaginationCustom } from "@/components/pagination-custom";
 
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
   const tab = searchParams.get("tab");
   const currentTab = tab || "toeic";
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [offset, setOffset] = useState<number>(0);
-  const limit = 10; // Số lượng bài thi mỗi lần tải
+  // Số lượng bài thi mỗi lần tải
 
   // Cấu hình Axios
 
@@ -26,8 +29,7 @@ const ExamPage: React.FC = () => {
     async function fetchExamData(
       category: string,
       title: string,
-      currentPage: number,
-      pageSize: number
+      currentPage: number
     ) {
       setLoading(true);
       setError(null);
@@ -39,12 +41,15 @@ const ExamPage: React.FC = () => {
               category,
               title,
               currentPage,
-              pageSize,
+              pageSize: 10,
             },
           }
         );
         if (response.data && Array.isArray(response.data.data)) {
-          setExams(response.data.data); // Use response.data.data for the array of exams
+          setExams(response.data.data);
+          setCurrentPage(response.data.currentPage);
+          setTotalPages(response.data.totalPages);
+          // Use response.data.data for the array of exams
         } else {
           setExams([]);
         }
@@ -55,113 +60,55 @@ const ExamPage: React.FC = () => {
       }
     }
 
-    fetchExamData("", "", 1, 10);
-  }, [currentTab, offset]);
-
-  // Xử lý tìm kiếm
-  const handleSearch = (newOffset: number = 0) => {
-    setOffset(newOffset);
-  };
-
-  // Xử lý phân trang
-  const handleNextPage = () => {
-    setOffset(offset + limit);
-  };
-
-  const handlePrevPage = () => {
-    setOffset(Math.max(offset - limit, 0));
-  };
+    fetchExamData("", "", page);
+  }, [currentTab]);
 
   if (!exams) {
     return;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50">
+      <main className="container mx-auto px-6 py-8">
         {/* Page Title */}
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <h1 className="text-4xl font-extrabold text-gray-800 text-center mb-8">
           Danh sách Đề Thi
         </h1>
 
-        {/* Exams Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {/* Content */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {loading ? (
-            // Loading Indicator
             <div className="col-span-full flex justify-center items-center">
-              <svg
-                className="animate-spin h-10 w-10 text-blue-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-primary border-opacity-75"></div>
             </div>
           ) : error ? (
-            // Error Message
-            <div className="col-span-full text-center text-red-500">
+            <div className="col-span-full text-center text-red-600">
               {error}
             </div>
           ) : exams.length > 0 ? (
-            // Exam Cards
             exams.map((exam) => (
               <Link
                 key={exam._id}
                 href={`/exams/${exam._id}`}
-                className="block bg-[#FAF0E6] rounded-md shadow-sm p-4 hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                className="block"
               >
                 <ExamCard exam={exam} />
               </Link>
             ))
           ) : (
-            // No Exams Found
             <div className="col-span-full text-center text-gray-500">
               Không có đề thi nào.
             </div>
           )}
         </div>
 
-        {/* Pagination Controls */}
-        {!loading && exams.length > 0 && (
-          <div className="flex justify-center mt-8 space-x-4">
-            <button
-              onClick={handlePrevPage}
-              disabled={offset === 0}
-              className={`px-5 py-2 rounded-md text-white ${
-                offset === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } transition-colors duration-200`}
-            >
-              Trước
-            </button>
-            <button
-              onClick={handleNextPage}
-              disabled={exams.length < limit}
-              className={`px-5 py-2 rounded-md text-white ${
-                exams.length < limit
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } transition-colors duration-200`}
-            >
-              Tiếp theo
-            </button>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <PaginationCustom
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
           </div>
         )}
       </main>

@@ -44,20 +44,14 @@ const ProfilePage: React.FC = () => {
         );
         setUser(response.data);
       } catch (error: any) {
-        console.error("Failed to fetch profile:", error);
-        if (error.response?.status === 401) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          dispatch(setIsLogin(false));
-          router.push("/login");
-        }
+        router.push("/login");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserProfile();
-  }, [isLogin, dispatch, router]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -125,14 +119,6 @@ const ProfilePage: React.FC = () => {
               className="mt-2 block w-full rounded-lg bg-[rgb(250,240,230)] border border-[rgb(185,180,199)] text-[rgb(53,47,68)] focus:ring-[rgb(92,84,112)] focus:border-[rgb(92,84,112)]"
             />
           </div>
-        </div>
-        <div className="mt-8 flex justify-center">
-          <Button
-            onClick={handleLogout}
-            className="w-full bg-[rgb(53,47,68)] hover:bg-[rgb(92,84,112)] text-[rgb(250,240,230)] font-semibold py-3 px-6 rounded-lg shadow-md"
-          >
-            Logout
-          </Button>
         </div>
       </div>
     </div>

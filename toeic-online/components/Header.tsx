@@ -5,8 +5,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { redirect } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { Button } from "./ui/button";
 import { RootState } from "@/lib/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -75,6 +74,7 @@ const Header = () => {
     };
   }, []);
   const logout = () => {
+    router.push("/exams");
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     dispatch(setIsLogin(false));
@@ -94,7 +94,6 @@ const Header = () => {
             alt="Logo"
             width={40}
             height={40}
-            priority // Tải logo sớm hơn
           />
         </Link>
       </div>

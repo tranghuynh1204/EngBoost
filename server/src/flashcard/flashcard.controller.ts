@@ -43,7 +43,7 @@ export class FlashcardController {
   ) {
     const effectivePage = currentPage || 1;
     const effectivePageSize = pageSize || 10;
-    return this.flashcardService.search(
+    return this.flashcardService.searchByUser(
       user.sub,
       effectivePage,
       effectivePageSize,
@@ -54,7 +54,7 @@ export class FlashcardController {
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
   findAll(@User() user) {
-    return this.flashcardService.findAll(user.sub);
+    return this.flashcardService.findAllByUser(user.sub);
   }
 
   @Roles(Role.USER)

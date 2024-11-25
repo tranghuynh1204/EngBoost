@@ -4,11 +4,12 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import {
-  redirect,
   useParams,
+  usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
+
 import { Exam, mapOption } from "@/types"; // Define your types accordingly
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
@@ -18,8 +19,6 @@ import QuestionTracker from "@/components/question-tracker";
 import { GroupItem } from "@/components/group/group-item";
 import { HightLightControl } from "@/components/hight-light-control";
 import { Counter } from "@/components/counter";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store/store";
 interface ChildComponentRef {
   callMe: (serial: string) => void;
 }
@@ -36,11 +35,11 @@ const PracticeExamPage = () => {
   const [indexSection, setIndexSection] = useState<number>(0);
   const childRef = useRef<ChildComponentRef>(null);
   const router = useRouter();
-  const isLogin = useSelector((state: RootState) => state.data.isLogin);
+  const pathname = usePathname();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (countRef.current === selectedTime) {
+      if (countRef.current === selectedTime && selectedTime !== 0) {
         onSubmit();
       }
       countRef.current += 1;
@@ -56,11 +55,19 @@ const PracticeExamPage = () => {
           {
             id: examId,
             sectionIds,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
+              "Content-Type": "application/json",
+            },
           }
         );
         setExam(response.data);
-      } catch (error) {
-        console.log("Error fetching practice session data:", error);
+      } catch (error: any) {
+        if (error.response.status === 401) {
+          router.replace(`/login?next=${pathname}?${searchParams}`);
+        }
       }
     };
 
@@ -97,35 +104,33 @@ const PracticeExamPage = () => {
     };
     fetchData();
   }, []);
+  const handleTabClose = async (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts`,
+        {
+          exam: examId,
+          answers: answeredQuestions.current,
+          sections: sectionIds,
+          duration: countRef.current,
+          startTime,
+          selectedTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.log("Error submitting answers:", error);
+    }
+  };
 
   useEffect(() => {
-    const handleTabClose = async (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts`,
-          {
-            exam: examId,
-            answers: answeredQuestions.current,
-            sections: sectionIds,
-            duration: countRef.current,
-            startTime,
-            selectedTime,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } catch (error) {
-        console.log("Error submitting answers:", error);
-      }
-    };
-
     window.addEventListener("beforeunload", handleTabClose);
-
     return () => {
       window.removeEventListener("beforeunload", handleTabClose);
     };
@@ -161,7 +166,7 @@ const PracticeExamPage = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`, // Replace with dynamic token if necessary
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
         }
@@ -184,10 +189,6 @@ const PracticeExamPage = () => {
     setIndexSection((prev) => prev - 1);
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
-
-  if (isLogin === false) {
-    return redirect("/login");
-  }
 
   if (!exam || loading) {
     return <div>Loading...</div>;

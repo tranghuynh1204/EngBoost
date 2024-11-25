@@ -1,6 +1,6 @@
 "use client";
 import { RootState } from "@/lib/store/store";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
@@ -17,6 +17,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
@@ -26,7 +32,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
-import { ok } from "assert";
 
 const formSchema = z.object({
   word: z.string().min(2, { message: "Từ mới phải có ít nhất 2 ký tự." }),
@@ -59,7 +64,6 @@ export const UpdateVocabularyModal = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
     const formData = new FormData();
 
     if (values.file) {
@@ -75,16 +79,18 @@ export const UpdateVocabularyModal = () => {
     formData.append("image", values.image);
 
     try {
-      const response = await axios.patch(
+      setIsSubmitting(true);
+      await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/vocabularies/${vocabulary?._id}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
+
       form.reset({
         word: "",
         mean: "",
@@ -96,16 +102,26 @@ export const UpdateVocabularyModal = () => {
         file: undefined,
       });
       dispatch(closeModal());
+      window.location.reload();
     } catch (error) {
       console.error("API Error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    form.setValue("word", vocabulary?.word ?? "");
+    form.setValue("mean", vocabulary?.mean ?? "");
+    form.setValue("partOfSpeech", vocabulary?.partOfSpeech ?? "");
+    form.setValue("pronunciation", vocabulary?.pronunciation ?? "");
+    form.setValue("notes", vocabulary?.notes ?? "");
+    form.setValue("example", vocabulary?.example ?? "");
+    form.setValue("image", vocabulary?.image ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vocabulary]);
   return (
     <Dialog
-      open={false}
+      open={isModalOpen}
       onOpenChange={() => {
         dispatch(closeModal());
       }}
@@ -148,84 +164,95 @@ export const UpdateVocabularyModal = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="image"
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormItem>
-                  <FormLabel>Ảnh</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...fieldProps}
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) =>
-                        onChange(event.target.files && event.target.files[0])
-                      }
-                    />
-                  </FormControl>
+            <Accordion type="single" collapsible className="border-2 px-2">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="border-2">
+                  Thêm phiên âm, ví dụ, ảnh, ghi chú ...
+                </AccordionTrigger>
+                <AccordionContent>
+                  <FormField
+                    control={form.control}
+                    name="file"
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    render={({ field: { value, onChange, ...fieldProps } }) => (
+                      <FormItem>
+                        <FormLabel>Ảnh</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...fieldProps}
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) =>
+                              onChange(
+                                event.target.files && event.target.files[0]
+                              )
+                            }
+                          />
+                        </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="partOfSpeech"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Từ loại</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="partOfSpeech"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Từ loại</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pronunciation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phiên âm</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pronunciation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phiên âm</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="example"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ví dụ</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="example"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ví dụ</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ghi chú</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             <Button type="submit" disabled={isSubmitting}>
               Submit
             </Button>

@@ -20,6 +20,8 @@ import {
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { useDispatch } from "react-redux";
+import { useRouter, useSearchParams } from "next/navigation";
+import { setIsLogin } from "@/lib/store/data-slice";
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -29,10 +31,11 @@ const formSchema = z.object({
 });
 
 const LoginPage = () => {
+  // const searchParams = useSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
+  // const next = searchParams.get("next");
+  const router = useRouter();
   const dispatch = useDispatch();
-
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,6 +55,10 @@ const LoginPage = () => {
       const { access_token, refresh_token } = response.data;
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
+      dispatch(setIsLogin(true));
+      const next = window.location.href.split("next=")[1] || "exams";
+      router.push(next);
+
       toast({
         title: "Đăng nhập thành công!",
         description: "Bạn đã đăng nhập thành công.",
@@ -103,7 +110,7 @@ const LoginPage = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="password" type="password" {...field} />
+                    <Input placeholder="password" type="text" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

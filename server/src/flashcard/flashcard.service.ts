@@ -28,11 +28,15 @@ export class FlashcardService {
     return newFlashcard.save();
   }
 
-  async findAll(userId: string) {
+  async findAllByUser(userId: string) {
     return await this.flashcardModel.find({ user: userId });
   }
 
-  async search(userId: string, currentPage: number = 1, pageSize: number = 10) {
+  async searchByUser(
+    userId: string,
+    currentPage: number = 1,
+    pageSize: number = 10,
+  ) {
     const totalFlashcards = await this.flashcardModel
       .countDocuments({ user: userId })
       .exec();
@@ -109,8 +113,8 @@ export class FlashcardService {
     if (!flashcard) {
       throw new NotFoundException('Không tìm thấy list từ vựng');
     }
-    if (flashcard.user.toString() !== userId) {
-      throw new ForbiddenException('List từ vựng này không thuộc về bạn');
+    if (flashcard.user.toString() === userId) {
+      flashcard.owner = true;
     }
     return flashcard;
   }

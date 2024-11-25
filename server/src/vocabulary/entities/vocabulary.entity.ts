@@ -15,14 +15,14 @@ export class Vocabulary {
   @Prop()
   image: string;
 
-  @Prop({ type: [String], maxlength: 10 }) // Tối đa 10 câu ví dụ
-  examples: string[];
+  @Prop()
+  example: string;
 
   @Prop()
   notes: string;
 
   @Prop()
-  Pronunciation: string;
+  pronunciation: string;
 
   @Prop()
   partOfSpeech: string;

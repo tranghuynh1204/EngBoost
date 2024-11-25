@@ -59,11 +59,15 @@ export class ExamController {
     );
   }
 
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard)
   @Get(':id/solutions')
   async findSolutions(@Param('id') id: string): Promise<Exam> {
     return this.examService.findSolutions(id);
   }
 
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard)
   @Get(':id/parts/:sectionId/solutions')
   async findSolution(
     @Param('id') id: string,
@@ -73,7 +77,7 @@ export class ExamController {
   }
 
   @Roles(Role.USER)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post('/practice')
   async getPractice(
     @Body('id') id: string,

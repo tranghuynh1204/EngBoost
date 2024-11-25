@@ -104,12 +104,14 @@ const ExamIdPage = () => {
               >
                 Thông tin đề thi
               </TabsTrigger>
-              <TabsTrigger
-                value="2"
-                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
-              >
-                Đáp án Transcript
-              </TabsTrigger>
+              {isLogin && (
+                <TabsTrigger
+                  value="2"
+                  className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
+                >
+                  Đáp án Transcript
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 

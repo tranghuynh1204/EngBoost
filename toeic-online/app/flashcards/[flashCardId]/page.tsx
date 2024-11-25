@@ -37,7 +37,6 @@ const FlashcardIdPage = () => {
         console.log(response);
         setFlashcard(response.data);
       } catch (error: any) {
-        console.log(error);
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }

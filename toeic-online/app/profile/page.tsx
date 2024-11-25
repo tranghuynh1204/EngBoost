@@ -53,13 +53,6 @@ const ProfilePage: React.FC = () => {
     fetchUserProfile();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    dispatch(setIsLogin(false));
-    router.push("/login");
-  };
-
   if (loading) {
     return <Loading />;
   }

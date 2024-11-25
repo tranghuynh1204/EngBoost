@@ -2,6 +2,7 @@ import { Exam } from "@/types";
 import { Clock, MessageSquare, Layers, HelpCircle } from "lucide-react";
 import { AiOutlineComment } from "react-icons/ai";
 import { GiSpellBook } from "react-icons/gi";
+import { FiUsers } from "react-icons/fi";
 interface ExamCardProps {
   exam: Exam; // Define exam as the prop
 }
@@ -32,19 +33,25 @@ const ExamCard = ({ exam }: ExamCardProps) => {
       </div>
       {/* Sections and Questions */}
       <div className="grid grid-cols-2 gap-4 text-gray-600 text-sm mb-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <GiSpellBook className="w-4 h-4 text-blue-400" />
           <span>
             <span className="font-semibold">Sections:</span> {exam.sectionCount}
           </span>
         </div>
-        <div className="flex items-center space-x-2">
-          <HelpCircle className="w-4 h-4 text-red-500" />
+        <div className="flex items-center space-x-1">
+          <HelpCircle width={200} className="w-4 h-4 text-red-500" />
           <span>
-            <span className="font-semibold">Questions:</span>{" "}
+            <span className="font-semibold">Questions:</span>
             {exam.questionCount}
           </span>
         </div>
+      </div>
+      <div className="flex items-center space-x-2">
+        <FiUsers className="w-4 h-4 mb-2 text-blue-400" />
+        <span>
+          <span> {exam.userCount}</span>
+        </span>
       </div>
       {/* Category */}
       <div className="text-gray-600 text-sm text-center">

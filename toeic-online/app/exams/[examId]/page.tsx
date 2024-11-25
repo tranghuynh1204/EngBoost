@@ -24,6 +24,9 @@ import {
 } from "@/components/ui/select"; // Assume you have a Select component
 import { RootState } from "@/lib/store/store";
 import { useSelector } from "react-redux";
+import { CommentContainer } from "@/components/comment/comment-container";
+import Loading from "@/components/loading";
+import NotFound from "@/components/not-found";
 const ExamIdPage = () => {
   const params = useParams();
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
@@ -31,15 +34,18 @@ const ExamIdPage = () => {
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("0");
+  const [isLoading, setIsLoading] = useState<boolean>();
   useEffect(() => {
     const fetchExam = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/exams/${params.examId}`
         );
         setExam(response.data);
-      } catch (error) {
-        console.error("Error fetching exam data:", error);
+      } catch {
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -71,13 +77,11 @@ const ExamIdPage = () => {
     }
   };
 
-  // Show a loading state if exam data is not yet available
+  if (isLoading) {
+    return <Loading />;
+  }
   if (!exam) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-xl text-gray-500">Loading...</div>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (
@@ -300,6 +304,7 @@ const ExamIdPage = () => {
             </div>
           </TabsContent>
         </Tabs>
+        <CommentContainer />
       </div>
     </div>
   );

@@ -6,26 +6,38 @@ import { openModal } from "@/lib/store/modal-slice";
 import { formatTime, UserExamResult } from "@/types";
 import axios from "axios";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   CheckCircleIcon,
   XCircleIcon,
   ClockIcon,
-  CircleStackIcon,
   MinusCircleIcon,
 } from "@heroicons/react/24/solid";
 import { GiSpellBook } from "react-icons/gi";
+import { CommentContainer } from "@/components/comment/comment-container";
+import Loading from "@/components/loading";
+import NotFound from "@/components/not-found";
 
 const UserExamIdPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const [result, setResult] = useState<UserExamResult>();
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   useEffect(() => {
     const fetchResult = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/exams/${params.examId}/result/${params.userExamId}`,
           {
@@ -36,15 +48,19 @@ const UserExamIdPage = () => {
           }
         );
         setResult(response.data);
-      } catch (error) {
-        console.error("Error fetching exam data:", error);
+      } catch (error: any) {
+        if (error.response.status === 401) {
+          router.replace(`/login?next=${pathname}?${searchParams}`);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (params.examId && params.userExamId) {
       fetchResult();
     }
-  }, [params.examId, params.userExamId]);
+  }, []);
 
   useEffect(() => {
     if (result) {
@@ -53,15 +69,11 @@ const UserExamIdPage = () => {
     }
   }, [result, dispatch]);
 
+  if (isLoading) {
+    return <Loading />;
+  }
   if (!result) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="flex flex-col items-center">
-          <CircleStackIcon className="h-10 w-10 text-blue-500 animate-spin" />
-          <p className="text-gray-500 text-lg mt-2">Loading...</p>
-        </div>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (
@@ -286,6 +298,7 @@ const UserExamIdPage = () => {
           );
         })}
       </div>
+      <CommentContainer />
     </div>
   );
 };

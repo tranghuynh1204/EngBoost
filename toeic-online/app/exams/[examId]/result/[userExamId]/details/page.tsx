@@ -1,17 +1,29 @@
 "use client";
+import Loading from "@/components/loading";
+import NotFound from "@/components/not-found";
 import { SolutionItem } from "@/components/solution/solution-item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserExam } from "@/types";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const DetailResultPage = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const [userExam, setUserExam] = useState<UserExam>();
+  const [isLoading, setIsLoading] = useState<boolean>();
   useEffect(() => {
     const fetchResult = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/exams/${params.examId}/result/${params.userExamId}/details`,
           {
@@ -22,17 +34,24 @@ const DetailResultPage = () => {
           }
         );
         setUserExam(response.data);
-      } catch (error) {
-        console.error("Error fetching exam data:", error);
+      } catch (error: any) {
+        if (error.response.status === 401) {
+          router.replace(`/login?next=${pathname}?${searchParams}`);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (params.examId && params.userExamId) {
       fetchResult();
     }
-  }, [params.examId, params.userExamId]);
+  }, []);
+  if (isLoading) {
+    return <Loading />;
+  }
   if (!userExam) {
-    return null;
+    return <NotFound />;
   }
   return (
     <div className="p-6 bg-gray-50 min-h-screen">

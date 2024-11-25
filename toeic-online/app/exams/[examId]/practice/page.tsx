@@ -19,12 +19,14 @@ import QuestionTracker from "@/components/question-tracker";
 import { GroupItem } from "@/components/group/group-item";
 import { HightLightControl } from "@/components/hight-light-control";
 import { Counter } from "@/components/counter";
+import Loading from "@/components/loading";
+import NotFound from "@/components/not-found";
 interface ChildComponentRef {
   callMe: (serial: string) => void;
 }
 const PracticeExamPage = () => {
   const { examId } = useParams();
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const sectionIds = useSearchParams().getAll("sectionId");
   const selectedTime = Number(searchParams.get("time"));
@@ -47,9 +49,11 @@ const PracticeExamPage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
   useEffect(() => {
     const fetchPracticeSession = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
           {
@@ -65,9 +69,10 @@ const PracticeExamPage = () => {
         );
         setExam(response.data);
       } catch (error: any) {
-        if (error.response.status === 401) {
+        if (error.response?.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
+        setIsLoading(false);
       }
     };
 
@@ -77,9 +82,8 @@ const PracticeExamPage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDraft = async () => {
       try {
-        setLoading(true);
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts/get`,
           {
@@ -96,14 +100,21 @@ const PracticeExamPage = () => {
         );
         const data = response.data;
         if (data) {
-          answeredQuestions.current = response.data.answers;
-          countRef.current = response.data.duration;
+          answeredQuestions.current = data.answers;
+          countRef.current = data.duration;
         }
-        setLoading(false);
-      } catch {}
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    fetchData();
-  }, []);
+
+    if (exam) {
+      fetchDraft();
+    }
+  }, [exam]);
+
   const handleTabClose = async (event: BeforeUnloadEvent) => {
     event.preventDefault();
     try {
@@ -155,7 +166,6 @@ const PracticeExamPage = () => {
   // Handler for submitting answers
   const onSubmit = async () => {
     try {
-      console.log(examId);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/user-exams`,
         {
@@ -191,8 +201,11 @@ const PracticeExamPage = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
 
-  if (!exam || loading) {
-    return <div>Loading...</div>;
+  if (isLoading) {
+    return <Loading />;
+  }
+  if (!exam) {
+    return <NotFound />;
   }
 
   return (
@@ -312,8 +325,7 @@ const PracticeExamPage = () => {
         </Tabs>
       </div>
 
-      {/* Sidebar: Question Tracker */}
-      <div className="w-64 hidden lg:block sticky top-6 self-start space-y-6">
+      <div className="w-64 hidden lg:block sticky top-20 self-start space-y-6">
         <Counter onSubmit={onSubmit} counter={countRef.current} />
         <QuestionTracker
           answeredQuestionsRef={answeredQuestions.current}

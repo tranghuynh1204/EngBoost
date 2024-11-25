@@ -21,6 +21,7 @@ import { RootState } from "@/lib/store/store";
 import ChevronUpIcon from "@heroicons/react/24/solid/ChevronUpIcon";
 import ChevronDownIcon from "@heroicons/react/24/solid/ChevronDownIcon";
 import { ReplyIcon } from "lucide-react";
+import Image from "next/image";
 export interface CommentItemProps {
   id: string;
   user: {
@@ -77,7 +78,7 @@ export const CommentItem = memo(
         {/* User Information */}
         <div className="flex items-start space-x-4">
           {/* User Avatar */}
-          <img
+          <Image
             src={`https://i.pinimg.com/736x/12/4f/41/124f41d139c139f8c0a9e323c94176ca.jpg`}
             alt="User Avatar"
             className="w-10 h-10 rounded-full"

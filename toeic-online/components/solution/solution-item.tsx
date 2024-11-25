@@ -8,21 +8,32 @@ interface SolutionItemProps {
 
 export const SolutionItem = ({ groups }: SolutionItemProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {groups.map((group, index) => (
-        <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <div
+          key={index}
+          className="bg-white p-6 rounded-lg shadow-lg border border-gray-200"
+        >
           {/* Group Content */}
           <GroupItem group={group} />
 
           {/* Questions and Solutions */}
-          <div className="mt-4">
+          <div className="mt-6">
             {group.questions.map((question) => (
-              <div key={question.serial} className="mb-4">
-                <div className="flex items-center mb-1">
-                  <span className="font-semibold mr-2">{question.serial}.</span>
-                  <span className="text-lg">
-                    Đáp án đúng là: {question.correctAnswer}
+              <div
+                key={question.serial}
+                className="mb-6 p-4 rounded-md bg-gray-50 shadow-sm border border-gray-100"
+              >
+                <div className="flex items-start space-x-4">
+                  <span className="font-bold text-lg text-blue-600">
+                    {question.serial}.
                   </span>
+                  <p className="text-gray-800">
+                    Đáp án đúng là:{" "}
+                    <span className="font-semibold text-green-600">
+                      {question.correctAnswer}
+                    </span>
+                  </p>
                 </div>
               </div>
             ))}

@@ -39,7 +39,7 @@ const DetailResultPage = () => {
       {/* Page Header */}
       <div className="text-2xl font-bold text-gray-800 mb-4">
         Đáp án/Transcript:{" "}
-        <span className="text-indigo-600">{userExam.exam.title}</span>
+        <span className="text-blue-600">{userExam.exam.title}</span>
       </div>
 
       {/* Tabs Component */}
@@ -51,7 +51,7 @@ const DetailResultPage = () => {
               <TabsTrigger
                 value={section.name}
                 key={index}
-                className="text-sm font-medium text-gray-600 px-4 py-2 rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
               >
                 {section.name}
               </TabsTrigger>

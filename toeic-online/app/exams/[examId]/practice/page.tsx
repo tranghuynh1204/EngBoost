@@ -31,7 +31,8 @@ const PracticeExamPage = () => {
   const sectionIds = useSearchParams().getAll("sectionId");
   const selectedTime = Number(searchParams.get("time"));
   const countRef = useRef(0);
-  const startTime = new Date().toISOString();
+  const startTime = new Date();
+  startTime.setHours(startTime.getHours() + 7);
   const [exam, setExam] = useState<Exam | null>(null);
   const answeredQuestions = useRef<Record<string, string>>({});
   const [indexSection, setIndexSection] = useState<number>(0);
@@ -182,7 +183,6 @@ const PracticeExamPage = () => {
           },
         }
       );
-      console.log(response.data);
       router.push(`result/${response.data._id}`);
     } catch (error) {
       console.log("Error submitting answers:", error);

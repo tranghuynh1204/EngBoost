@@ -17,7 +17,13 @@ export class Comment {
   @Prop()
   rootId: string;
 
-  @Prop({ default: Date.now })
+  @Prop({
+    default: () => {
+      const date = new Date();
+      date.setHours(date.getHours() + 7); // Cộng 7 giờ
+      return date;
+    },
+  })
   createdAt: Date;
 
   @Prop({ ref: 'Comment' })

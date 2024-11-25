@@ -50,13 +50,18 @@ export class ExamController {
     @Query('pageSize') pageSize?: number,
   ) {
     const effectivePage = currentPage || 1;
-    const effectivePageSize = pageSize || 10;
+    const effectivePageSize = pageSize || 8;
     return this.examService.searchExams(
       category,
       title,
       effectivePage,
       effectivePageSize,
     );
+  }
+
+  @Get('new')
+  async getNew() {
+    return this.examService.getNew();
   }
 
   @Roles(Role.USER)

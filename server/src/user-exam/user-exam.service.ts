@@ -175,6 +175,7 @@ export class UserExamService {
 
   async analytics(userId: string, days: number) {
     const startDate = new Date();
+    startDate.setHours(startDate.getHours() + 7);
     startDate.setDate(startDate.getDate() - days);
     const result: {
       [key: string]: {

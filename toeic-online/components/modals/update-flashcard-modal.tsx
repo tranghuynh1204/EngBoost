@@ -31,25 +31,25 @@ const formSchema = z.object({
   title: z.string().min(2, { message: "title phải có ít nhất 2 ký tự." }),
   description: z.string(),
 });
-export const CreateFlashcardModal = () => {
+export const UpdateFlashcardModal = () => {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isOpen, type } = useSelector((state: RootState) => state.modal);
-
-  const isModalOpen = isOpen && type === "CreateFlashcard";
+  const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
+  const { flashcard } = data;
+  const isModalOpen = isOpen && type === "UpdateFlashcard";
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: flashcard?.title,
+      description: flashcard?.description,
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/flashcards`,
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/flashcards/${flashcard?._id}`,
         values,
         {
           headers: {
@@ -68,7 +68,11 @@ export const CreateFlashcardModal = () => {
       setIsSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    form.setValue("title", flashcard?.title ?? "");
+    form.setValue("description", flashcard?.description ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flashcard]);
   return (
     <Dialog
       open={isModalOpen}

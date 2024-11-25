@@ -56,7 +56,9 @@ const formSchema = z.object({
 export const CreateVocabularyModal = () => {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
+  const { isOpen, data, type, isReload } = useSelector(
+    (state: RootState) => state.modal
+  );
   const { vocabulary } = data;
   const flashcardId = vocabulary?.flashcard?._id;
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
@@ -65,6 +67,7 @@ export const CreateVocabularyModal = () => {
 
   useEffect(() => {
     const fetchVocabulary = async () => {
+      console.log("ss");
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/flashcards`,
@@ -85,13 +88,14 @@ export const CreateVocabularyModal = () => {
         setCreateFlashCard(true);
       }
     };
-    if (!flashcardId) {
+    if (!flashcardId && isModalOpen) {
       fetchVocabulary();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen]);
   useEffect(() => {
     form.setValue("word", vocabulary?.word ?? "");
+    form.setValue("flashcard", flashcardId ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vocabulary]);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -179,6 +183,9 @@ export const CreateVocabularyModal = () => {
         file: undefined,
       });
       dispatch(closeModal());
+      if (isReload) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("API Error:", error);
     } finally {
@@ -204,18 +211,19 @@ export const CreateVocabularyModal = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div>
-              {flashcards && (
+              {flashcards && !flashcardId && (
                 <Button
                   onClick={() => {
                     setCreateFlashCard(!createFlashCard);
                   }}
                   type="button"
                 >
-                  + Tạo mới
+                  + Tạo list từ mới
                 </Button>
               )}
             </div>
             <div>
+              {flashcardId && <div>List từ: {vocabulary.flashcard?.title}</div>}
               {!flashcardId && flashcards.length > 0 && !createFlashCard && (
                 <FormField
                   control={form.control}
@@ -256,7 +264,7 @@ export const CreateVocabularyModal = () => {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tạo list từ mới</FormLabel>
+                        <FormLabel>Tiêu đề</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -269,6 +277,7 @@ export const CreateVocabularyModal = () => {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel>Mô tả</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>

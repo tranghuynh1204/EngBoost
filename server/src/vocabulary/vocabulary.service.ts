@@ -13,7 +13,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Vocabulary } from './entities/vocabulary.entity';
 import { FlashcardService } from 'src/flashcard/flashcard.service';
-import { CreateFlashcardDto } from 'src/flashcard/dto/create-flashcard.dto';
+
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
@@ -100,6 +100,9 @@ export class VocabularyService {
       );
     }
     if (file) {
+      if (updateVocabularyDto.image) {
+        this.cloudinaryService.deleteFileByUrl(updateVocabularyDto.image);
+      }
       const { secure_url } = await this.cloudinaryService.uploadFile(file);
       updateVocabularyDto.image = secure_url;
     }
@@ -120,6 +123,10 @@ export class VocabularyService {
 
     if (vocabulary.flashcard.user.toString() !== userId) {
       throw new ForbiddenException(`Bạn không có quyền xóa vocabulary này`);
+    }
+
+    if (vocabulary.image) {
+      this.cloudinaryService.deleteFileByUrl(vocabulary.image);
     }
 
     return this.vocabularyModel.findByIdAndDelete(id).exec();

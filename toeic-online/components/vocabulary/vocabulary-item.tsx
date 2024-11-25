@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Divide, Volume2 } from "lucide-react";
+import { Divide, Edit3, Trash2, Volume2 } from "lucide-react";
 
 interface VocabularyItemProps {
   owner: boolean;
@@ -59,25 +59,21 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
     }
   };
   return (
-    <div className="flex flex-col space-y-4 p-4 border rounded-lg shadow-sm bg-white">
-      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+    <div className="p-4 mb-4 border border-[rgb(185,180,199)] rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow">
+      {/* Header: Word, Part of Speech, and Audio */}
+      <div className="flex justify-between items-center">
         <div className="flex-1">
-          <div className="text-lg font-semibold">
+          <div className="text-lg font-bold text-[rgb(53,47,68)]">
             {vocabulary.word}
             {vocabulary.partOfSpeech && (
-              <span className="ml-2 text-gray-500">
+              <span className="text-sm text-[rgb(92,84,112)]">
                 ({vocabulary.partOfSpeech})
               </span>
             )}
           </div>
-          {vocabulary.pronunciation && (
-            <div className="text-gray-600">
-              Pronunciation: {vocabulary.pronunciation}
-            </div>
-          )}
-          <div className="flex items-center space-x-4 mt-2">
+          <div className="flex items-center space-x-4 mt-2 text-gray-600">
             <button
-              className="flex items-center space-x-2 hover:text-primary"
+              className="text-[rgb(92, 84, 112)] hover:text-[rgb(92,84,112)] flex items-center"
               onClick={() => togglePlayPause(ukAudioRef.current)}
             >
               <Volume2 className="w-4 h-4" />
@@ -89,7 +85,7 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
               </audio>
             </button>
             <button
-              className="flex items-center space-x-2 hover:text-primary"
+              className="text-[rgb(92, 84, 112)] hover:text-[rgb(92,84,112)] flex items-center"
               onClick={() => togglePlayPause(usAudioRef.current)}
             >
               <Volume2 className="w-4 h-4" />
@@ -103,49 +99,47 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
           </div>
         </div>
         {vocabulary.image && (
-          <div className="w-32 h-32 flex-shrink-0">
-            <Image
-              src={vocabulary.image}
-              width={128}
-              height={128}
-              alt="Vocabulary illustration"
-              className="rounded-md"
-            />
-          </div>
+          <Image
+            src={vocabulary.image}
+            width={250}
+            height={250}
+            alt="Vocabulary"
+            className="rounded-md object-cover"
+          />
         )}
       </div>
-      <div>
-        <div className="font-medium">Definition:</div>
-        <textarea
-          className="w-full border h-20 rounded-md p-2 mt-1 text-sm"
-          defaultValue={vocabulary.mean}
-          readOnly
-        />
+
+      {/* Word + Definition (Compact Line) */}
+      <div className="mt-4">
+        <div className="flex items-center space-x-4">
+          <div className="flex-1 text-sm">
+            <div className="font-medium text-gray-900">
+              <strong>{vocabulary.word}: </strong>
+              {vocabulary.mean}
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Examples (if any) */}
       {vocabulary.example && (
-        <div>
-          <div className="font-medium">Example:</div>
-          <textarea
-            className="w-full h-22 border rounded-md p-2 mt-1 text-sm"
-            defaultValue={vocabulary.example}
-            readOnly
-          />
+        <div className="mt-2 text-sm text-[rgb(185, 180, 199)]">
+          <strong>Example:</strong> {vocabulary.example}
         </div>
       )}
+
+      {/* Notes (if any) */}
       {vocabulary.notes && (
-        <div>
-          <div className="font-medium">Notes:</div>
-          <textarea
-            className="w-full h-20 border rounded-md p-2 mt-1 text-sm"
-            defaultValue={vocabulary.notes}
-            readOnly
-          />
+        <div className="mt-2 text-sm text-[rgb(185,180,199)]">
+          <strong>Note:</strong> {vocabulary.notes}
         </div>
       )}
+
+      {/* Actions: Edit and Delete */}
       {owner && (
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-end items-center mt-4 space-x-4">
           <button
-            className="text-primary hover:underline"
+            className="flex items-center space-x-1 text-blue-600 hover:underline"
             onClick={() =>
               dispatch(
                 openModal({
@@ -155,14 +149,16 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
               )
             }
           >
-            Edit
+            <Edit3 className="w-4 h-4" />
+            <span>Edit</span>
           </button>
           <AlertDialog>
             <AlertDialogTrigger
-              className="text-red-600 hover:underline"
+              className="flex items-center space-x-1 text-red-600 hover:underline"
               disabled={deleting}
             >
-              Delete
+              <Trash2 className="w-4 h-4" />
+              <span>Delete</span>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>

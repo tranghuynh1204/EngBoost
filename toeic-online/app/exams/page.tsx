@@ -41,7 +41,7 @@ const ExamPage: React.FC = () => {
               category,
               title,
               currentPage,
-              pageSize: 10,
+              pageSize: 8,
             },
           }
         );

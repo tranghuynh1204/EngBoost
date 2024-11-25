@@ -304,8 +304,8 @@ const ExamIdPage = () => {
             </div>
           </TabsContent>
         </Tabs>
-        <CommentContainer />
       </div>
+      <CommentContainer />
     </div>
   );
 };

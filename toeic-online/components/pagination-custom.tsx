@@ -88,7 +88,7 @@ export const PaginationCustom = ({
                 id="page"
                 type="number"
                 min={0}
-                defaultValue={page}
+                defaultValue={currentPage}
                 onChange={(e) => {
                   setPage(Number(e.target.value));
                 }}

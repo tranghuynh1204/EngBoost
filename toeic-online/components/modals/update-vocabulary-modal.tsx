@@ -49,7 +49,6 @@ export const UpdateVocabularyModal = () => {
   const { isOpen, data, type } = useSelector((state: RootState) => state.modal);
   const { vocabulary } = data;
   const isModalOpen = isOpen && type === "UpdateVocabulary";
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

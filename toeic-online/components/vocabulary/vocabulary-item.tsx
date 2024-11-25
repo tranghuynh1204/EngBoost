@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import Image from "next/image";
 import { openModal } from "@/lib/store/modal-slice";
@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Divide, Volume2 } from "lucide-react";
 
 interface VocabularyItemProps {
   owner: boolean;
@@ -23,6 +24,8 @@ interface VocabularyItemProps {
 export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
   const [deleting, setDeleting] = useState(false);
   const dispatch = useDispatch();
+  const ukAudioRef = useRef<HTMLAudioElement | null>(null);
+  const usAudioRef = useRef<HTMLAudioElement | null>(null);
   const onClickDelete = async () => {
     try {
       // thêm dùm cái hỏi có chắc là xoá kh
@@ -42,12 +45,50 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
       setDeleting(false);
     }
   };
+  const togglePlayPause = (audio: HTMLAudioElement | null) => {
+    try {
+      if (audio) {
+        if (audio.paused) {
+          audio.play().catch();
+        } else {
+          audio.pause(); // Nếu đang phát, tạm dừng
+        }
+      }
+    } catch {
+      console.log("a");
+    }
+  };
   return (
     <div className="flex space-x-4">
       <div>
         <div>
-          {vocabulary.word} ({vocabulary.partOfSpeech})
-          {vocabulary.pronunciation}
+          <span> {vocabulary.word}</span>
+          {vocabulary.partOfSpeech && <span> ({vocabulary.partOfSpeech})</span>}
+          {vocabulary.pronunciation && <span> {vocabulary.pronunciation}</span>}
+
+          <span>
+            <button onClick={() => togglePlayPause(ukAudioRef.current)}>
+              <audio preload="none" ref={ukAudioRef}>
+                <source
+                  src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=1`}
+                />
+              </audio>
+              <Volume2 />
+            </button>
+            <span>UK</span>
+          </span>
+          <span>
+            <button onClick={() => togglePlayPause(usAudioRef.current)}>
+              <audio preload="none" ref={usAudioRef}>
+                <source
+                  src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=2`}
+                />
+              </audio>
+              <Volume2 />
+            </button>
+            <span>US</span>
+          </span>
+
           {owner && (
             <button
               onClick={() => {
@@ -65,8 +106,18 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
         </div>
         <div>Định nghĩa:</div>
         <textarea defaultValue={vocabulary.mean}></textarea>
-        <div>Ví dụ:</div>
-        <textarea defaultValue={vocabulary.example}></textarea>
+        {vocabulary.example && (
+          <div>
+            <div>Ví dụ:</div>
+            <textarea defaultValue={vocabulary.example}></textarea>
+          </div>
+        )}
+        {vocabulary.notes && (
+          <div>
+            <div>Ghi chú:</div>
+            <textarea defaultValue={vocabulary.notes}></textarea>
+          </div>
+        )}
       </div>
       {vocabulary.image && (
         <div>

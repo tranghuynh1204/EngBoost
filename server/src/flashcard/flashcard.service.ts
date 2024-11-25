@@ -63,6 +63,7 @@ export class FlashcardService {
           _id: 1,
           title: 1,
           vocabularyCount: 1,
+          description: 1,
         },
       },
       {

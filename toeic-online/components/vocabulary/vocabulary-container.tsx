@@ -1,7 +1,7 @@
 import { Vocabulary } from "@/types";
 import axios from "axios";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { VocabularyItem } from "./vocabulary-item";
 import { PaginationCustom } from "../pagination-custom";
 
@@ -10,9 +10,9 @@ interface VocabularyContainerProps {
 }
 export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
   const { flashcardId } = useParams();
-  const page = Number(useSearchParams().get("page"));
+  const page = Number(useSearchParams().get("page")) || 1;
 
-  const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
+  const [vocabularies, setVocabularies] = useState<Vocabulary[]>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -23,7 +23,7 @@ export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
         {
           params: {
             currentPage: page,
-            pageSize: 1,
+            pageSize: 10,
           },
 
           headers: {
@@ -45,7 +45,7 @@ export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
   }, [flashcardId]);
 
   if (!vocabularies) {
-    return null;
+    return <div>Không có từ vựng nào</div>;
   }
   return (
     <div>

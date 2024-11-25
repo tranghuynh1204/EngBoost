@@ -129,6 +129,14 @@ const Header = () => {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger
+              onClick={() => router.push("/flashcards")}
+              className="cursor-pointer font-semibold"
+            >
+              Flashcard
+            </NavigationMenuTrigger>
+          </NavigationMenuItem>
         </NavigationMenuList>
         <NavigationMenuViewport />
       </NavigationMenu>
@@ -153,7 +161,13 @@ const Header = () => {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Trang cá nhân</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push("/profile");
+                }}
+              >
+                Profile
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

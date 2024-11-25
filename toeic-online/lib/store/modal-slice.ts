@@ -37,13 +37,13 @@ export const modalSlice = createSlice({
       state,
       action: PayloadAction<{
         type: ModalType;
-        data: ModalData;
+        data?: ModalData;
         isReload?: boolean;
       }>
     ) => {
       state.isOpen = true;
       state.type = action.payload.type;
-      state.data = action.payload.data;
+      state.data = action.payload.data || {};
       state.isReload = action.payload.isReload || false;
     },
     closeModal: (state) => {

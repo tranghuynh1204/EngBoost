@@ -20,7 +20,7 @@ import {
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { useDispatch } from "react-redux";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { setIsLogin } from "@/lib/store/data-slice";
 
 const formSchema = z.object({

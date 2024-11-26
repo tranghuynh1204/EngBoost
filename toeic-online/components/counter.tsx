@@ -4,8 +4,9 @@ import { formatTime } from "@/types";
 interface CounterProps {
   onSubmit: () => void;
   counter: number;
+  isSubmit: boolean;
 }
-export const Counter = ({ onSubmit, counter }: CounterProps) => {
+export const Counter = ({ onSubmit, counter, isSubmit }: CounterProps) => {
   const [count, setCount] = useState(counter);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,6 +25,7 @@ export const Counter = ({ onSubmit, counter }: CounterProps) => {
       <div className="mb-6">
         <Button
           onClick={onSubmit}
+          disabled={isSubmit}
           className="w-full flex items-center justify-center px-4 py-2 border border-white bg-black text-white rounded-lg shadow hover:bg-gray-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           Nộp bài

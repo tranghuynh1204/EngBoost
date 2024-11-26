@@ -38,6 +38,7 @@ const PracticeExamPage = () => {
   const childRef = useRef<ChildComponentRef>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const [isSubmit, setIsSubmit] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -166,6 +167,7 @@ const PracticeExamPage = () => {
   // Handler for submitting answers
   const onSubmit = async () => {
     try {
+      setIsSubmit(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/user-exams`,
         {
@@ -185,6 +187,8 @@ const PracticeExamPage = () => {
       router.push(`result/${response.data._id}`);
     } catch (error) {
       console.log("Error submitting answers:", error);
+    } finally {
+      setIsSubmit(false);
     }
   };
 
@@ -325,7 +329,11 @@ const PracticeExamPage = () => {
       </div>
 
       <div className="w-64 hidden lg:block sticky top-20 self-start space-y-6">
-        <Counter onSubmit={onSubmit} counter={countRef.current} />
+        <Counter
+          onSubmit={onSubmit}
+          isSubmit={isSubmit}
+          counter={countRef.current}
+        />
         <QuestionTracker
           answeredQuestionsRef={answeredQuestions.current}
           ref={childRef}

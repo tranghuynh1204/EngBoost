@@ -52,11 +52,16 @@ const LoginPage = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         values
       );
-      const { access_token, refresh_token } = response.data;
+      const { access_token, refresh_token, userId } = response.data;
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("userId", userId);
+
       dispatch(setIsLogin(true));
       const next = window.location.href.split("next=")[1] || "exams";
+      if (next === "") {
+        router.push("/");
+      }
       router.push(next);
 
       toast({

@@ -1,6 +1,6 @@
 import { Comment } from "@/types";
 import axios from "axios";
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CommentItem } from "./comment-item";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

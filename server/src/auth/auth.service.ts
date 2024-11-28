@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { Types } from 'mongoose';
 @Injectable()
 export class AuthService {
   constructor(
@@ -17,7 +18,11 @@ export class AuthService {
   async signIn(
     email: string,
     password: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  ): Promise<{
+    access_token: string;
+    refresh_token: string;
+    userId: Types.ObjectId;
+  }> {
     const user = await this.userService.findOne(email);
     if (!user) {
       throw new NotFoundException('Không tìm thấy người dùng');
@@ -37,6 +42,7 @@ export class AuthService {
         secret: process.env.REFRESH_JWT_SECRET_KEY,
         expiresIn: process.env.REFRESH_JWT_EXPIRATION_TIME,
       }),
+      userId: payload.sub,
     };
   }
   async refreshToken(

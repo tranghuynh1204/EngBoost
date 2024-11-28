@@ -1,5 +1,4 @@
-import { formatTime, UserExam } from "@/types";
-import { formatDate } from "@/utils/dateUtils";
+import { formatDate, formatTime, UserExam } from "@/types";
 import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -27,7 +26,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           `${process.env.NEXT_PUBLIC_API_URL}/user-exams/exam/${examId}`,
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzJmODVlNzA1MmY2YjhjM2QxODhkN2YiLCJuYW1lIjoibm9hZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJ1c2VyIiwibW9kZXJhdG9yIl0sImlhdCI6MTczMjAzMDI2MywiZXhwIjoxNzMyNjM1MDYzfQ.mz-2rj4azAsW_vYmmtRFkItTzZhpO-W_DCEYvctdJ3Q`,
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
           }
         );

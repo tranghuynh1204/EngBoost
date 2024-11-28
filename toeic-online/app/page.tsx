@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from "axios";
 import { Exam, UserExam } from "@/types";
 import ExamCard from "@/components/exam/exam-card";
 import UserExamCard from "@/components/user-exam-card";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 const Home = () => {
   const [recentlyAttemptedExams, setRecentlyAttemptedExams] = useState<
@@ -25,9 +26,7 @@ const Home = () => {
           }
         );
         setRecentlyAttemptedExams(response.data || []);
-      } catch (error) {
-        console.error("Error fetching recently attempted exams:", error);
-      }
+      } catch (error) {}
     };
 
     const fetchRecentlyCreatedExams = async () => {
@@ -47,7 +46,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-[rgb(251,249,241)]">
-      {/* Welcome Section */}
+      <ChatWidget />
       <header className="bg-gradient-to-r from-[rgb(146,199,207)] to-[rgb(170,215,217)] text-[rgb(53,47,68)] py-12">
         <div className="container mx-auto px-6 lg:px-12 text-center">
           <h1 className="text-4xl lg:text-6xl font-bold mb-4">Welcome Back!</h1>
@@ -63,7 +62,6 @@ const Home = () => {
           </Link>
         </div>
       </header>
-
       {/* Recently Attempted Exams */}
       <section className="py-12 bg-[rgb(229,225,218)]">
         <div className="container mx-auto px-6 lg:px-12">
@@ -89,7 +87,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
       {/* Recently Created Exams */}
       <section className="py-12 bg-[rgb(251,249,241)]">
         <div className="container mx-auto px-6 lg:px-12">
@@ -115,7 +112,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
       {/* Quick Links Section */}
       <section className="py-12 bg-[rgb(229,225,218)]">
         <div className="container mx-auto px-6 lg:px-12">
@@ -159,7 +155,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
       {/* Call to Action */}
       <section className="py-12 bg-gradient-to-r from-[rgb(146,199,207)] to-[rgb(170,215,217)] text-[rgb(53,47,68)] text-center">
         <div className="container mx-auto px-6 lg:px-12">

@@ -155,3 +155,9 @@ export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   return format(date, "dd/MM/yyyy HH:mm:ss");
 };
+
+export interface Statistical {
+  total: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[];
+}

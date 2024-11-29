@@ -73,7 +73,6 @@ const PracticeExamPage = () => {
         if (error.response?.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
-        setIsLoading(false);
       }
     };
 

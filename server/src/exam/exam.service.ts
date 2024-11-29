@@ -124,6 +124,33 @@ export class ExamService {
     );
   }
 
+  async statistics() {
+    const result = await this.examModel.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          category: '$_id',
+          count: 1,
+        },
+      },
+    ]);
+
+    const data = result.map((item) => ({
+      key: item.category,
+      value: item.count,
+    }));
+
+    const total = result.reduce((sum, item) => sum + item.count, 0);
+
+    return { total, data };
+  }
+
   async gradeExam(userExamId: string, userId: string) {
     const userExam = await this.userExamService.findOne(userExamId, userId);
     if (!userExam) {

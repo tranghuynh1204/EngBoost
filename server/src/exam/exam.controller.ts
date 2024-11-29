@@ -90,6 +90,10 @@ export class ExamController {
   ) {
     return this.examService.getPractice(id, sectionIds);
   }
+  @Get('statistics')
+  async examStatistics() {
+    return this.examService.statistics();
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Exam> {

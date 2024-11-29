@@ -25,9 +25,12 @@ import { setIsLogin } from "@/lib/store/data-slice";
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  email: z.string().min(2, {
-    message: "Invalid email format",
-  }),
+  email: z
+    .string()
+    .min(2, {
+      message: "Invalid email format",
+    })
+    .email(),
   password: z.string(),
 });
 

@@ -19,7 +19,7 @@ const DetailResultPage = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [userExam, setUserExam] = useState<UserExam>();
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchResult = async () => {
       try {

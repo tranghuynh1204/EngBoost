@@ -186,9 +186,8 @@ const PracticeExamPage = () => {
       );
       router.push(`result/${response.data._id}`);
     } catch (error) {
-      console.log("Error submitting answers:", error);
-    } finally {
       setIsSubmit(false);
+      console.log("Error submitting answers:", error);
     }
   };
 

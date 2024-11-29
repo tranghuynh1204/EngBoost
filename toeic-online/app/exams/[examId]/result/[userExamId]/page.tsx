@@ -32,7 +32,7 @@ const UserExamIdPage = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [result, setResult] = useState<UserExamResult>();
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchResult = async () => {

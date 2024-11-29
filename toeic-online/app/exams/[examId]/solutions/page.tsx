@@ -20,7 +20,7 @@ const SolutionsPage = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchExam = async () => {
       try {

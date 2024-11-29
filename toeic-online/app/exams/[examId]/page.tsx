@@ -34,7 +34,7 @@ const ExamIdPage = () => {
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("0");
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchExam = async () => {
       try {

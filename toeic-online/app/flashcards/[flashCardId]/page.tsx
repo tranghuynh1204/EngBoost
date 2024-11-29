@@ -22,7 +22,7 @@ const FlashcardIdPage = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { flashcardId } = useParams();
 

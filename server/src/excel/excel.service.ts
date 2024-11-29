@@ -3,11 +3,23 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 @Injectable()
 export class ExcelService {
-  async readFile(file: any): Promise<any[]> {
+  async readFile(file: any): Promise<Record<string, any[]>> {
     try {
       const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      return XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      // Khởi tạo đối tượng chứa dữ liệu từ tất cả các sheet
+      const sheetsData: Record<string, any[]> = {};
+
+      // Duyệt qua từng sheet trong workbook
+      workbook.SheetNames.forEach((sheetName) => {
+        const worksheet = workbook.Sheets[sheetName];
+
+        // Chuyển sheet thành JSON
+        const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // 'header: 1' trả về mảng
+        sheetsData[sheetName] = data;
+      });
+
+      return sheetsData;
     } catch {
       throw new HttpException('Lỗi khi đọc file Excel', HttpStatus.BAD_REQUEST);
     }
@@ -24,11 +36,11 @@ export class ExcelService {
       questionCount: 0,
     };
 
-    // Đọc thông tin tiêu đề, thời gian thi, và loại bài thi
-    exam.title = jsonData[0][1]; // Tiêu đề
-    exam.duration = Number(jsonData[1][1]); // Thời gian thi
-    exam.category = jsonData[2][1]; // Loại bài thi
-
+    const firstSheetName = Object.keys(jsonData)[0];
+    const firstSheetData = jsonData[firstSheetName];
+    exam.title = firstSheetData[0][1];
+    exam.duration = Number(firstSheetData[1][1]);
+    exam.category = firstSheetData[2][1];
     if (!exam.title) {
       throw new HttpException(
         'Tiêu đề không được để trống.',
@@ -53,116 +65,117 @@ export class ExcelService {
     let mapTagQuestion = null;
     let mapQuestion = null;
 
-    let i = 6; // Khởi tạo biến đếm cho hàng bắt đầu từ hàng thứ 6
+    for (let i = 1; i < Object.keys(jsonData).length; i++) {
+      const sheetName = Object.keys(jsonData)[i];
+      const sheetData = jsonData[sheetName];
 
-    // Vòng lặp while để kiểm tra hàng rỗng và lặp qua dữ liệu
-    while (jsonData[i].length !== 0) {
-      const row = jsonData[i];
+      // Vòng lặp while để kiểm tra hàng rỗng và lặp qua dữ liệu
+      for (let j = 1; j < sheetData.length; j++) {
+        const row = sheetData[j];
 
-      // Kiểm tra nếu hàng là tiêu đề phần thi
-      if (row[0]) {
-        if (currentSection) {
-          if (!currentSection.name) {
-            throw new HttpException(
-              'Phần thi phải có tên',
-              HttpStatus.BAD_REQUEST,
-            );
+        // Kiểm tra nếu hàng là tiêu đề phần thi
+        if (row[0]) {
+          if (currentSection) {
+            if (!currentSection.name) {
+              throw new HttpException(
+                'Phần thi phải có tên',
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+            if (currentSection.questionCount === 0) {
+              throw new HttpException(
+                'Phần thi có ít nhất 1 câu hỏi',
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+            exam.sectionCount++;
+            exam.questionCount += currentSection.questionCount;
+            exam.sections.push(currentSection); // Thêm phần thi trước đó vào danh sách
           }
-          if (currentSection.questionCount === 0) {
-            throw new HttpException(
-              'Phần thi có ít nhất 1 câu hỏi',
-              HttpStatus.BAD_REQUEST,
-            );
-          }
-          exam.sectionCount++;
-          exam.questionCount += currentSection.questionCount;
-          exam.sections.push(currentSection); // Thêm phần thi trước đó vào danh sách
-        }
 
-        // Khởi tạo phần thi mới
-        currentSection = {
-          name: row[0],
-          category: row[1],
-          tags: [],
-          groups: [],
-          questionCount: 0,
-        };
-        currentGroup = null;
-        if (mapTagQuestion) {
-          mapTagQuestion.forEach((value, key) => {
-            value.forEach((serial) => {
-              mapQuestion.get(serial).tags.push(key);
+          // Khởi tạo phần thi mới
+          currentSection = {
+            name: row[0],
+            category: row[1],
+            tags: [],
+            groups: [],
+            questionCount: 0,
+          };
+          currentGroup = null;
+          if (mapTagQuestion) {
+            mapTagQuestion.forEach((value, key) => {
+              value.forEach((serial) => {
+                mapQuestion.get(serial).tags.push(key);
+              });
             });
-          });
+          }
+          mapQuestion = new Map();
+          mapTagQuestion = new Map();
         }
-        mapQuestion = new Map();
-        mapTagQuestion = new Map();
-      }
-      if (row[2]) {
-        currentSection.tags.push(row[2]);
-        if (!row[3]) {
-          throw new HttpException(
-            'Tồn tại 1 tag không có câu hỏi nào.',
-            HttpStatus.BAD_REQUEST,
+        if (row[2]) {
+          currentSection.tags.push(row[2]);
+          if (!row[3]) {
+            throw new HttpException(
+              'Tồn tại 1 tag không có câu hỏi nào.',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          mapTagQuestion.set(
+            row[2],
+            typeof row[3] === 'string'
+              ? row[3].split(' ')
+              : [row[3].toString()],
           );
         }
-
-        mapTagQuestion.set(
-          row[2],
-          typeof row[3] === 'string' ? row[3].split(' ') : [row[3].toString()],
-        );
-      }
-      if (row[12] || row[13] || row[14]) {
-        currentGroup = {
-          documentText: row[12],
-          audio: row[13],
-          image: row[14],
-          transcript: row[15],
-          questions: [],
-        };
-        currentSection.groups.push(currentGroup);
-      }
-      if (currentSection) {
-        const question = {
-          serial: row[4],
-          content: row[5], // Câu hỏi
-          options: [row[6], row[7], row[8], row[9]].filter(
-            (x) => x !== null && x !== undefined,
-          ),
-          correctAnswer: row[10],
-          answerExplanation: row[11],
-          tags: [],
-        };
-        mapQuestion.set(row[4].toString(), question);
-
-        if (!question.serial) {
-          throw new HttpException(
-            'Số thứ tự không được để trống.',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        if (!question.correctAnswer) {
-          throw new HttpException(
-            'Đáp án đúng không được để trống.',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        if (!currentGroup) {
+        if (row[12] || row[13] || row[14]) {
           currentGroup = {
+            documentText: row[12],
+            audio: row[13],
+            image: row[14],
+            transcript: row[15],
             questions: [],
           };
           currentSection.groups.push(currentGroup);
         }
-        currentSection.questionCount++;
-        currentGroup.questions.push(question);
+        if (currentSection) {
+          const question = {
+            serial: row[4],
+            content: row[5], // Câu hỏi
+            options: [row[6], row[7], row[8], row[9]].filter(
+              (x) => x !== null && x !== undefined,
+            ),
+            correctAnswer: row[10],
+            answerExplanation: row[11],
+            tags: [],
+          };
+          mapQuestion.set(row[4].toString(), question);
+
+          if (!question.serial) {
+            throw new HttpException(
+              'Số thứ tự không được để trống.',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          if (!question.correctAnswer) {
+            throw new HttpException(
+              'Đáp án đúng không được để trống.',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          if (!currentGroup) {
+            currentGroup = {
+              questions: [],
+            };
+            currentSection.groups.push(currentGroup);
+          }
+          currentSection.questionCount++;
+          currentGroup.questions.push(question);
+        }
       }
-
-      i++;
     }
-
-    // Thêm phần thi cuối cùng nếu có
     if (currentSection) {
       exam.sectionCount++;
       exam.questionCount += currentSection.questionCount;

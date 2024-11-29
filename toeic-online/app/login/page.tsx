@@ -4,7 +4,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button"; // Adjust the path based on your setup
-import { Input } from "@/components/ui/input";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,6 +22,7 @@ import { toast } from "@/hooks/use-toast";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { setIsLogin } from "@/lib/store/data-slice";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   email: z.string().min(2, {

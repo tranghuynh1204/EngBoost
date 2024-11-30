@@ -62,10 +62,8 @@ const LoginPage = () => {
       localStorage.setItem("userId", userId);
 
       dispatch(setIsLogin(true));
-      const next = window.location.href.split("next=")[1] || "exams";
-      if (next === "") {
-        router.push("/");
-      }
+      const next = window.location.href.split("next=")[1] || "/";
+
       router.push(next);
 
       toast({

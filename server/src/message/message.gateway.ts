@@ -22,8 +22,15 @@ export class MessageGateway {
     const recentMessages = await this.messageService.getRecentMessages(userId);
 
     client.join(userId);
+    client.emit('new_message', recentMessages);
+  }
 
-    this.server.to(userId).emit('new_message', recentMessages);
+  @SubscribeMessage('admin')
+  async handleAdminChat(@ConnectedSocket() client: Socket): Promise<void> {
+    const recentMessages = await this.messageService.getInBox();
+
+    client.join('admin');
+    client.emit('new_message', recentMessages);
   }
 
   // Gửi tin nhắn đến một phòng userId
@@ -47,5 +54,6 @@ export class MessageGateway {
     );
 
     this.server.to(userId).emit('new_message', [newMessage]);
+    this.server.to('admin').emit('new_message', newMessage);
   }
 }

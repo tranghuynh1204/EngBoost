@@ -8,28 +8,30 @@ import { EmojiPicker } from "../emoji-picker";
 import { Send } from "lucide-react";
 import { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
-import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 const formSchema = z.object({
   content: z.string().min(1),
 });
 interface ChatInputProps {
   socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
+  isAdmin: boolean;
+  userId: string;
 }
 
-export const ChatInput = ({ socket }: ChatInputProps) => {
+export const ChatInput = ({ socket, isAdmin, userId }: ChatInputProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
     },
   });
-  const userId = localStorage.getItem("userId") || "";
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (socket) {
       socket.emit("send_message", {
-        userId: userId,
+        userId,
         content: values.content,
-        isAdmin: false,
+        isAdmin,
       });
       form.reset();
     }
@@ -45,10 +47,10 @@ export const ChatInput = ({ socket }: ChatInputProps) => {
             control={form.control}
             name="content"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-full">
                 <FormControl>
-                  <div className="flex items-center space-x-2">
-                    <Textarea placeholder="Nhắn tin" {...field} />
+                  <div className="flex items-center space-x-3 w-full">
+                    <Input placeholder="Nhắn tin" {...field} />
                     <EmojiPicker
                       onChange={(emoji: string) =>
                         field.onChange(`${field.value} ${emoji}`)
@@ -61,7 +63,7 @@ export const ChatInput = ({ socket }: ChatInputProps) => {
           />
           <Button
             type="submit"
-            className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+            className="ml-2 w-14 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
           >
             <Send />
           </Button>

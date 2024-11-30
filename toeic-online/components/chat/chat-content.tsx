@@ -9,7 +9,7 @@ interface ChatContentProps {
 export const ChatContent = ({ socket }: ChatContentProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement | null>(null); // Tham chiếu đến container
-
+  const hasJoined = useRef(false);
   // Hàm cuộn xuống cuối
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -24,8 +24,10 @@ export const ChatContent = ({ socket }: ChatContentProps) => {
   useEffect(() => {
     if (socket) {
       const userId = localStorage.getItem("userId") || "";
-      socket.emit("join_chat", userId);
-
+      if (!hasJoined.current) {
+        socket.emit("join_chat", userId);
+        hasJoined.current = true;
+      }
       socket.on("new_message", (newMessage) => {
         setMessages((prevMessages) => [...prevMessages, ...newMessage]);
       });
@@ -33,7 +35,7 @@ export const ChatContent = ({ socket }: ChatContentProps) => {
         socket.off("new_message");
       };
     }
-  }, []);
+  }, [socket]);
 
   return (
     <div
@@ -41,7 +43,12 @@ export const ChatContent = ({ socket }: ChatContentProps) => {
       ref={chatContainerRef}
     >
       {messages.map((message, index) => (
-        <MessageItem key={index} {...message} />
+        <MessageItem
+          key={index}
+          timestamp={message.timestamp}
+          content={message.content}
+          isAdmin={message.isAdmin}
+        />
       ))}
     </div>
   );

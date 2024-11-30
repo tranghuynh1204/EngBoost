@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Home, Inbox } from "lucide-react";
 
 import {
   Sidebar,
@@ -11,15 +11,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 // Menu items.
 const items = [
-  {
-    title: "Home",
-    url: "",
-    icon: Home,
-  },
   {
     title: "Inbox",
     url: "inbox",
@@ -28,7 +23,7 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const [active, SetActive] = useState("Home");
+  const pathName = usePathname();
   return (
     <Sidebar>
       <SidebarContent>
@@ -36,16 +31,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem></SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathName === "/admin"}
+                  className="data-[active=true]:bg-red-500"
+                >
+                  <a href="/admin">
+                    <Home />
+                    <span>Home</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={active === item.title}
-                    onClick={() => SetActive(item.title)}
+                    isActive={pathName.includes(item.url)}
                     className="data-[active=true]:bg-red-500"
                   >
-                    <a href={item.url}>
+                    <a href={`/admin/${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
                     </a>

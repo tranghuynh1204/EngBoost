@@ -10,6 +10,11 @@ export interface Exam {
   sections: Section[];
 }
 
+export interface User {
+  _id: string;
+  name: string;
+}
+
 export interface Section {
   _id: string;
   name: string;
@@ -20,17 +25,14 @@ export interface Section {
 
 export interface Comment {
   _id: string;
-  user: {
-    _id: string;
-    name: string;
-  };
+  user: User;
   content: string;
   replies: Comment[];
   createdAt: string;
 }
 
 export interface Message {
-  user: string;
+  user: User;
   timestamp: string;
   content: string;
   isAdmin: boolean;

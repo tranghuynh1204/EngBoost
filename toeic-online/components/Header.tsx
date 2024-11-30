@@ -74,7 +74,7 @@ const Header = () => {
     };
   }, []);
   const logout = () => {
-    router.push("/exams");
+    router.push("/");
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("userId");

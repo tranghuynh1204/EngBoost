@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,6 +16,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const chartConfig = {
   value: {
@@ -29,29 +32,37 @@ const chartConfig = {
     color: "blue",
   },
 } satisfies ChartConfig;
-interface CustomBarChartProps {
-  chartData: any[];
-  title: string;
-  description: string;
-}
-export function CustomBarChart({
-  chartData,
-  title,
-  description,
-}: CustomBarChartProps) {
-  const updatedData = chartData.map((item) => ({
-    ...item,
-    fill: `var(--color-${item.key})`,
-  }));
+
+export const ExamChart = () => {
+  const [total, setTotal] = useState();
+  const [data, setData] = useState();
+  const fetchData = async () => {
+    try {
+      // Gọi API với số ngày là 7 (7 ngày gần nhất)
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/exams/statistics`
+      );
+      const updatedData = response.data.data.map((item: { key: string }) => ({
+        ...item,
+        fill: `var(--color-${item.key})`,
+      }));
+      setTotal(response.data.total);
+      setData(updatedData); // Lưu kết quả vào state
+    } catch {}
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle>Tổng số bài thi là {total}</CardTitle>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={updatedData}>
+          <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="key"
@@ -85,6 +96,7 @@ export function CustomBarChart({
           </BarChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter>Đếm bài thi theo phân loại</CardFooter>
     </Card>
   );
-}
+};

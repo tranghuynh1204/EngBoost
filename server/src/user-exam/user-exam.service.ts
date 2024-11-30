@@ -208,7 +208,6 @@ export class UserExamService {
       })
       .populate('exam', 'category')
       .exec();
-    console.log(userExams);
     for (const userExam of userExams) {
       // 1. Khởi tạo category trong result nếu chưa tồn tại
       const category = userExam.exam.category;
@@ -296,5 +295,55 @@ export class UserExamService {
     );
 
     return transformedResult;
+  }
+  async statistics(days: number) {
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - days);
+    const results = await this.userExamModel.aggregate([
+      {
+        $match: {
+          startTime: { $gt: sinceDate }, // Lọc startTime > targetDate
+        },
+      },
+      {
+        $lookup: {
+          from: 'exams', // Tên collection của bảng exam
+          localField: 'exam', // Trường khóa ngoại trong userExam
+          foreignField: '_id', // Trường khóa chính trong exam
+          as: 'examData', // Tên trường chứa dữ liệu nối
+        },
+      },
+      {
+        $unwind: '$examData', // Trải examData thành một đối tượng
+      },
+      {
+        $facet: {
+          totalSubmissions: [
+            { $count: 'total' }, // Tính tổng số bài làm
+          ],
+          groupedByCategory: [
+            {
+              $group: {
+                _id: '$examData.category', // Gom nhóm theo category từ bảng exam
+                value: { $sum: 1 }, // Đếm số bài làm trong mỗi nhóm
+              },
+            },
+            {
+              $project: {
+                key: '$_id', // Đổi tên _id thành key
+                value: 1,
+                _id: 0, // Loại bỏ _id khỏi kết quả
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    // Xử lý kết quả
+    const total = results[0].totalSubmissions[0]?.total || 0; // Tổng tất cả bài làm
+    const data = results[0].groupedByCategory || []; // Gom nhóm theo category
+
+    return { total, data };
   }
 }

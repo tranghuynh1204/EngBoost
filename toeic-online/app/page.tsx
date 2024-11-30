@@ -134,28 +134,22 @@ const Home = () => {
                 Simulate real TOEIC tests to sharpen your skills.
               </p>
             </Link>
-            <Link
-              href="/study-materials"
-              className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition"
-            >
+            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
               <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
                 Study Materials
               </h3>
               <p className="text-gray-600 mt-2">
                 Access resources for listening, reading, and grammar.
               </p>
-            </Link>
-            <Link
-              href="/vocabulary"
-              className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition"
-            >
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
               <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
                 Vocabulary Builder
               </h3>
               <p className="text-gray-600 mt-2">
                 Expand your vocabulary with interactive tools.
               </p>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -167,12 +161,9 @@ const Home = () => {
           <p className="mb-6">
             Stay consistent with your practice and watch your TOEIC score soar!
           </p>
-          <Link
-            href="/dashboard"
-            className="bg-[rgb(229,225,218)] text-[rgb(53,47,68)] px-6 py-3 rounded-lg shadow-md hover:bg-gray-200 transition-transform transform hover:scale-105"
-          >
+          <div className="bg-[rgb(229,225,218)] text-[rgb(53,47,68)] px-6 py-3 rounded-lg shadow-md hover:bg-gray-200 transition-transform transform hover:scale-105">
             Go to Dashboard
-          </Link>
+          </div>
         </div>
       </section>
     </div>

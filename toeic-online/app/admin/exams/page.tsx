@@ -5,26 +5,28 @@ import {
   CloudinaryUploadWidgetInfo,
   CloudinaryUploadWidgetResults,
 } from "next-cloudinary";
-import { useEffect, useState } from "react";
-
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useRef, useState } from "react";
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 import Spreadsheet from "react-spreadsheet";
 
 const AdminExamsPage = () => {
-  const [resources, setResources] = useState<any[]>([]);
   const [data, setData] = useState<{ value: string; readOnly: boolean }[][]>(
     []
   );
+  const editor = useRef(null);
+  const [content, setContent] = useState("Worlds best html page");
+
+  const handleChange = (value: string) => {
+    console.log(value);
+    setContent(value);
+  };
 
   return (
     <div>
       <CldUploadWidget
         signatureEndpoint="/api/sign-cloudinary-params"
         onSuccess={(result: any, { widget }) => {
-          console.log(result?.info);
-          setResources((prevResources) => [
-            ...prevResources,
-            result?.info.secure_url,
-          ]);
           setData((prevData) => [
             ...prevData,
             [
@@ -42,8 +44,19 @@ const AdminExamsPage = () => {
         }}
       </CldUploadWidget>
       <div>
-        <Spreadsheet data={data} />;
+        <Spreadsheet data={data} />
       </div>
+      <div>
+        <div>Có thể dán chữ đã định dạng, mã html đều được</div>
+        <JoditEditor
+          ref={editor}
+          value={content}
+          onChange={handleChange}
+          className="w-full h-[70%] mt-10 bg-white"
+        />
+        <style>{`.jodit-wysiwyg{height:300px !important}`}</style>
+      </div>
+      <div>{content}</div>
     </div>
   );
 };

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ExcelService } from 'src/excel/excel.service';
 import { Exam } from './entities/exam.entity';
 import { Model, Types } from 'mongoose';
@@ -7,6 +12,7 @@ import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
 import { GroupDocument } from 'src/section/entities/group.entity';
+import { Response } from 'express';
 
 @Injectable()
 export class ExamService {
@@ -514,5 +520,37 @@ export class ExamService {
     }
 
     return exam;
+  }
+
+  async export(id: string, res: Response) {
+    try {
+      // Lấy dữ liệu từ cơ sở dữ liệu
+      const exam = await this.examModel.findById(id).populate('sections');
+
+      if (!exam) {
+        throw new HttpException('Không tìm thấy bài thi', HttpStatus.NOT_FOUND);
+      }
+
+      // Chuẩn bị dữ liệu cho ExcelService
+      const data = {
+        title: exam.title,
+        duration: exam.duration,
+        category: exam.category,
+        sections: exam.sections,
+      };
+
+      // Tạo file Excel
+      const buffer = await this.excelService.export(data);
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader('Content-Disposition', `attachment;`);
+
+      res.end(buffer);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

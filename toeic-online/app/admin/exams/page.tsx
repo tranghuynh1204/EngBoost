@@ -1,12 +1,7 @@
 "use client";
-import {
-  CldImage,
-  CldUploadWidget,
-  CloudinaryUploadWidgetInfo,
-  CloudinaryUploadWidgetResults,
-} from "next-cloudinary";
+import { CldUploadWidget } from "next-cloudinary";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 import Spreadsheet from "react-spreadsheet";
 

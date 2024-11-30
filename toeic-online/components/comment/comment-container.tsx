@@ -63,7 +63,6 @@ export const CommentContainer = () => {
         setComments(response.data);
       }
     } catch (error) {
-      console.error("Error fetching comments:", error);
     } finally {
       setIsFetchingComments(false);
     }
@@ -85,7 +84,6 @@ export const CommentContainer = () => {
       setComments([response.data, ...comments]);
       form.reset();
     } catch (error) {
-      console.error("Error posting comment:", error);
     } finally {
       setIsSubmittingComment(false);
     }

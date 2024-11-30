@@ -31,16 +31,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           }
         );
         setUserExams(response.data);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          console.error(
-            "Error fetching exam data:",
-            error.response?.data.message
-          );
-        } else {
-          console.error("An unexpected error occurred:", error);
-        }
-      }
+      } catch (error: unknown) {}
     };
     fetchComments();
   }, [examId]);

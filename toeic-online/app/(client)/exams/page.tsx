@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 
+import ExamCard from "@/components/exam/exam-card";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 import { Exam } from "@/types";
 import Link from "next/link";
 import { PaginationCustom } from "@/components/pagination-custom";
-import ExamCard from "@/components/exam/exam-card";
 
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();

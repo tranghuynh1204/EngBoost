@@ -1,5 +1,5 @@
 "use client";
-import { Home, Inbox } from "lucide-react";
+import { Calendar, Upload, Home, Inbox, Search, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,6 +19,11 @@ const items = [
     title: "Inbox",
     url: "inbox",
     icon: Inbox,
+  },
+  {
+    title: "Upload Exam", // Mục mới cho việc upload bài thi
+    url: "exams",
+    icon: Upload,
   },
 ];
 

@@ -1,5 +1,4 @@
-import { Comment } from "@/types";
-import { formatDate } from "@/utils/dateUtils";
+import { Comment, formatDate } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 

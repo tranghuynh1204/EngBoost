@@ -13,6 +13,7 @@ import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UserexamdraftModule } from './userexamdraft/userexamdraft.module';
 import jwtConfig from './config/jwt.config';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -30,8 +31,9 @@ import jwtConfig from './config/jwt.config';
     VocabularyModule,
     CloudinaryModule,
     UserexamdraftModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],
 })
-export class AppModule { }
+export class AppModule {}

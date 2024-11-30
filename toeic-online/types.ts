@@ -29,6 +29,13 @@ export interface Comment {
   createdAt: string;
 }
 
+export interface Message {
+  user: string;
+  timestamp: string;
+  content: string;
+  isAdmin: boolean;
+}
+
 export interface UserExam {
   _id: string;
   exam: Exam;
@@ -142,3 +149,15 @@ export const formatTime = (seconds: number) => {
     secs < 10 ? "0" : ""
   }${secs}`;
 };
+import { format } from "date-fns";
+
+export const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return format(date, "dd/MM/yyyy HH:mm:ss");
+};
+
+export interface Statistical {
+  total: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[];
+}

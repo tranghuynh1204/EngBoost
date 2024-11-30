@@ -28,9 +28,49 @@ export class UserService {
     const createdUser = new this.userModel({
       ...createUserDto,
       password: hashedPassword,
-      roles: [Role.USER, Role.MODERATOR],
+      roles: [Role.USER],
     });
 
     return createdUser.save();
+  }
+
+  async statistics(days: number) {
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - days); // Tính ngày bắt đầu
+
+    // Thống kê người dùng theo ngày
+    const stats = await this.userModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: sinceDate }, // Lọc người dùng theo khoảng thời gian
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }, // Nhóm theo ngày
+          },
+          count: { $sum: 1 }, // Đếm số lượng người dùng
+        },
+      },
+      {
+        $sort: { _id: 1 }, // Sắp xếp theo ngày tăng dần
+      },
+    ]);
+
+    // Tính tổng số người dùng trong khoảng thời gian
+    const total = stats.reduce((sum, stat) => sum + stat.count, 0);
+
+    // Chuyển đổi dữ liệu từ MongoDB format sang đối tượng dễ đọc
+    const formattedStats = stats.map((stat) => ({
+      key: stat._id,
+      value: stat.count,
+    }));
+
+    // Trả về kết quả bao gồm tổng số người dùng và thống kê theo ngày
+    return {
+      total, // Tổng số người dùng
+      data: formattedStats, // Thống kê theo ngày
+    };
   }
 }

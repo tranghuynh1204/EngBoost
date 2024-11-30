@@ -21,7 +21,7 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Upload Exam", // Mục mới cho việc upload bài thi
+    title: "Exam", // Mục mới cho việc upload bài thi
     url: "exams",
     icon: Upload,
   },

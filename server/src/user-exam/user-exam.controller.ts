@@ -71,4 +71,9 @@ export class UserExamController {
   async analytics(@User() user, @Body('days') days: number) {
     return this.userExamService.analytics(user.sub, days);
   }
+
+  @Get('statistics')
+  async userExamStatistics(@Query('days') days: number) {
+    return this.userExamService.statistics(days);
+  }
 }

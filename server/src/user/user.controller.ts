@@ -13,7 +13,7 @@ export class UserController {
   }
 
   @Get('statistics')
-  async getUserGrowth(@Query('days') days: number) {
+  async userStatistics(@Query('days') days: number) {
     return this.userService.statistics(days);
   }
 }

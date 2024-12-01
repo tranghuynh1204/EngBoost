@@ -9,10 +9,12 @@ export class MessageService {
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
   ) {}
 
-  async getRecentMessages(userId: string) {
+  async getRecentMessages(userId: string, skip: number) {
     const messages = await this.messageModel
       .find({ user: new Types.ObjectId(userId) })
+      .skip(skip)
       .limit(15)
+      .sort({ _id: -1 })
       .exec();
     return messages;
   }

@@ -19,10 +19,32 @@ export class MessageGateway {
     @MessageBody() userId: string,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    const recentMessages = await this.messageService.getRecentMessages(userId);
+    const recentMessages = await this.messageService.getRecentMessages(
+      userId,
+      0,
+    );
 
     client.join(userId);
-    client.emit('new_message', recentMessages);
+    client.emit('old_message', recentMessages.reverse());
+  }
+
+  @SubscribeMessage('load_old')
+  async loadOld(
+    @MessageBody()
+    {
+      userId,
+      skip,
+    }: {
+      userId: string;
+      skip: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    const recentMessages = await this.messageService.getRecentMessages(
+      userId,
+      skip,
+    );
+    client.emit('old_message', recentMessages.reverse());
   }
 
   @SubscribeMessage('admin')

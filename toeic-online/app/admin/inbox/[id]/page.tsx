@@ -13,6 +13,30 @@ const InboxIdPage = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null); // Tham chiếu đến container
   const [socket, setSocket] =
     useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
+  const [loadMore, setLoadMore] = useState(false);
+  const noMore = useRef(false);
+
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop } = chatContainerRef.current;
+
+      if (scrollTop === 0 && !loadMore && !noMore.current) {
+        if (socket) {
+          setLoadMore(true);
+          socket.emit("load_old", { userId: id, skip: messages.length });
+        }
+        setLoadMore(false);
+      }
+    }
+  };
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      const { scrollTop } = chatContainerRef.current;
+      if (scrollTop !== 0) {
+        scrollToBottom();
+      }
+    }
+  }, [messages]);
   useEffect(() => {
     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
       transports: ["websocket"],
@@ -22,6 +46,12 @@ const InboxIdPage = () => {
     socket.emit("join_chat", id);
     socket.on("new_message", (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, ...newMessage]);
+    });
+    socket.on("old_message", (oldMessage) => {
+      if (oldMessage.length === 0) {
+        noMore.current = true;
+      }
+      setMessages((prevMessages) => [...oldMessage, ...prevMessages]);
     });
     return () => {
       socket.disconnect();
@@ -34,14 +64,12 @@ const InboxIdPage = () => {
     }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
   return (
     <div>
       <div
         className="flex-1 overflow-y-auto h-[640px] bg-gray-50 p-4 space-y-3 rounded-t-lg shadow-inner"
         ref={chatContainerRef}
+        onScroll={handleScroll}
       >
         {messages.map((message, index) => (
           <MessageItem

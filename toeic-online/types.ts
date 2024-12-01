@@ -8,6 +8,7 @@ export interface Exam {
   commentCount: number;
   userCount: number;
   sections: Section[];
+  createAt: string | Date;
 }
 
 export interface User {

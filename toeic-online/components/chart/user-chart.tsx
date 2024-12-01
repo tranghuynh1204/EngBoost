@@ -74,11 +74,11 @@ export const UserChart = () => {
     fetchData(7);
   }, []);
   return (
-    <div>
+    <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-2/3 space-y-6"
+          className="w-full space-y-4"
         >
           <FormField
             control={form.control}
@@ -90,32 +90,39 @@ export const UserChart = () => {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn Khoảng thời gian" />
+                    <SelectTrigger className="bg-[#DEE2E6] text-[#212529] border border-[#ADB5BD]">
+                      <SelectValue placeholder="Select Timeframe" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="7">7 Ngày</SelectItem>
-                    <SelectItem value="30">1 tháng</SelectItem>
-                    <SelectItem value="365">1 năm</SelectItem>
+                  <SelectContent className="bg-white text-[#212529]">
+                    <SelectItem value="7">7 Days</SelectItem>
+                    <SelectItem value="30">1 Month</SelectItem>
+                    <SelectItem value="365">1 Year</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Search</Button>
+          <Button className="bg-[#343A40] text-white hover:bg-[#212529]">
+            Search
+          </Button>
         </form>
       </Form>
-      <Card>
-        <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row  w-[600px]">
-          <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-            <CardTitle>Tổng số người dùng mới {total}</CardTitle>
-          </div>
+      <Card className="bg-[#F8F9FA] text-[#212529] border border-[#ADB5BD]">
+        <CardHeader className="border-b p-4">
+          <CardTitle className="text-lg font-semibold">
+            Total New Users: {total}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="px-2 sm:p-6">
+        <CardContent>
           <ChartContainer
-            config={chartConfig}
+            config={{
+              user: {
+                label: "User",
+                color: "#343A40",
+              },
+            }}
             className="aspect-auto h-[250px] w-full"
           >
             <LineChart
@@ -126,7 +133,11 @@ export const UserChart = () => {
                 right: 12,
               }}
             >
-              <CartesianGrid vertical={false} />
+              <CartesianGrid
+                stroke="#DEE2E6"
+                vertical={false}
+                strokeDasharray="3 3"
+              />
               <XAxis
                 dataKey="key"
                 tickLine={false}
@@ -140,11 +151,12 @@ export const UserChart = () => {
                     day: "numeric",
                   });
                 }}
+                style={{ fill: "#343A40" }}
               />
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    className="w-[150px]"
+                    className="bg-[#343A40] text-white p-2 rounded-lg"
                     nameKey="views"
                     labelFormatter={(value) => {
                       return new Date(value).toLocaleDateString("en-US", {
@@ -159,14 +171,14 @@ export const UserChart = () => {
               <Line
                 dataKey="value"
                 type="monotone"
-                stroke="var(--color-user)"
+                stroke="#ADB5BD"
                 strokeWidth={2}
                 dot={false}
               />
             </LineChart>
           </ChartContainer>
         </CardContent>
-        <CardFooter>Biểu đồ tăng trưởng lượng người dùng</CardFooter>
+        <CardFooter className="text-sm">User Growth Over Time</CardFooter>
       </Card>
     </div>
   );

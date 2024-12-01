@@ -25,14 +25,13 @@ const chartConfig = {
   },
   toeic: {
     label: "Toeic",
-    color: "red",
+    color: "#495057", // Darker shade for distinction
   },
   ielts: {
     label: "Ielts",
-    color: "blue",
+    color: "#6C757D", // Muted dark gray for contrast
   },
 } satisfies ChartConfig;
-
 export const ExamChart = () => {
   const [total, setTotal] = useState();
   const [data, setData] = useState();
@@ -55,15 +54,20 @@ export const ExamChart = () => {
   }, []);
 
   return (
-    <Card>
+    <Card className="bg-[#F8F9FA] text-[#212529] rounded-lg shadow-lg p-4">
       <CardHeader>
-        <CardTitle>Tổng số bài thi là {total}</CardTitle>
-        <CardDescription></CardDescription>
+        <CardTitle className="text-lg font-semibold">
+          Tổng số bài thi: {total}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} />
+          <BarChart accessibilityLayer data={data} className="mx-auto">
+            <CartesianGrid
+              stroke="#E9ECEF"
+              vertical={false}
+              strokeDasharray="3 3"
+            />
             <XAxis
               dataKey="key"
               tickLine={false}
@@ -72,31 +76,27 @@ export const ExamChart = () => {
               tickFormatter={(value) =>
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
+              style={{ fill: "#495057" }} // Dark gray for X-axis labels
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={
+                <ChartTooltipContent className="bg-[#ADB5BD] text-[#212529] p-2 rounded-lg" />
+              }
             />
             <Bar
               dataKey="value"
               strokeWidth={2}
               radius={8}
-              activeIndex={2}
-              activeBar={({ ...props }) => {
-                return (
-                  <Rectangle
-                    {...props}
-                    fillOpacity={0.8}
-                    strokeDasharray={4}
-                    strokeDashoffset={4}
-                  />
-                );
-              }}
+              fillOpacity={0.8}
+              fill="#6C757D" // Consistent muted color for bars
             />
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>Đếm bài thi theo phân loại</CardFooter>
+      <CardFooter className="text-sm text-[#495057]">
+        Đếm bài thi theo phân loại
+      </CardFooter>
     </Card>
   );
 };

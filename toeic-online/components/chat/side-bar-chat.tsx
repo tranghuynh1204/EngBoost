@@ -35,7 +35,7 @@ export const SideBarChat = () => {
   }, []);
 
   return (
-    <ScrollArea className="flex flex-col space-y-4 w-full bg-red-500">
+    <ScrollArea className="flex flex-col space-y-4 min-w-[300px] w-full bg-white border-r border-gray-300 p-4">
       {userInboxs.map((item) => (
         <SideBarItem
           key={item.user._id}

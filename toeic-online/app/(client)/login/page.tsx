@@ -117,7 +117,7 @@ const LoginPage = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="password" type="password" {...field} />
+                    <Input placeholder="******" type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

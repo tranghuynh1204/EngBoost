@@ -103,7 +103,6 @@ export const UpdateVocabularyModal = () => {
       dispatch(closeModal());
       window.location.reload();
     } catch (error) {
-      console.error("API Error:", error);
     } finally {
       setIsSubmitting(false);
     }

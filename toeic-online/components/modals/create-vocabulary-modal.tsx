@@ -187,7 +187,6 @@ export const CreateVocabularyModal = () => {
         window.location.reload();
       }
     } catch (error) {
-      console.error("API Error:", error);
     } finally {
       setIsSubmitting(false);
     }

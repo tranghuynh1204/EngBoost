@@ -104,7 +104,6 @@ const PracticeExamPage = () => {
           countRef.current = data.duration;
         }
       } catch (error: any) {
-        console.error(error);
       } finally {
         setIsLoading(false);
       }

@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Param,
   Post,
   Query,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -17,7 +19,7 @@ import { Role } from 'src/shared/enums/role.enum';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { User } from 'src/decorator/user.decorator';
-
+import { Response } from 'express';
 @Controller('exams')
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
@@ -93,6 +95,10 @@ export class ExamController {
   @Get('statistics')
   async examStatistics() {
     return this.examService.statistics();
+  }
+  @Get('export/:id')
+  async export(@Param('id') id: string, @Res() res: Response) {
+    return this.examService.export(id, res);
   }
 
   @Get(':id')

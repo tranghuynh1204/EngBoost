@@ -35,9 +35,7 @@ const Home = () => {
           `${process.env.NEXT_PUBLIC_API_URL}/exams/new`
         );
         setRecentlyCreatedExams(response.data || []);
-      } catch (error) {
-        console.error("Error fetching recently created exams:", error);
-      }
+      } catch (error) {}
     };
 
     fetchRecentlyAttemptedExams();

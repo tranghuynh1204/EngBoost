@@ -73,4 +73,13 @@ export class UserService {
       data: formattedStats, // Thống kê theo ngày
     };
   }
+
+  async updatePassword(id: string, newPassword: string): Promise<User> {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      { password: hashedPassword },
+      { new: true },
+    );
+  }
 }

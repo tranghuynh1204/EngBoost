@@ -13,6 +13,7 @@ import { UserExamService } from 'src/user-exam/user-exam.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
 import { GroupDocument } from 'src/section/entities/group.entity';
 import { Response } from 'express';
+import { SectionDocument } from 'src/section/entities/section.entity';
 
 @Injectable()
 export class ExamService {
@@ -41,6 +42,53 @@ export class ExamService {
       // Cam kết giao dịch
       await session.commitTransaction();
       return exam;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async update(id: string, file: any): Promise<Exam> {
+    const examData = await this.excelService.parseToExam(file);
+    const session = await this.examModel.db.startSession();
+
+    try {
+      // Lấy exam hiện tại
+      const existingExam = await this.examModel.findById(id);
+
+      if (!existingExam) {
+        throw new Error('Exam not found');
+      }
+
+      const updatedSections = await Promise.all(
+        examData.sections.map(async (newSectionData, index) => {
+          if (existingExam.sections[index]) {
+            const existingSectionId = existingExam.sections[index].toString();
+            const updatedSection = await this.sectionService.update(
+              existingSectionId,
+              newSectionData,
+            );
+            return updatedSection._id;
+          } else {
+            // Nếu không có section ở vị trí này, tạo mới
+            const newSection = await this.sectionService.create(newSectionData);
+            return newSection._id;
+          }
+        }),
+      );
+
+      // Cập nhật sections của exam
+      existingExam.set({
+        ...examData,
+        sections: updatedSections,
+      });
+
+      await existingExam.save();
+
+      // Cam kết giao dịch
+      return existingExam;
     } catch (error) {
       await session.abortTransaction();
       throw error;

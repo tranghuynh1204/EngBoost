@@ -4,6 +4,7 @@ import {
   Get,
   Header,
   Param,
+  Patch,
   Post,
   Query,
   Res,
@@ -24,10 +25,20 @@ import { Response } from 'express';
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
+  // @Roles(Role.ADMIN)
+  // @UseGuards(AuthGuard, RolesGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(@UploadedFile() file): Promise<Exam> {
     return this.examService.create(file);
+  }
+
+  // @Roles(Role.ADMIN)
+  // @UseGuards(AuthGuard, RolesGuard)
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('file'))
+  async update(@Param('id') id: string, @UploadedFile() file): Promise<Exam> {
+    return this.examService.update(id, file);
   }
 
   @Roles(Role.USER)
@@ -67,7 +78,7 @@ export class ExamController {
   }
 
   @Roles(Role.USER)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get(':id/solutions')
   async findSolutions(@Param('id') id: string): Promise<Exam> {
     return this.examService.findSolutions(id);
@@ -92,10 +103,16 @@ export class ExamController {
   ) {
     return this.examService.getPractice(id, sectionIds);
   }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('statistics')
   async examStatistics() {
     return this.examService.statistics();
   }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('export/:id')
   async export(@Param('id') id: string, @Res() res: Response) {
     return this.examService.export(id, res);

@@ -41,7 +41,7 @@ export const ChatInput = ({ socket, isAdmin, userId }: ChatInputProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="border-t p-3 bg-white flex items-center"
+          className="border-t border-[#E9ECEF] p-3 bg-[#F8F9FA] flex items-center space-x-3"
         >
           <FormField
             control={form.control}
@@ -50,7 +50,11 @@ export const ChatInput = ({ socket, isAdmin, userId }: ChatInputProps) => {
               <FormItem className="w-full">
                 <FormControl>
                   <div className="flex items-center space-x-3 w-full">
-                    <Input placeholder="Nhắn tin" {...field} />
+                    <Input
+                      placeholder="Type a message"
+                      className="bg-[#E9ECEF] border border-[#ADB5BD] rounded-md focus:ring focus:ring-[#6C757D]"
+                      {...field}
+                    />
                     <EmojiPicker
                       onChange={(emoji: string) =>
                         field.onChange(`${field.value} ${emoji}`)
@@ -63,7 +67,7 @@ export const ChatInput = ({ socket, isAdmin, userId }: ChatInputProps) => {
           />
           <Button
             type="submit"
-            className="ml-2 w-14 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+            className="ml-2 w-14 bg-[#343A40] text-white px-4 py-2 rounded-md hover:bg-[#212529] transition duration-200"
           >
             <Send />
           </Button>

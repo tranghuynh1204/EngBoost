@@ -32,20 +32,20 @@ export const ChatWidget = () => {
         <div className="fixed bottom-5 right-5 z-50">
           <button
             onClick={toggleChat}
-            className="bg-blue-500 text-white w-14 h-14 rounded-full shadow-lg hover:bg-blue-600 transition duration-200 flex items-center justify-center text-xl"
+            className="bg-[#343A40] text-white w-14 h-14 rounded-full shadow-lg hover:bg-[#212529] transition duration-200 flex items-center justify-center text-xl"
           >
             💬
           </button>
         </div>
 
         {isOpen && (
-          <div className="fixed bottom-20 right-5 w-80 h-96 bg-white rounded-lg shadow-lg flex flex-col">
+          <div className="fixed bottom-20 right-5 w-80 h-96 bg-[#F8F9FA] rounded-lg shadow-lg flex flex-col">
             {/* Header */}
-            <div className="bg-blue-500 text-white font-bold py-2 px-4 flex justify-between items-center">
+            <div className="bg-[#343A40] text-white font-bold py-2 px-4 flex justify-between items-center">
               <span>Chat</span>
               <button
                 onClick={toggleChat}
-                className="text-white text-lg hover:text-gray-200"
+                className="text-white text-lg hover:text-[#ADB5BD]"
               >
                 ✖
               </button>

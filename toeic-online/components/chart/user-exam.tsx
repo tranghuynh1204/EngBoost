@@ -44,11 +44,11 @@ const chartConfig = {
   },
   toeic: {
     label: "Toeic",
-    color: "red",
+    color: "#495057", // Darker gray for contrast
   },
   ielts: {
     label: "Ielts",
-    color: "blue",
+    color: "#6C757D", // Muted dark gray for differentiation
   },
 } satisfies ChartConfig;
 
@@ -84,13 +84,9 @@ export const UserExamChart = () => {
     fetchData(7);
   }, []);
   return (
-    <div>
-      {" "}
+    <div className="bg-[#F8F9FA] p-4 rounded-lg shadow-md">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-2/3 space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="days"
@@ -101,26 +97,30 @@ export const UserExamChart = () => {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn Khoảng thời gian" />
+                    <SelectTrigger className="bg-[#E9ECEF] text-[#212529] border border-[#ADB5BD]">
+                      <SelectValue placeholder="Select Timeframe" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="7">7 Ngày</SelectItem>
-                    <SelectItem value="30">1 tháng</SelectItem>
-                    <SelectItem value="365">1 năm</SelectItem>
+                  <SelectContent className="bg-[#F8F9FA] text-[#495057]">
+                    <SelectItem value="7">7 Days</SelectItem>
+                    <SelectItem value="30">1 Month</SelectItem>
+                    <SelectItem value="365">1 Year</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Search</Button>
+          <Button className="bg-[#343A40] text-white hover:bg-[#212529]">
+            Search
+          </Button>
         </form>
       </Form>
-      <Card className="flex flex-col">
+      <Card className="flex flex-col text-[#212529] bg-white rounded-lg mt-6">
         <CardHeader className="items-center pb-0">
-          <CardTitle>Thống kê số bài làm</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Exam Statistics
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 pb-0">
           <ChartContainer
@@ -130,7 +130,9 @@ export const UserExamChart = () => {
             <PieChart>
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent hideLabel />}
+                content={
+                  <ChartTooltipContent className="bg-[#ADB5BD] text-[#212529] p-2 rounded-lg" />
+                }
               />
               <Pie
                 data={data}
@@ -152,16 +154,16 @@ export const UserExamChart = () => {
                           <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
-                            className="fill-foreground text-3xl font-bold"
+                            className="fill-[#212529] text-3xl font-bold"
                           >
                             {total}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 24}
-                            className="fill-muted-foreground"
+                            className="fill-[#ADB5BD]"
                           >
-                            Bài làm
+                            Exams
                           </tspan>
                         </text>
                       );
@@ -172,8 +174,8 @@ export const UserExamChart = () => {
             </PieChart>
           </ChartContainer>
         </CardContent>
-        <CardFooter className="flex-col gap-2 text-sm">
-          Phân loại và đếm số bài làm
+        <CardFooter className="flex-col gap-2 text-sm text-[#495057]">
+          Exam breakdown by category
         </CardFooter>
       </Card>
     </div>

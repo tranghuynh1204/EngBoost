@@ -30,32 +30,40 @@ const items = [
 export function AppSidebar() {
   const pathName = usePathname();
   return (
-    <Sidebar>
+    <Sidebar className="bg-[#F8F9FA] text-[#212529] border-r border-[#E9ECEF] shadow-md">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[#495057] uppercase text-sm font-semibold mb-2">
+            Application
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
+              {/* Home Menu Item */}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={pathName === "/admin"}
-                  className="data-[active=true]:bg-red-500"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md transition duration-200 data-[active=true]:bg-[#343A40] data-[active=true]:text-white hover:bg-[#E9ECEF]"
                 >
-                  <a href="/admin">
+                  <a href="/admin" className="flex items-center space-x-2">
                     <Home />
                     <span>Home</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {/* Dynamic Menu Items */}
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
                     isActive={pathName.includes(item.url)}
-                    className="data-[active=true]:bg-red-500"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-md transition duration-200 data-[active=true]:bg-[#343A40] data-[active=true]:text-white hover:bg-[#E9ECEF]"
                   >
-                    <a href={`/admin/${item.url}`}>
+                    <a
+                      href={`/admin/${item.url}`}
+                      className="flex items-center space-x-2"
+                    >
                       <item.icon />
                       <span>{item.title}</span>
                     </a>

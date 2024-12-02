@@ -25,16 +25,16 @@ import { Response } from 'express';
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(@UploadedFile() file): Promise<Exam> {
     return this.examService.create(file);
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file'))
   async update(@Param('id') id: string, @UploadedFile() file): Promise<Exam> {
@@ -77,14 +77,12 @@ export class ExamController {
     return this.examService.getNew();
   }
 
-  @Roles(Role.USER)
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard)
   @Get(':id/solutions')
   async findSolutions(@Param('id') id: string): Promise<Exam> {
     return this.examService.findSolutions(id);
   }
 
-  @Roles(Role.USER)
   @UseGuards(AuthGuard)
   @Get(':id/parts/:sectionId/solutions')
   async findSolution(

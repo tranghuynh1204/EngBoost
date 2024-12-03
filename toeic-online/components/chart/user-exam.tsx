@@ -44,7 +44,7 @@ const chartConfig = {
   },
   toeic: {
     label: "Toeic",
-    color: "#495057", // Darker gray for contrast
+    color: "black", // Darker gray for contrast
   },
   ielts: {
     label: "Ielts",

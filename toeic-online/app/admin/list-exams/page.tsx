@@ -20,11 +20,16 @@ import { TitleSearch } from "@/components/list-exam/title-search";
 import { CategoryFilter } from "@/components/list-exam/category-filter";
 import { DateFilter } from "@/components/list-exam/date-filter";
 import { Button } from "@/components/ui/button";
-
+import { useToast } from "@/hooks/use-toast";
+import { PiExport } from "react-icons/pi";
 export const ExamList = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
   const [exportingId, setExportingId] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null); // State for the file input
+  const [updatingId, setUpdatingId] = useState<string | null>(null); // ID for updating an exam
+
   // State management for filters, pagination, and data
   const [title, setTitle] = useState(searchParams.get("title") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
@@ -58,50 +63,48 @@ export const ExamList = () => {
   };
 
   // Fetch exam data
-  useEffect(() => {
-    const fetchExamData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/exams/search`,
-          {
-            params: {
-              category,
-              title,
-              startDate,
-              endDate,
-              currentPage,
-              pageSize: 8,
-            },
-          }
-        );
-
-        if (data?.data) {
-          setExams(data.data);
-          setCurrentPage(data.currentPage);
-          setTotalPages(data.totalPages);
-        } else {
-          setExams([]);
+  const fetchExamData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/exams/search`,
+        {
+          params: {
+            category,
+            title,
+            startDate,
+            endDate,
+            currentPage,
+            pageSize: 8,
+          },
         }
-      } catch (err) {
-        setError("Failed to fetch exam data. Please try again.");
-      } finally {
-        setLoading(false);
+      );
+
+      if (data?.data) {
+        setExams(data.data);
+        setCurrentPage(data.currentPage);
+        setTotalPages(data.totalPages);
+      } else {
+        setExams([]);
       }
-    };
+    } catch (err) {
+      setError("Failed to fetch exam data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchExamData();
-  }, [category, title, startDate, endDate, currentPage]);
-
-  // Export an exam by its ID
-  // Export a specific exam by ID
+  // Handle exam export
   const handleExport = async (examId: string) => {
     setExportingId(examId);
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/export/${examId}`,
         {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           responseType: "blob", // Ensure response is treated as a file
         }
       );
@@ -114,6 +117,11 @@ export const ExamList = () => {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      toast({
+        title: "Export Successful",
+        description: "Exam has been exported.",
+        variant: "success",
+      });
     } catch (err) {
       setError(`Failed to export exam with ID: ${examId}`);
     } finally {
@@ -121,11 +129,100 @@ export const ExamList = () => {
     }
   };
 
+  // Handle exam import
+  const handleImport = async () => {
+    if (!file) {
+      setError("Please select a file to upload.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/exams`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      setFile(null); // Reset the file input
+      fetchExamData(); // Refresh the exam list
+      toast({
+        title: "Import Successful",
+        description: "Exam imported successfully.",
+        variant: "success",
+      });
+    } catch (err) {
+      setError("Failed to import exam. Please try again.");
+    }
+  };
+
+  // Handle exam update
+  const handleUpdate = async () => {
+    if (!file || !updatingId) {
+      setError("Please select a file and select an exam to update.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/exams/${updatingId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      alert("Exam updated successfully.");
+      setFile(null); // Reset the file input
+      setUpdatingId(null); // Clear the updating ID
+      fetchExamData(); // Refresh the exam list
+    } catch (err) {
+      setError("Failed to update exam. Please try again.");
+    }
+  };
+
+  // Fetch exam data when component mounts or filters change
+  useEffect(() => {
+    fetchExamData();
+  }, [category, title, startDate, endDate, currentPage]);
   return (
-    <div className="p-6 bg-[#F8F9FA] rounded-lg shadow-lg">
-      <h1 className="text-2xl font-semibold text-[#212529] mb-4">
+    <div className="p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-semibold text-gray-800 mb-6">
         List of Exams
       </h1>
+
+      {/* File Input for Import and Update */}
+      <div className="mb-6 flex gap-4">
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+          className="file-input file-input-bordered file-input-primary"
+        />
+        <Button
+          onClick={handleImport}
+          className="text-white bg-gray-700"
+          disabled={!file}
+        >
+          Import Exam
+        </Button>
+        <Button
+          onClick={handleUpdate}
+          className="bg-gray-600 text-white "
+          disabled={!file || !updatingId}
+        >
+          Update Exam
+        </Button>
+      </div>
 
       {/* Filters */}
       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -153,45 +250,56 @@ export const ExamList = () => {
 
       {/* Loading and Error States */}
       {loading && <p className="text-gray-600">Loading exams...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-600">{error}</p>}
       {!loading && !error && exams.length === 0 && (
         <p className="text-gray-600">No exams found.</p>
       )}
 
       {/* Exam Table */}
       {!loading && !error && exams.length > 0 && (
-        <Table className="bg-white border border-[#E9ECEF]">
+        <Table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Duration (mins)</TableHead>
-              <TableHead>Question Count</TableHead>
-              <TableHead>Sections</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Export</TableHead>
+              <TableHead className="px-4 py-3 text-left">Title</TableHead>
+              <TableHead className="px-4 py-3 text-left">Category</TableHead>
+              <TableHead className="px-4 py-3 text-left">
+                Duration (mins)
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left">
+                Question Count
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left">Sections</TableHead>
+              <TableHead className="px-4 py-3 text-left">Created At</TableHead>
+              <TableHead className="px-4 py-3 text-left">Export</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {exams.map((exam) => (
-              <TableRow key={exam._id}>
-                <TableCell>{exam.title}</TableCell>
-                <TableCell>{exam.category}</TableCell>
-                <TableCell>{exam.duration}</TableCell>
-                <TableCell>{exam.questionCount}</TableCell>
-                <TableCell>{exam.sectionCount}</TableCell>
-                <TableCell>
-                  {exam.createAt
-                    ? formatDate(exam.createAt.toString())
-                    : getDateFromObjectId(exam._id).toLocaleString()}
+              <TableRow key={exam._id} className="border-t border-gray-100">
+                <TableCell className="px-4 py-2">{exam.title}</TableCell>
+                <TableCell className="px-4 py-2">{exam.category}</TableCell>
+                <TableCell className="px-4 py-2">{exam.duration}</TableCell>
+                <TableCell className="px-4 py-2">
+                  {exam.questionCount}
                 </TableCell>
-                <TableCell>
+                <TableCell className="px-4 py-2">{exam.sectionCount}</TableCell>
+                <TableCell className="px-4 py-2">
+                  {formatDate(
+                    exam.createAt?.toString() ||
+                      getDateFromObjectId(exam._id).toLocaleString()
+                  )}
+                </TableCell>
+                <TableCell className="px-4 py-2">
                   <Button
                     onClick={() => handleExport(exam._id)}
                     disabled={exporting === exam._id}
-                    className="px-3 py-1 text-white bg-gray-600 rounded hover:bg-gray-700 disabled:bg-gray-400"
+                    className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700 disabled:bg-gray-400"
                   >
-                    {exporting === exam._id ? "Exporting..." : "Export"}
+                    {exporting === exam._id ? (
+                      <span>Exporting...</span>
+                    ) : (
+                      <PiExport className="w-5 h-5" /> // Using the icon here
+                    )}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -199,7 +307,7 @@ export const ExamList = () => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={7} className="text-right">
+              <TableCell colSpan={7} className="px-4 py-3 text-right">
                 Page {currentPage} of {totalPages}
               </TableCell>
             </TableRow>

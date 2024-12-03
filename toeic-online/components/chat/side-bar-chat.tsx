@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+
 import React, { useEffect, useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { SideBarItem } from "./side-bar-item";
@@ -9,7 +9,9 @@ import { useRouter } from "next/navigation";
 
 export const SideBarChat = () => {
   const [userInboxs, setUserInboxs] = useState<Message[]>([]);
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const router = useRouter();
+
   useEffect(() => {
     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
       transports: ["websocket"],
@@ -27,12 +29,27 @@ export const SideBarChat = () => {
             (item) => item.user._id !== newMessage.user._id
           ),
         ]);
+
+        // Cập nhật số lượng tin nhắn chưa đọc
+        setUnreadCounts((prevCounts) => ({
+          ...prevCounts,
+          [newMessage.user._id]: (prevCounts[newMessage.user._id] || 0) + 1,
+        }));
       }
     });
+
     return () => {
       socket.disconnect();
     };
   }, []);
+
+  const handleUserClick = (userId: string) => {
+    router.replace(`/admin/inbox/${userId}`);
+    setUnreadCounts((prevCounts) => ({
+      ...prevCounts,
+      [userId]: 0, // Đặt số tin nhắn chưa đọc về 0 khi người dùng nhấp vào
+    }));
+  };
 
   return (
     <ScrollArea className="flex flex-col space-y-4 min-w-[300px] w-full bg-white border-r border-gray-300 p-4">
@@ -42,6 +59,8 @@ export const SideBarChat = () => {
           _id={item.user._id}
           name={item.user.name}
           content={item.content}
+          unreadCount={unreadCounts[item.user._id] || 0}
+          onClick={() => handleUserClick(item.user._id)}
         />
       ))}
     </ScrollArea>

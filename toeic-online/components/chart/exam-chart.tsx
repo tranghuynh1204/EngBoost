@@ -25,7 +25,7 @@ const chartConfig = {
   },
   toeic: {
     label: "Toeic",
-    color: "#495057", // Darker shade for distinction
+    color: "black", // Darker shade for distinction
   },
   ielts: {
     label: "Ielts",
@@ -39,8 +39,14 @@ export const ExamChart = () => {
     try {
       // Gọi API với số ngày là 7 (7 ngày gần nhất)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/exams/statistics`
+        `${process.env.NEXT_PUBLIC_API_URL}/exams/statistics`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
       );
+
       const updatedData = response.data.data.map((item: { key: string }) => ({
         ...item,
         fill: `var(--color-${item.key})`,

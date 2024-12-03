@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Tooltip,
@@ -11,13 +12,24 @@ interface SideBarItemProps {
   _id: string;
   name: string;
   content: string;
+  unreadCount: number;
+  onClick: () => void;
 }
-export const SideBarItem = ({ _id, name, content }: SideBarItemProps) => {
+
+export const SideBarItem = ({
+  _id,
+  name,
+  content,
+  unreadCount,
+  onClick,
+}: SideBarItemProps) => {
   const router = useRouter();
   return (
     <div
-      className="flex px-2 cursor-pointer hover:bg-[#E9ECEF] transition duration-200 rounded-md"
-      onClick={() => router.replace(`/admin/inbox/${_id}`)}
+      className={`flex px-2 cursor-pointer hover:bg-[#E9ECEF] transition duration-200 rounded-md ${
+        unreadCount > 0 ? "font-semibold bg-[#F8F9FA]" : ""
+      }`}
+      onClick={onClick}
     >
       <TooltipProvider>
         <Tooltip>
@@ -31,8 +43,23 @@ export const SideBarItem = ({ _id, name, content }: SideBarItemProps) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <div className="space-y-1">
-        <div className="truncate font-semibold text-[#212529]">{name}</div>
+      <div className="space-y-1 w-full">
+        <div className="flex justify-between items-center">
+          <div
+            className={`truncate ${
+              unreadCount > 0
+                ? "font-semibold text-[#212529]"
+                : "text-[#495057]"
+            }`}
+          >
+            {name}
+          </div>
+          {unreadCount > 0 && (
+            <span className="bg-[#E03131] text-white text-xs px-2 py-1 rounded-full">
+              {unreadCount}
+            </span>
+          )}
+        </div>
         <div className="truncate text-sm text-[#495057]">{content}</div>
       </div>
     </div>

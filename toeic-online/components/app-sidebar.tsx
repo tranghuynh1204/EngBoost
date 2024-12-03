@@ -1,5 +1,14 @@
 "use client";
-import { Calendar, Upload, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Calendar,
+  Upload,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+  List,
+  BarChartBig,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -25,6 +34,11 @@ const items = [
     url: "exams",
     icon: Upload,
   },
+  {
+    title: "List Exams", // Mục mới cho việc upload bài thi
+    url: "list-exams",
+    icon: List,
+  },
 ];
 
 export function AppSidebar() {
@@ -42,11 +56,11 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathName === "/admin"}
+                  isActive={pathName === "/admin"} // Check exact match for Home
                   className="flex items-center space-x-2 px-3 py-2 rounded-md transition duration-200 data-[active=true]:bg-[#343A40] data-[active=true]:text-white hover:bg-[#E9ECEF]"
                 >
                   <a href="/admin" className="flex items-center space-x-2">
-                    <Home />
+                    <BarChartBig />
                     <span>Home</span>
                   </a>
                 </SidebarMenuButton>
@@ -57,7 +71,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathName.includes(item.url)}
+                    isActive={pathName === `/admin/${item.url}`} // Exact match for each item
                     className="flex items-center space-x-2 px-3 py-2 rounded-md transition duration-200 data-[active=true]:bg-[#343A40] data-[active=true]:text-white hover:bg-[#E9ECEF]"
                   >
                     <a

@@ -156,7 +156,7 @@ export const UserChart = () => {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    className="bg-[#343A40] text-white p-2 rounded-lg"
+                    className="bg-gray-400 text-black p-2 rounded-lg"
                     nameKey="views"
                     labelFormatter={(value) => {
                       return new Date(value).toLocaleDateString("en-US", {

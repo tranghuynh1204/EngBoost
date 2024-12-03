@@ -26,9 +26,8 @@ export class CommentController {
   @Get('by-exam')
   async getCommentsByExam(
     @Query('examId') examId: string,
-    @Query('offset') offset: number = 0,
-    @Query('limit') limit: number = 10,
+    @Query('offset') offset: number,
   ): Promise<Comment[]> {
-    return this.commentService.getCommentsByExam(examId, offset, limit);
+    return this.commentService.getCommentsByExam(examId, offset);
   }
 }

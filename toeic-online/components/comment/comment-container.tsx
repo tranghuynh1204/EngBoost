@@ -1,6 +1,6 @@
 import { Comment } from "@/types";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CommentItem } from "./comment-item";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -31,7 +31,6 @@ export const CommentContainer = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
   const params = useParams();
-  const offset = useRef(0);
   const [isFetchingComments, setIsFetchingComments] = useState<boolean>(false); // Separate loading for fetching comments
   const [isSubmittingComment, setIsSubmittingComment] =
     useState<boolean>(false); // Separate loading for submitting a comment
@@ -44,7 +43,7 @@ export const CommentContainer = () => {
     },
   });
 
-  const fetchComments = async (offset: number, limit: number) => {
+  const fetchComments = async () => {
     setIsFetchingComments(true);
     try {
       const response = await axios.get(
@@ -52,8 +51,7 @@ export const CommentContainer = () => {
         {
           params: {
             examId: params.examId,
-            offset,
-            limit,
+            offset: comments.length,
           },
         }
       );
@@ -90,7 +88,7 @@ export const CommentContainer = () => {
   };
 
   useEffect(() => {
-    fetchComments(0, 10);
+    fetchComments();
   }, [params.examId]);
 
   return (
@@ -156,8 +154,7 @@ export const CommentContainer = () => {
       <div className="flex justify-center mt-6">
         <Button
           onClick={() => {
-            offset.current++;
-            fetchComments(offset.current, 10);
+            fetchComments();
           }}
           className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
         >

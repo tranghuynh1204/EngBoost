@@ -63,7 +63,6 @@ export class CommentService {
   async getCommentsByExam(
     examId: string,
     offset: number = 0,
-    limit: number = 10,
   ): Promise<Comment[]> {
     const comments = await this.commentModel
       .find({
@@ -73,8 +72,8 @@ export class CommentService {
       .select('content user replies createdAt')
       .sort({ createdAt: -1 })
       .populate('user', 'name')
-      .skip(offset * limit)
-      .limit(limit)
+      .skip(offset)
+      .limit(10)
       .exec();
 
     if (!comments || comments.length === 0) {

@@ -260,49 +260,51 @@ const ExamIdPage = () => {
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="2">
-            <div className="space-y-4">
-              {/* Solutions Overview */}
-              <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                <Button
-                  variant="link"
-                  className="text-blue-600 hover:underline"
-                >
-                  <Link href={`/exams/${params.examId}/solutions`}>
-                    Xem đáp án đề thi
-                  </Link>
-                </Button>
-              </div>
-              {/* Detailed Solutions */}
-              <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Đáp án Các Phần Thi
-                </h2>
-                <ul className="space-y-2">
-                  {exam.sections.map((section) => (
-                    <li
-                      key={section._id}
-                      className="flex items-center justify-between p-3 border rounded-md bg-white hover:shadow-sm"
-                    >
-                      <div className="text-gray-700">
-                        <span className="font-medium">{section.name}</span>
-                      </div>
-                      <Button
-                        variant="link"
-                        className="text-blue-600 hover:underline text-sm font-semibold"
+          {isLogin && (
+            <TabsContent value="2">
+              <div className="space-y-4">
+                {/* Solutions Overview */}
+                <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                  <Button
+                    variant="link"
+                    className="text-blue-600 hover:underline"
+                  >
+                    <Link href={`/exams/${params.examId}/solutions`}>
+                      Xem đáp án đề thi
+                    </Link>
+                  </Button>
+                </div>
+                {/* Detailed Solutions */}
+                <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                    Đáp án Các Phần Thi
+                  </h2>
+                  <ul className="space-y-2">
+                    {exam.sections.map((section) => (
+                      <li
+                        key={section._id}
+                        className="flex items-center justify-between p-3 border rounded-md bg-white hover:shadow-sm"
                       >
-                        <Link
-                          href={`/exams/${params.examId}/parts/${section._id}/solutions`}
+                        <div className="text-gray-700">
+                          <span className="font-medium">{section.name}</span>
+                        </div>
+                        <Button
+                          variant="link"
+                          className="text-blue-600 hover:underline text-sm font-semibold"
                         >
-                          Đáp án
-                        </Link>
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+                          <Link
+                            href={`/exams/${params.examId}/parts/${section._id}/solutions`}
+                          >
+                            Đáp án
+                          </Link>
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
       <CommentContainer />

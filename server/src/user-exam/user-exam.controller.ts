@@ -72,6 +72,8 @@ export class UserExamController {
     return this.userExamService.analytics(user.sub, days);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('statistics')
   async userExamStatistics(@Query('days') days: number) {
     return this.userExamService.statistics(days);

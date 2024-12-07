@@ -46,7 +46,7 @@ export const ExamChart = () => {
           },
         }
       );
-
+      console.log(response.data);
       const updatedData = response.data.data.map((item: { key: string }) => ({
         ...item,
         fill: `var(--color-${item.key})`,

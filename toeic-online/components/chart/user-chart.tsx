@@ -63,6 +63,9 @@ export const UserChart = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/users/statistics`,
         {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           params: { days },
         }
       );

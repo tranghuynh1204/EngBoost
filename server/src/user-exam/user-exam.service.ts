@@ -180,7 +180,7 @@ export class UserExamService {
       [key: string]: {
         // key là "TOEIC" hoặc "ELIT"
         exams: Set<string>; // Set chứa các examId duy nhất
-        section: {
+        sections: {
           [key: string]: {
             // key là "Listening", "Reading" trong mỗi nhóm
             exams: Set<string>;
@@ -214,7 +214,7 @@ export class UserExamService {
       if (!result[category]) {
         result[category] = {
           exams: new Set(),
-          section: {}, // Chứa các danh mục (Listening, Reading, etc.)
+          sections: {}, // Chứa các danh mục (Listening, Reading, etc.)
           duration: 0,
         };
       }
@@ -227,8 +227,8 @@ export class UserExamService {
       // 3. Duyệt qua từng danh mục trong mapSectionCategory
       userExam.mapSectionCategory.forEach((value, section) => {
         // Khởi tạo section trong category nếu chưa tồn tại
-        if (!categoryData.section[section]) {
-          categoryData.section[section] = {
+        if (!categoryData.sections[section]) {
+          categoryData.sections[section] = {
             exams: new Set(),
             precision: {
               correct: 0,
@@ -239,7 +239,7 @@ export class UserExamService {
         }
 
         // Cập nhật thông tin cho section
-        const sectionData = categoryData.section[section];
+        const sectionData = categoryData.sections[section];
         const date = userExam.startTime;
         // Chuyển đổi ngày, tháng, năm thành định dạng YYYY-MM-DD
         const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
@@ -266,15 +266,15 @@ export class UserExamService {
         const categoryData = result[examCategory];
         acc[examCategory] = {
           examsCount: categoryData.exams.size, // Độ dài của Set exams
-          secions: Object.keys(categoryData.section).reduce(
+          sections: Object.keys(categoryData.sections).reduce(
             (catAcc, categoryName) => {
               catAcc[categoryName] = {
-                examCount: categoryData.section[categoryName].exams.size,
-                precision: categoryData.section[categoryName].precision,
-                data: Object.keys(categoryData.section[categoryName].data).map(
+                examsCount: categoryData.sections[categoryName].exams.size,
+                precision: categoryData.sections[categoryName].precision,
+                data: Object.keys(categoryData.sections[categoryName].data).map(
                   (key) => {
                     const { correct, questionCount } =
-                      categoryData.section[categoryName].data[key].precision;
+                      categoryData.sections[categoryName].data[key].precision;
                     return {
                       date: key,
                       precision: (correct * 100) / questionCount,

@@ -67,11 +67,13 @@ export class UserExamController {
 
   @Roles(Role.USER)
   @UseGuards(AuthGuard, RolesGuard)
-  @Post('/analytics')
-  async analytics(@User() user, @Body('days') days: number) {
+  @Get('/analytics')
+  async analytics(@User() user, @Query('days') days: number) {
     return this.userExamService.analytics(user.sub, days);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('statistics')
   async userExamStatistics(@Query('days') days: number) {
     return this.userExamService.statistics(days);

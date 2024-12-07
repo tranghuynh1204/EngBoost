@@ -39,7 +39,7 @@ const SectionIdPage = () => {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
       } finally {
-        setIsLoading(true);
+        setIsLoading(false);
       }
     };
 

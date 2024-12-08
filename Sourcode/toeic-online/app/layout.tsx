@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import StoreProvider from "./store-provider";
-
+import { Roboto } from "next/font/google";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
+});
+const roboto = Roboto({
+  subsets: ["latin"], // Choose the subset for your project
+  weight: ["400", "700"], // Specify weights as needed
+  variable: "--font-roboto", // Define a custom CSS variable
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
@@ -27,11 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <StoreProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
+        <body className={`${roboto.variable} antialiased`}>{children}</body>
       </StoreProvider>
     </html>
   );

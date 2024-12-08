@@ -1,5 +1,3 @@
-// app/login/page.tsx
-
 "use client";
 
 import React, { useState } from "react";
@@ -23,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { setIsLogin } from "@/lib/store/data-slice";
 import { Input } from "@/components/ui/input";
+import { LuLogIn } from "react-icons/lu";
 
 const formSchema = z.object({
   email: z
@@ -71,7 +70,7 @@ const LoginPage = () => {
         description: "Bạn đã đăng nhập thành công.",
       });
     } catch (error: any) {
-      if (error.response.status == 404) {
+      if (error.response.status === 404) {
         form.setError("email", {
           type: "manual",
           message: "User not found",
@@ -91,20 +90,34 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      {/* The Toaster is already included in RootLayout */}
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Đăng nhập</h2>
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center relative"
+      style={{
+        backgroundImage: "url('/assets/124947253_p0.jpg')",
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+
+      <div className="relative z-10 bg-gradient-to-b from-[#142846] to-[#4A6DA5] p-8 rounded-lg shadow-lg w-full max-w-md mx-4">
+        <h2 className="text-3xl font-semibold mb-6 text-center text-white">
+          Đăng nhập
+        </h2>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-white">Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="email" type="email" {...field} />
+                    <Input
+                      placeholder="Nhập email của bạn"
+                      type="email"
+                      {...field}
+                      className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,19 +128,59 @@ const LoginPage = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-white">Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input placeholder="******" type="password" {...field} />
+                    <Input
+                      placeholder="******"
+                      type="password"
+                      {...field}
+                      className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={loading}>
-              Submit
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-12 h-12 border border-blue-300 bg-white text-blue-600 p-0 rounded-xl shadow hover:bg-blue-50 transition-colors disabled:border-blue-200 disabled:text-blue-200 flex items-center justify-center"
+              >
+                {loading ? (
+                  <svg
+                    className="animate-spin h-6 w-6 text-blue-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <LuLogIn size={24} />
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
+        <p className="mt-4 text-center text-white">
+          Bạn chưa có tài khoản?{" "}
+          <a href="/register" className="text-white hover:underline">
+            Đăng ký ngay
+          </a>
+        </p>
       </div>
     </div>
   );

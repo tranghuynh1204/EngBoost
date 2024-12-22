@@ -281,6 +281,9 @@ export const ExamList = () => {
                   Question Count
                 </TableHead>
                 <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+                  User Count
+                </TableHead>
+                <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
                   Sections
                 </TableHead>
                 <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
@@ -305,6 +308,9 @@ export const ExamList = () => {
                   </TableCell>
                   <TableCell className="px-4 py-2 text-gray-800">
                     {exam.questionCount}
+                  </TableCell>
+                  <TableCell className="px-4 py-2 text-gray-800">
+                    {exam.userCount}
                   </TableCell>
                   <TableCell className="px-4 py-2 text-gray-800">
                     {exam.sectionCount}

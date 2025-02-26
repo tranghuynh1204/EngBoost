@@ -296,6 +296,12 @@ export class UserExamService {
 
     return transformedResult;
   }
+  async hasUserAttemptedExam(userId: string, examId: string): Promise<boolean> {
+    const attempt = await this.userExamModel.findOne({
+      where: { userId, examId },
+    });
+    return !!attempt; // Returns true if an attempt exists
+  }
   async statistics(days: number) {
     const sinceDate = new Date();
     sinceDate.setDate(sinceDate.getDate() - days);

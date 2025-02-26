@@ -14,6 +14,7 @@ interface SideBarItemProps {
   content: string;
   unreadCount: number;
   onClick: () => void;
+  isActive: boolean;
 }
 
 export const SideBarItem = ({
@@ -22,12 +23,17 @@ export const SideBarItem = ({
   content,
   unreadCount,
   onClick,
+  isActive,
 }: SideBarItemProps) => {
   const router = useRouter();
   return (
     <div
       className={`flex px-2 cursor-pointer hover:bg-[#E9ECEF] transition duration-200 rounded-md ${
-        unreadCount > 0 ? "font-semibold bg-[#F8F9FA]" : ""
+        isActive
+          ? "bg-gray-100 text-blue-900 font-semibold" // Active chat styles
+          : unreadCount > 0
+          ? "font-semibold bg-[#F8F9FA]"
+          : "text-gray-700"
       }`}
       onClick={onClick}
     >

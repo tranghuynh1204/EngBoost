@@ -13,7 +13,8 @@ import { AiOutlineComment } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { GiSpellBook } from "react-icons/gi";
 import { FaUserAstronaut } from "react-icons/fa6";
-import { TbMessageCircleQuestion } from "react-icons/tb";
+import { TbList, TbMessageCircleQuestion } from "react-icons/tb";
+import { TbListNumbers, TbListCheck } from "react-icons/tb";
 
 import {
   Select,
@@ -21,12 +22,13 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"; // Assume you have a Select component
+} from "@/components/ui/select";
 import { RootState } from "@/lib/store/store";
 import { useSelector } from "react-redux";
 import { CommentContainer } from "@/components/comment/comment-container";
 import Loading from "@/components/loading";
 import NotFound from "@/components/not-found";
+
 const ExamIdPage = () => {
   const params = useParams();
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
@@ -35,6 +37,7 @@ const ExamIdPage = () => {
   const [isEntireExamSelected, setIsEntireExamSelected] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("0");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
   useEffect(() => {
     const fetchExam = async () => {
       try {
@@ -44,6 +47,7 @@ const ExamIdPage = () => {
         );
         setExam(response.data);
       } catch {
+        // Handle error if needed
       } finally {
         setIsLoading(false);
       }
@@ -99,21 +103,24 @@ const ExamIdPage = () => {
             {exam.title}
           </h1>
         </div>
+        {/* Updated Tabs using the same styling as your first project */}
         <Tabs defaultValue="1">
           <div className="flex justify-center mb-6">
-            <TabsList className="flex space-x-2 rounded-lg bg-gray-100 p-1">
+            <TabsList className="flex  h-8 border bg-muted/40 border-border/50 rounded-lg p-1">
               <TabsTrigger
                 value="1"
-                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
+                className="flex items-center space-x-2 py-0.5 px-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-none  "
               >
-                Thông tin đề thi
+                <TbListNumbers className="w-4 h-4" />
+                <span>Exam Information</span>
               </TabsTrigger>
               {isLogin && (
                 <TabsTrigger
                   value="2"
-                  className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
+                  className="flex items-center space-x-2 py-0.5 px-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-none  "
                 >
-                  Đáp án Transcript
+                  <TbListCheck className="w-4 h-4" />
+                  <span>Transcript</span>
                 </TabsTrigger>
               )}
             </TabsList>
@@ -123,43 +130,40 @@ const ExamIdPage = () => {
             <div className="space-y-4">
               <div className="bg-gradient-to-r from-gray-50 to-white p-4 border border-gray-100 rounded-md shadow-sm">
                 <h2 className="font-semibold text-gray-800 mb-2">
-                  Chi tiết đề thi
+                  Exam Details
                 </h2>
                 <ul className="space-y-3">
                   <li className="flex items-center text-gray-700">
                     <TfiTimer className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Thời gian làm bài: {exam.duration} phút</span>
+                    <span>Duration: {exam.duration} phút</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <GiSpellBook className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Phần thi: {exam.sectionCount} phần</span>
+                    <span>Section: {exam.sectionCount} phần</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <TbMessageCircleQuestion className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Câu hỏi: {exam.questionCount} câu</span>
+                    <span>Questions: {exam.questionCount} câu</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <AiOutlineComment className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Bình luận: {exam.commentCount} bình luận</span>
+                    <span>Comments: {exam.commentCount} bình luận</span>
                   </li>
                   <li className="flex items-center text-gray-700">
                     <FaUserAstronaut className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Người luyện: {exam.userCount} người</span>
+                    <span>Users: {exam.userCount} người</span>
                   </li>
                 </ul>
               </div>
-              {/* User Exam Container */}
               {isLogin && (
                 <div className="mb-6">
                   <UserExamContainer examId={params.examId as string} />
                 </div>
               )}
-              {/* Exam Sections */}
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                  Các Phần Thi
+                  Exam Sections
                 </h2>
-                {/* Selection Controls */}
                 <div className="flex items-center mb-4">
                   <input
                     type="checkbox"
@@ -168,7 +172,7 @@ const ExamIdPage = () => {
                     className="mr-2"
                   />
                   <label className="text-lg text-gray-700">
-                    Chọn toàn bộ đề thi
+                    Select All Exam Sections
                   </label>
                 </div>
                 <div className="flex flex-col space-y-4">
@@ -186,58 +190,52 @@ const ExamIdPage = () => {
                   ))}
                 </div>
               </div>
-              {/* Time Selection Dropdown */}
-              {/* Time Selection Dropdown */}
               <div className="mb-6">
                 <label
                   htmlFor="time-select"
                   className="block text-lg font-medium text-gray-700 mb-2"
                 >
-                  Chọn thời gian luyện tập:
+                  Select Practice Time:
                 </label>
                 <Select
-                  onValueChange={(value) => {
-                    setSelectedTime(value);
-                  }}
+                  onValueChange={(value) => setSelectedTime(value)}
                   defaultValue="0"
                 >
-                  {/* Assign 'id' to SelectTrigger */}
                   <SelectTrigger id="time-select" className="w-full">
-                    <SelectValue placeholder="Chọn thời gian" />
+                    <SelectValue placeholder="Select Practice Time" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0">Không giới hạn</SelectItem>
-                    <SelectItem value="10">5 phút</SelectItem>
-                    <SelectItem value="600">10 phút</SelectItem>
-                    <SelectItem value="900">15 phút</SelectItem>
-                    <SelectItem value="1200">20 phút</SelectItem>
-                    <SelectItem value="1500">25 phút</SelectItem>
-                    <SelectItem value="1800">30 phút</SelectItem>
-                    <SelectItem value="2100">35 phút</SelectItem>
-                    <SelectItem value="2400">40 phút</SelectItem>
-                    <SelectItem value="2700">45 phút</SelectItem>
-                    <SelectItem value="3000">50 phút</SelectItem>
-                    <SelectItem value="3300">55 phút</SelectItem>
-                    <SelectItem value="3600">60 phút</SelectItem>
-                    <SelectItem value="3900">65 phút</SelectItem>
-                    <SelectItem value="4200">70 phút</SelectItem>
-                    <SelectItem value="4500">75 phút</SelectItem>
-                    <SelectItem value="4800">80 phút</SelectItem>
-                    <SelectItem value="5100">85 phút</SelectItem>
-                    <SelectItem value="5400">90 phút</SelectItem>
-                    <SelectItem value="5700">95 phút</SelectItem>
-                    <SelectItem value="6000">100 phút</SelectItem>
-                    <SelectItem value="6300">105 phút</SelectItem>
-                    <SelectItem value="6600">110 phút</SelectItem>
-                    <SelectItem value="6900">115 phút</SelectItem>
-                    <SelectItem value="7200">120 phút</SelectItem>
-                    <SelectItem value="7500">125 phút</SelectItem>
-                    <SelectItem value="7800">130 phút</SelectItem>
-                    <SelectItem value="8100">135 phút</SelectItem>
+                    <SelectItem value="0">No Limit</SelectItem>
+                    <SelectItem value="10">5 minutes</SelectItem>
+                    <SelectItem value="600">10 minutes</SelectItem>
+                    <SelectItem value="900">15 minutes</SelectItem>
+                    <SelectItem value="1200">20 minutes</SelectItem>
+                    <SelectItem value="1500">25 minutes</SelectItem>
+                    <SelectItem value="1800">30 minutes</SelectItem>
+                    <SelectItem value="2100">35 minutes</SelectItem>
+                    <SelectItem value="2400">40 minutes</SelectItem>
+                    <SelectItem value="2700">45 minutes</SelectItem>
+                    <SelectItem value="3000">50 minutes</SelectItem>
+                    <SelectItem value="3300">55 minutes</SelectItem>
+                    <SelectItem value="3600">60 minutes</SelectItem>
+                    <SelectItem value="3900">65 minutes</SelectItem>
+                    <SelectItem value="4200">70 minutes</SelectItem>
+                    <SelectItem value="4500">75 minutes</SelectItem>
+                    <SelectItem value="4800">80 minutes</SelectItem>
+                    <SelectItem value="5100">85 minutes</SelectItem>
+                    <SelectItem value="5400">90 minutes</SelectItem>
+                    <SelectItem value="5700">95 minutes</SelectItem>
+                    <SelectItem value="6000">100 minutes</SelectItem>
+                    <SelectItem value="6300">105 minutes</SelectItem>
+                    <SelectItem value="6600">110 minutes</SelectItem>
+                    <SelectItem value="6900">115 minutes</SelectItem>
+                    <SelectItem value="7200">120 minutes</SelectItem>
+                    <SelectItem value="7500">125 minutes</SelectItem>
+                    <SelectItem value="7800">130 minutes</SelectItem>
+                    <SelectItem value="8100">135 minutes</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              {/* Submit Button */}
               <div className="flex justify-center items-center mb-6">
                 <Button
                   className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
@@ -254,7 +252,7 @@ const ExamIdPage = () => {
                       },
                     }}
                   >
-                    Bắt đầu luyện tập
+                    Start practice
                   </Link>
                 </Button>
               </div>
@@ -263,21 +261,19 @@ const ExamIdPage = () => {
           {isLogin && (
             <TabsContent value="2">
               <div className="space-y-4">
-                {/* Solutions Overview */}
                 <div className="bg-gray-50 p-4 rounded-md shadow-sm">
                   <Button
                     variant="link"
                     className="text-blue-600 hover:underline"
                   >
                     <Link href={`/exams/${params.examId}/solutions`}>
-                      Xem đáp án đề thi
+                      View Exam Answer
                     </Link>
                   </Button>
                 </div>
-                {/* Detailed Solutions */}
                 <div className="bg-gray-50 p-4 rounded-md shadow-sm">
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                    Đáp án Các Phần Thi
+                    Answers for Exam Sections
                   </h2>
                   <ul className="space-y-2">
                     {exam.sections.map((section) => (
@@ -295,7 +291,7 @@ const ExamIdPage = () => {
                           <Link
                             href={`/exams/${params.examId}/parts/${section._id}/solutions`}
                           >
-                            Đáp án
+                            Transcript
                           </Link>
                         </Button>
                       </li>

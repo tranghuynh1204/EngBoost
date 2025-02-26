@@ -26,7 +26,7 @@ const FlashcardPage = () => {
           {
             params: {
               currentPage: page,
-              pageSize: 1,
+              pageSize: 3,
             },
 
             headers: {
@@ -50,9 +50,7 @@ const FlashcardPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 sm:p-8 bg-[rgb(250,240,230)] rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-extrabold text-[rgb(53,47,68)]">
-          Flashcards
-        </h1>
+        <h1 className="text-3xl font-bold text-[rgb(53,47,68)]">Flashcards</h1>
         <button
           onClick={() =>
             dispatch(
@@ -61,20 +59,22 @@ const FlashcardPage = () => {
               })
             )
           }
-          className="px-4 py-2 bg-[rgb(53,47,68)] text-white rounded-lg hover:bg-[rgb(92,84,112)] transition-colors"
+          className="px-6 py-3 bg-[rgb(53,47,68)] text-white rounded-lg hover:bg-[rgb(92,84,112)] transition-colors ease-in-out duration-300"
         >
           Create Flashcard
         </button>
       </div>
       {flashcards && flashcards.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {flashcards.map((flashcard) => (
-            <FlashcardItem {...flashcard} key={flashcard._id} />
+            <div key={flashcard._id} className="space-y-4">
+              <FlashcardItem {...flashcard} />
+            </div>
           ))}
           <PaginationCustom currentPage={currentPage} totalPages={totalPages} />
         </div>
       ) : (
-        <div className="text-center text-gray-500">
+        <div className="text-center text-gray-500 text-lg">
           No flashcards available.
         </div>
       )}

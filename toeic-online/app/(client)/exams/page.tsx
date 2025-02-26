@@ -41,7 +41,7 @@ const ExamPage: React.FC = () => {
               category,
               title,
               currentPage,
-              pageSize: 8,
+              pageSize: 15,
             },
           }
         );
@@ -68,52 +68,37 @@ const ExamPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <main className="container mx-auto px-6 py-8">
-        {/* Page Title */}
-        <h1 className="text-4xl font-extrabold text-gray-800 text-center mb-8">
-          Danh sách Đề Thi
+        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          Exam List
         </h1>
-
-        {/* Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {loading ? (
             <div className="col-span-full flex justify-center items-center">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-primary border-opacity-75"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-primary border-opacity-75"></div>
             </div>
           ) : error ? (
-            <div className="col-span-full text-center text-red-600">
-              {error}
-            </div>
+            <div className="col-span-full text-center text-red-600">{error}</div>
           ) : exams.length > 0 ? (
             exams.map((exam) => (
-              <Link
-                key={exam._id}
-                href={`/exams/${exam._id}`}
-                className="block"
-              >
+              <Link key={exam._id} href={`/exams/${exam._id}`} className="block">
                 <ExamCard exam={exam} />
               </Link>
             ))
           ) : (
             <div className="col-span-full text-center text-gray-500">
-              Không có đề thi nào.
+              No exams available.
             </div>
           )}
         </div>
-
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8">
-            <PaginationCustom
-              currentPage={currentPage}
-              totalPages={totalPages}
-            />
+          <div className="mt-6">
+            <PaginationCustom currentPage={currentPage} totalPages={totalPages} />
           </div>
         )}
       </main>
     </div>
   );
 };
-
 export default ExamPage;

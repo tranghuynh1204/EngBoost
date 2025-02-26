@@ -200,15 +200,18 @@ export const CreateVocabularyModal = () => {
       }}
     >
       <DialogContent
-        ria-labelledby="dialog-title"
-        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-scroll"
+        aria-labelledby="dialog-title"
+        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-auto p-6 bg-white rounded-lg shadow-xl"
       >
-        {/* Chỉnh độ dài ở đây nè nhưng tuyệt đối không được bỏ cái max-w-full */}
         <DialogHeader>
-          <DialogTitle>Thêm từ vựng</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold text-gray-800">
+            Thêm từ vựng
+          </DialogTitle>
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Flashcard Creation */}
             <div>
               {flashcards && !flashcardId && (
                 <Button
@@ -221,21 +224,31 @@ export const CreateVocabularyModal = () => {
                 </Button>
               )}
             </div>
+
             <div>
-              {flashcardId && <div>List từ: {vocabulary.flashcard?.title}</div>}
+              {flashcardId && (
+                <div className="text-gray-600">
+                  List từ: {vocabulary.flashcard?.title}
+                </div>
+              )}
               {!flashcardId && flashcards.length > 0 && !createFlashCard && (
                 <FormField
                   control={form.control}
                   name="flashcard"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Chọn list từ vựng</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm text-gray-700">
+                        Chọn list từ vựng
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger ref={field.ref}>
+                          <SelectTrigger
+                            ref={field.ref}
+                            className="w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                          >
                             <SelectValue placeholder="Chọn list từ vựng" />
                           </SelectTrigger>
                         </FormControl>
@@ -250,22 +263,26 @@ export const CreateVocabularyModal = () => {
                           ))}
                         </SelectContent>
                       </Select>
-
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               )}
               {createFlashCard && !flashcardId && (
-                <div>
+                <div className="space-y-6">
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiêu đề</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Tiêu đề
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input
+                            {...field}
+                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -275,12 +292,16 @@ export const CreateVocabularyModal = () => {
                     control={form.control}
                     name="description"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mô tả</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Mô tả
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input
+                            {...field}
+                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                          />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -288,47 +309,65 @@ export const CreateVocabularyModal = () => {
                 </div>
               )}
             </div>
+
+            {/* Main Vocabulary Form Fields */}
             <FormField
               control={form.control}
               name="word"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Từ mới</FormLabel>
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm text-gray-700">
+                    Từ mới
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      {...field}
+                      className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                    />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="mean"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Định nghĩa</FormLabel>
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm text-gray-700">
+                    Định nghĩa
+                  </FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea
+                      {...field}
+                      className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                    />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Accordion type="single" collapsible className="border-2 px-2">
+
+            {/* Accordion for Additional Information */}
+            <Accordion
+              type="single"
+              collapsible
+              className="border-2 rounded-lg"
+            >
               <AccordionItem value="item-1">
-                <AccordionTrigger className="border-2">
+                <AccordionTrigger className="bg-gray-200 text-black p-3 rounded-md hover:bg-gray-300 transition duration-200">
                   Thêm phiên âm, ví dụ, ảnh, ghi chú ...
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="space-y-4 p-4">
                   <FormField
                     control={form.control}
                     name="file"
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     render={({ field: { value, onChange, ...fieldProps } }) => (
-                      <FormItem>
-                        <FormLabel>Ảnh</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Ảnh
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...fieldProps}
@@ -339,66 +378,86 @@ export const CreateVocabularyModal = () => {
                                 event.target.files && event.target.files[0]
                               )
                             }
+                            className="w-full border rounded-md p-2"
                           />
                         </FormControl>
-
-                        <FormMessage />
+                        <FormMessage className="text-red-600 italic font-semibold mt-1 text-sm" />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="partOfSpeech"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Từ loại</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Từ loại
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input
+                            {...field}
+                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                          />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="pronunciation"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phiên âm</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Phiên âm
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input
+                            {...field}
+                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                          />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="example"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ví dụ</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Ví dụ
+                        </FormLabel>
                         <FormControl>
-                          <Textarea {...field} />
+                          <Textarea
+                            {...field}
+                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                          />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="notes"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ghi chú</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Ghi chú
+                        </FormLabel>
                         <FormControl>
-                          <Textarea {...field} />
+                          <Textarea
+                            {...field}
+                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                          />
                         </FormControl>
-
-                        <FormMessage />
+                        <FormMessage className="text-red-500 italic font-semibold mt-1"></FormMessage>
                       </FormItem>
                     )}
                   />
@@ -406,6 +465,7 @@ export const CreateVocabularyModal = () => {
               </AccordionItem>
             </Accordion>
 
+            {/* Submit Button */}
             <Button type="submit" disabled={isSubmitting}>
               Submit
             </Button>

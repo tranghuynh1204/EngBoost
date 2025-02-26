@@ -10,6 +10,12 @@ export interface Exam {
   sections: Section[];
   createAt: string | Date;
 }
+export interface HistoryResponse {
+  data: UserExam[];
+  totalPages: number;
+  currentPage: string; // Change to string to match API
+  pageSize: string;    // Change to string to match API
+}
 
 export interface User {
   _id: string;

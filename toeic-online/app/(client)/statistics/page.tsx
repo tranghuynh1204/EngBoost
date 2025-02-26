@@ -101,9 +101,9 @@ const Statisticspage = () => {
     return <NotFound />;
   }
   return (
-    <div className="bg-gray-50 p-8 rounded-xl shadow-lg space-y-8 max-w-7xl mx-auto">
+    <div className="bg-gray-100 p-8 rounded-xl shadow-lg space-y-8 max-w-7xl mx-auto">
       {/* Filter Form */}
-      <Card className="p-6 bg-gray-800">
+      <Card className="p-6 bg-white shadow-lg">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -119,8 +119,7 @@ const Statisticspage = () => {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      {/* SelectTrigger with white background and black text */}
-                      <SelectTrigger className="w-full bg-white text-black border border-gray-500 shadow-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <SelectTrigger className="w-full bg-white text-black border border-gray-300 shadow-sm rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200">
                         <SelectValue placeholder="Select Timeframe" />
                       </SelectTrigger>
                     </FormControl>
@@ -134,10 +133,9 @@ const Statisticspage = () => {
                 </FormItem>
               )}
             />
-            {/* Search Button with white background and black text */}
             <Button
               type="submit"
-              className="w-full sm:w-auto bg-white text-black px-6 py-2 rounded-md shadow hover:bg-gray-300 transition-colors duration-200 border border-gray-500"
+              className="w-full sm:w-auto bg-gray-600 text-white px-6 py-2 rounded-md shadow hover:bg-gray-800 transition-colors duration-200 border border-gray-400"
             >
               Search
             </Button>
@@ -152,7 +150,7 @@ const Statisticspage = () => {
             <TabsTrigger
               key={key}
               value={key}
-              className="flex-1 min-w-max px-4 py-2 bg-gray-700 text-gray-300 rounded-md shadow-sm hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+              className="w-24 px-2 py-2 bg-gray-600 text-white rounded-md shadow-sm hover:bg-gray-800 focus:ring-2 focus:ring-gray-100 transition-colors duration-200"
             >
               {key}
             </TabsTrigger>
@@ -161,15 +159,15 @@ const Statisticspage = () => {
 
         {Object.entries(result).map(([key, value]) => (
           <TabsContent key={key} value={key}>
-            <Card className="p-6 bg-gray-600 shadow-md rounded-lg">
+            <Card className="p-6 bg-white shadow-lg rounded-lg">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="text-lg font-semibold text-gray-100">
+                <div className="text-lg font-semibold text-gray-800">
                   Số đề đã làm:{" "}
-                  <span className="text-gray-300">{value.examsCount}</span>
+                  <span className="text-gray-600">{value.examsCount}</span>
                 </div>
-                <div className="text-lg font-semibold text-gray-100">
+                <div className="text-lg font-semibold text-gray-800">
                   Thời gian luyện thi:{" "}
-                  <span className="text-gray-300">
+                  <span className="text-gray-600">
                     {formatTime(value.duration)}
                   </span>
                 </div>
@@ -185,7 +183,7 @@ const Statisticspage = () => {
                     <TabsTrigger
                       key={sectionKey}
                       value={sectionKey}
-                      className="px-3 py-1.5 bg-gray-500 text-gray-700 rounded-md shadow-sm hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+                      className="px-3 py-1.5 bg-gray-600 text-white rounded-md shadow-sm hover:bg-gray-800 focus:ring-2 focus:ring-gray-100 transition-colors duration-200"
                     >
                       {sectionKey}
                     </TabsTrigger>
@@ -195,17 +193,17 @@ const Statisticspage = () => {
                 {Object.entries(value.sections).map(
                   ([sectionKey, sectionValue]) => (
                     <TabsContent key={sectionKey} value={sectionKey}>
-                      <Card className="p-4 bg-gray-300 rounded-md shadow-inner mt-4">
+                      <Card className="p-4 bg-white rounded-md shadow-lg mt-4">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                          <div className="text-md font-medium text-gray-700">
+                          <div className="text-md font-medium text-gray-800">
                             Số đề đã làm:{" "}
-                            <span className="text-gray-500">
+                            <span className="text-gray-600">
                               {sectionValue.examsCount}
                             </span>
                           </div>
-                          <div className="text-md font-medium text-gray-700 mt-2 sm:mt-0">
+                          <div className="text-md font-medium text-gray-800 mt-2 sm:mt-0">
                             Độ chính xác:{" "}
-                            <span className="text-gray-500">
+                            <span className="text-gray-600">
                               {sectionValue.precision.correct}/
                               {sectionValue.precision.questionCount}
                             </span>
@@ -213,7 +211,7 @@ const Statisticspage = () => {
                         </div>
 
                         {/* Chart */}
-                        <Card className="mt-4 bg-gray-500 text-gray-800 border border-gray-600">
+                        <Card className="mt-4 bg-white text-gray-800 border border-gray-400 shadow-lg">
                           <CardContent>
                             <ChartContainer
                               config={{
@@ -256,7 +254,7 @@ const Statisticspage = () => {
                                 <ChartTooltip
                                   content={
                                     <ChartTooltipContent
-                                      className="bg-gray-800 text-gray-300 p-3 rounded-lg"
+                                      className="bg-white text-gray-800 p-3 rounded-lg border border-gray-400 shadow-lg"
                                       nameKey="precision"
                                       labelFormatter={(value) => {
                                         return new Date(
@@ -286,7 +284,7 @@ const Statisticspage = () => {
                               </LineChart>
                             </ChartContainer>
                           </CardContent>
-                          <CardFooter className="text-sm text-gray-300">
+                          <CardFooter className="text-sm text-gray-600">
                             Độ chính xác qua các ngày
                           </CardFooter>
                         </Card>

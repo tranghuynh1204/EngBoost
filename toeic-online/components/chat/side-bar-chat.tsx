@@ -11,6 +11,7 @@ export const SideBarChat = () => {
   const [userInboxs, setUserInboxs] = useState<Message[]>([]);
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const router = useRouter();
+  const [activeUserId, setActiveUserId] = useState<string | null>(null); // Track active user
 
   useEffect(() => {
     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
@@ -44,6 +45,7 @@ export const SideBarChat = () => {
   }, []);
 
   const handleUserClick = (userId: string) => {
+    setActiveUserId(userId);
     router.replace(`/admin/inbox/${userId}`);
     setUnreadCounts((prevCounts) => ({
       ...prevCounts,
@@ -61,6 +63,7 @@ export const SideBarChat = () => {
           content={item.content}
           unreadCount={unreadCounts[item.user._id] || 0}
           onClick={() => handleUserClick(item.user._id)}
+          isActive={activeUserId === item.user._id}
         />
       ))}
     </ScrollArea>

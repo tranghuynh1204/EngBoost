@@ -66,8 +66,9 @@ const LoginPage = () => {
       router.push(next);
 
       toast({
-        title: "Đăng nhập thành công!",
-        description: "Bạn đã đăng nhập thành công.",
+        variant: "success",
+        title: "Login Successful!",
+        description: "You have successfully logged in.",
       });
     } catch (error: any) {
       if (error.response.status === 404) {

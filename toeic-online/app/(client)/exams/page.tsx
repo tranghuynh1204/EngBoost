@@ -67,8 +67,8 @@ const ExamPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
-      <main className="container mx-auto px-6 py-8 bg-white shadow-sm rounded-2xl border border-slate-300">
-      <div className="flex justify-between items-center pb-4">
+      <main className="container mx-auto px-6 py-6 bg-white shadow-sm rounded-2xl border border-slate-300">
+      <div className="flex justify-between items-center pb-6">
           <h2 className="text-xl font-semibold text-slate-700">Exams</h2>
           <SearchInput
             placeholder="Search exams..."

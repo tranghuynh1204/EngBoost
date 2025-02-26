@@ -92,8 +92,8 @@ export const CommentContainer = () => {
   }, [params.examId]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <div className="container mx-auto py-8">
+      <div className="bg-white  border border-slate-400 rounded-2xl p-6">
         <h2 className="text-2xl font-semibold mb-4 text-black">Bình luận</h2>
         {isLogin ? (
           <Form {...form}>

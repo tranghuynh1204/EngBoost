@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import ExamCard from "@/components/exam/exam-card";
 import { useSearchParams } from "next/navigation";
@@ -8,6 +8,9 @@ import axios, { AxiosResponse } from "axios";
 import { Exam } from "@/types";
 import Link from "next/link";
 import { PaginationCustom } from "@/components/pagination-custom";
+import { SearchInput } from "@/components/ui/search-input";
+import { debounce } from "lodash";
+
 
 const ExamPage: React.FC = () => {
   const searchParams = useSearchParams();
@@ -20,59 +23,59 @@ const ExamPage: React.FC = () => {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  // Số lượng bài thi mỗi lần tải
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Cấu hình Axios
-
-  // Gọi API khi component mount hoặc khi currentTab, offset thay đổi
-  useEffect(() => {
-    async function fetchExamData(
-      category: string,
-      title: string,
-      currentPage: number
-    ) {
-      setLoading(true);
-      setError(null);
-      try {
-        const response: AxiosResponse = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/exams/search`,
-          {
-            params: {
-              category,
-              title,
-              currentPage,
-              pageSize: 15,
-            },
-          }
-        );
-        if (response.data && Array.isArray(response.data.data)) {
-          setExams(response.data.data);
-          setCurrentPage(response.data.currentPage);
-          setTotalPages(response.data.totalPages);
-          // Use response.data.data for the array of exams
-        } else {
-          setExams([]);
+  const fetchExamData = async (category: string, title: string, currentPage: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response: AxiosResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/exams/search`,
+        {
+          params: {
+            category,
+            title,
+            currentPage,
+            pageSize: 15,
+          },
         }
-      } catch {
-        setError("Lỗi khi gọi API");
-      } finally {
-        setLoading(false);
+      );
+      if (response.data && Array.isArray(response.data.data)) {
+        setExams(response.data.data);
+        setCurrentPage(response.data.currentPage);
+        setTotalPages(response.data.totalPages);
+      } else {
+        setExams([]);
       }
+    } catch {
+      setError("Error fetching exams");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    fetchExamData("", "", page);
-  }, [currentTab]);
+  useEffect(() => {
+    fetchExamData(currentTab, searchTerm, page); //can be ""
+  }, [currentTab, page, searchTerm]);
 
-  if (!exams) {
-    return;
-  }
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+      setSearchTerm(query);
+    }, 300),
+    []
+  );
 
   return (
-    <div className="min-h-screen bg-white">
-      <main className="container mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
-          Exam List
-        </h1>
+    <div className="min-h-screen bg-slate-50 py-8">
+      <main className="container mx-auto px-6 py-6 bg-white shadow-sm rounded-2xl border border-slate-300">
+      <div className="flex justify-between items-center pb-6">
+          <h2 className="text-xl font-semibold text-slate-700">Exams</h2>
+          <SearchInput
+            placeholder="Search exams..."
+            onChange={(e) => debouncedSearch(e.target.value)}
+
+          />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {loading ? (
             <div className="col-span-full flex justify-center items-center">

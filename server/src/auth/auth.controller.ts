@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from './auth.guard';
 import { SignInDto } from './dto/sign-in-dto';
 import { User } from '../decorator/user.decorator';
 
@@ -26,5 +26,24 @@ export class AuthController {
   @Get('profile')
   getProfile(@User() user) {
     return user;
+  }
+
+  @Post('refresh')
+  async refreshToken(@Body() body: { refresh_token: string }) {
+    return this.authService.refreshToken(body.refresh_token);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body('otp') otp: string,
+    @Body('newPassword') newPassword: string,
+    @Body('otpToken') otpToken: string,
+  ) {
+    return this.authService.resetPassword(otp, newPassword, otpToken);
   }
 }

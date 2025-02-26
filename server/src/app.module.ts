@@ -8,7 +8,12 @@ import { UserExamModule } from './user-exam/user-exam.module';
 import { CommentModule } from './comment/comment.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { FlashcardModule } from './flashcard/flashcard.module';
+import { VocabularyModule } from './vocabulary/vocabulary.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { UserexamdraftModule } from './userexamdraft/userexamdraft.module';
 import jwtConfig from './config/jwt.config';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -16,11 +21,17 @@ import jwtConfig from './config/jwt.config';
       isGlobal: true,
       load: [jwtConfig],
     }),
+
     MongooseModule.forRoot(process.env.DATABASE_URL),
     ExamModule,
     UserExamModule,
     CommentModule,
     AuthModule,
+    FlashcardModule,
+    VocabularyModule,
+    CloudinaryModule,
+    UserexamdraftModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

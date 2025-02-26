@@ -1,14 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ExcelService } from 'src/excel/excel.service';
 import { Exam } from './entities/exam.entity';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { SectionService } from 'src/section/section.service';
 import { UserExamService } from 'src/user-exam/user-exam.service';
-import { CommentService } from 'src/comment/comment.service';
 import { UserExamResult } from 'src/shared/interfaces/user-exam-result.interface';
-
-import { SectionDto } from 'src/section/entities/section.dto';
+import { GroupDocument } from 'src/section/entities/group.entity';
+import { Response } from 'express';
+import { SectionDocument } from 'src/section/entities/section.entity';
 
 @Injectable()
 export class ExamService {
@@ -16,7 +21,6 @@ export class ExamService {
     private readonly excelService: ExcelService,
     private readonly sectionService: SectionService,
     private readonly userExamService: UserExamService,
-    private readonly commentService: CommentService,
     @InjectModel(Exam.name) private examModel: Model<Exam>,
   ) {}
 
@@ -46,7 +50,54 @@ export class ExamService {
     }
   }
 
-  async findExamDetail(id: string): Promise<Exam> {
+  async update(id: string, file: any): Promise<Exam> {
+    const examData = await this.excelService.parseToExam(file);
+    const session = await this.examModel.db.startSession();
+
+    try {
+      // Lấy exam hiện tại
+      const existingExam = await this.examModel.findById(id);
+
+      if (!existingExam) {
+        throw new Error('Exam not found');
+      }
+
+      const updatedSections = await Promise.all(
+        examData.sections.map(async (newSectionData, index) => {
+          if (existingExam.sections[index]) {
+            const existingSectionId = existingExam.sections[index].toString();
+            const updatedSection = await this.sectionService.update(
+              existingSectionId,
+              newSectionData,
+            );
+            return updatedSection._id;
+          } else {
+            // Nếu không có section ở vị trí này, tạo mới
+            const newSection = await this.sectionService.create(newSectionData);
+            return newSection._id;
+          }
+        }),
+      );
+
+      // Cập nhật sections của exam
+      existingExam.set({
+        ...examData,
+        sections: updatedSections,
+      });
+
+      await existingExam.save();
+
+      // Cam kết giao dịch
+      return existingExam;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async findOne(id: string): Promise<Exam> {
     const [exam] = await this.examModel.aggregate([
       { $match: { _id: new Types.ObjectId(id) } }, // Match the exam by ID
       {
@@ -63,6 +114,15 @@ export class ExamService {
           localField: 'sections',
           foreignField: '_id', // Field in comments that references the exam
           as: 'sections',
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+                questionCount: 1,
+                tags: 1,
+              },
+            },
+          ],
         },
       },
       {
@@ -98,14 +158,13 @@ export class ExamService {
       },
       {
         $project: {
-          comments: 0, // Optionally, remove the comments array
-          userExams: 0, // Optionally, remove the userExams array
+          comments: 0,
+          userExams: 0,
         },
       },
     ]);
-    exam.sections = SectionDto.mapSectionsToDtos(exam.sections);
     if (!exam) {
-      throw new NotFoundException(`Không tìm thấy bài thi với ${id}`);
+      throw new NotFoundException(`Không tìm thấy bài thi`);
     }
 
     return exam;
@@ -119,90 +178,149 @@ export class ExamService {
     );
   }
 
-  async gradeExam(userExamId: string): Promise<UserExamResult> {
-    // Truy vấn bài thi của người dùng
-    const userExam = await this.userExamService.findOne(userExamId);
+  async statistics() {
+    const result = await this.examModel.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          category: '$_id',
+          count: 1,
+        },
+      },
+    ]);
+
+    const data = result.map((item) => ({
+      key: item.category,
+      value: item.count,
+    }));
+
+    const total = result.reduce((sum, item) => sum + item.count, 0);
+
+    return { total, data };
+  }
+
+  async gradeExam(userExamId: string, userId: string) {
+    const userExam = await this.userExamService.findOne(userExamId, userId);
     if (!userExam) {
-      throw new NotFoundException(
-        `Không tìm thấy bài thi với ID: ${userExamId}`,
-      );
+      throw new NotFoundException(`Không tìm thấy bài thi`);
     }
 
     const answers = userExam.answers;
     const mapQuestion = {};
+    const mapGroup = {};
+
     const result: UserExamResult = {
+      exam: userExam.exam,
       sections: [],
       correct: 0,
       incorrect: 0,
       skipped: 0,
+      duration: userExam.duration,
+      result: userExam.result,
+      mapQuestion,
+      mapGroup,
+      mapSectionCategory: Object.fromEntries(
+        userExam.mapSectionCategory.entries(),
+      ),
     };
 
-    // Duyệt qua các phần thi và câu hỏi
+    //Duyệt các phần mà người dùng thi
     for (const sectionExam of userExam.sections) {
-      // Khởi tạo kết quả phần thi
-      const sectionResult = {
+      const mapTagQuestion = {};
+      for (const tag of sectionExam.tags) {
+        mapTagQuestion[tag] = {
+          correct: 0,
+          incorrect: 0,
+          skipped: 0,
+          questions: [],
+        };
+      }
+
+      //tạo kết quả của phần thi hiện tại
+      const currentSection = {
         name: sectionExam.name,
-        tags: sectionExam.tags,
+        mapTagQuestion: mapTagQuestion,
         correct: 0,
         incorrect: 0,
         skipped: 0,
+        serialStart: sectionExam.groups[0].questions[0].serial,
+        serialEnd: sectionExam.groups.at(-1).questions.at(-1).serial,
       };
+      //duyệt các câu hỏi trong phần thi hiện tại
+      for (const group of sectionExam.groups) {
+        const groupDocument = group as GroupDocument;
 
-      for (const question of sectionExam.questions) {
-        // Lấy hoặc tạo mới kết quả tag nếu chưa có
-        if (!mapQuestion[question.tag]) {
-          mapQuestion[question.tag] = {
-            correct: 0,
-            incorrect: 0,
-            skipped: 0,
-            questions: [],
-          };
-        }
-        const tagResult = mapQuestion[question.tag];
-
-        // Tạo đối tượng chứa kết quả câu hỏi
-        const questionResult = {
-          content: question.content,
-          options: question.options,
-          correctAnswer: question.correctAnswer,
-          serial: question.serial,
-          tag: question.tag,
-          answer: answers.get(question.serial),
+        // Thêm dữ liệu vào Map
+        mapGroup[groupDocument._id.toString()] = {
+          documentText: group.documentText,
+          audio: group.audio,
+          image: group.image,
+          transcript: group.transcript,
         };
 
-        // Xác định và cập nhật loại kết quả (correct, incorrect, skipped)
-        if (!questionResult.answer) {
-          result.skipped++;
-          tagResult.skipped++;
-          sectionResult.skipped++;
-        } else if (questionResult.answer !== questionResult.correctAnswer) {
-          result.incorrect++;
-          tagResult.incorrect++;
-          sectionResult.incorrect++;
-        } else {
-          result.correct++;
-          tagResult.correct++;
-          sectionResult.correct++;
+        //tạo câu hỏi kết quả
+        for (const question of group.questions) {
+          const questionResult = {
+            content: question.content,
+            options: question.options,
+            correctAnswer: question.correctAnswer,
+            tags: question.tags,
+            answer: answers.get(question.serial.toString()),
+            group: (group as GroupDocument)._id,
+            answerExplanation: question.answerExplanation,
+          };
+          if (!questionResult.answer) {
+            result.skipped++;
+            currentSection.skipped++;
+          } else if (questionResult.answer !== questionResult.correctAnswer) {
+            result.incorrect++;
+            currentSection.incorrect++;
+          } else {
+            result.correct++;
+            currentSection.correct++;
+          }
+          mapQuestion[question.serial] = questionResult;
+          for (const tag of question.tags) {
+            const TagQuestion = mapTagQuestion[tag];
+            if (!questionResult.answer) {
+              TagQuestion.skipped++;
+            } else if (questionResult.answer !== questionResult.correctAnswer) {
+              TagQuestion.incorrect++;
+            } else {
+              TagQuestion.correct++;
+            }
+            TagQuestion.questions.push(question.serial);
+          }
         }
-
-        // Thêm câu hỏi vào kết quả tag
-        tagResult.questions.push(questionResult);
       }
-
-      // Thêm kết quả phần thi vào mảng kết quả
-      result.sections.push(sectionResult);
+      result.sections.push(currentSection);
     }
 
-    result.mapQuestion = mapQuestion; // Thêm bản đồ các tag vào kết quả
     return result;
   }
-
+  async getAnswerDetail(userExamId: string, userId: string) {
+    const userExam = await this.userExamService.findOne(userExamId, userId);
+    if (!userExam) {
+      throw new NotFoundException(`Không tìm thấy bài thi`);
+    }
+    return {
+      exam: userExam.exam,
+      sections: userExam.sections,
+      answer: userExam.answers,
+    };
+  }
   async searchExams(
     category: string,
     title: string,
-    offset: number = 0,
-    limit: number = 10,
-  ): Promise<Exam[]> {
+    currentPage: number,
+    pageSize: number,
+  ) {
     const query: any = {};
     if (category) {
       query.category = category;
@@ -210,6 +328,9 @@ export class ExamService {
     if (title) {
       query.title = { $regex: title, $options: 'i' }; // Tìm kiếm không phân biệt chữ hoa chữ thường
     }
+    const totalItems = await this.examModel.countDocuments(query).exec();
+    const totalPages = Math.ceil(totalItems / pageSize);
+
     const exams = await this.examModel.aggregate([
       { $match: query },
       {
@@ -257,14 +378,227 @@ export class ExamService {
         },
       },
       {
-        $skip:
-          Number.isInteger(offset) && Number.isInteger(limit)
-            ? offset * limit
-            : 0,
+        $skip: (currentPage - 1) * pageSize,
       },
-      { $limit: limit > 0 && Number.isInteger(limit) ? limit : 10 },
+      { $limit: Number(pageSize) },
+    ]);
+
+    return {
+      data: exams,
+      totalPages,
+      currentPage,
+      pageSize,
+    };
+  }
+
+  async getNew() {
+    const exams = await this.examModel.aggregate([
+      {
+        $lookup: {
+          from: 'comments', // Replace with your comments collection name
+          localField: '_id',
+          foreignField: 'exam',
+          as: 'comments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userexams',
+          localField: '_id',
+          foreignField: 'exam',
+          as: 'userExams',
+        },
+      },
+      {
+        $unwind: { path: '$userExams', preserveNullAndEmptyArrays: true }, // Unwind userExams to individual documents
+      },
+      {
+        $group: {
+          _id: '$_id', // Group by exam ID
+          title: { $first: '$title' },
+          category: { $first: '$category' },
+          duration: { $first: '$duration' },
+          sectionCount: { $first: '$sectionCount' },
+          questionCount: { $first: '$questionCount' },
+          comments: { $first: '$comments' },
+          userExams: { $addToSet: '$userExams.user' },
+          createAt: { $first: '$createAt' },
+        },
+      },
+      {
+        $addFields: {
+          commentCount: { $size: '$comments' }, // Count of comments
+          userCount: { $size: { $ifNull: ['$userExams', []] } }, // Count of users
+        },
+      },
+      {
+        $sort: { createAt: -1 }, // Now, sort by createAt after grouping
+      },
+      {
+        $limit: 8, // Limit to 8 exams
+      },
+      {
+        $project: {
+          comments: 0, // Optionally, remove the comments array
+          userExams: 0,
+        },
+      },
     ]);
 
     return exams;
+  }
+
+  async findSolutions(id: string): Promise<Exam> {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } }, // Lọc theo exam ID
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          sections: {
+            name: 1,
+            groups: {
+              image: 1,
+              transcript: 1,
+              questions: {
+                serial: 1,
+                correctAnswer: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
+  }
+
+  // Lấy solution cho một section cụ thể trong một exam
+  async findSolution(id: string, sectionId: string): Promise<Exam> {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } }, // Lọc theo exam ID
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+          pipeline: [
+            {
+              $match: { _id: new Types.ObjectId(sectionId) }, // Match section by sectionId
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          sections: {
+            name: 1,
+            groups: {
+              image: 1,
+              transcript: 1,
+              questions: {
+                serial: 1,
+                correctAnswer: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
+  }
+
+  async getPractice(id: string, sectionIds: string[]) {
+    const [exam] = await this.examModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: 'sections',
+          localField: 'sections',
+          foreignField: '_id',
+          as: 'sections',
+          pipeline: [
+            {
+              $match: {
+                _id: { $in: sectionIds.map((id) => new Types.ObjectId(id)) },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          sections: {
+            _id: 1,
+            name: 1,
+            groups: {
+              image: 1,
+              audio: 1,
+              documentText: 1,
+              questions: {
+                content: 1,
+                serial: 1,
+                options: 1,
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (!exam) {
+      throw new NotFoundException(`Exam with id ${id} not found`);
+    }
+
+    return exam;
+  }
+
+  async export(id: string, res: Response) {
+    try {
+      // Lấy dữ liệu từ cơ sở dữ liệu
+      const exam = await this.examModel.findById(id).populate('sections');
+
+      if (!exam) {
+        throw new HttpException('Không tìm thấy bài thi', HttpStatus.NOT_FOUND);
+      }
+
+      // Chuẩn bị dữ liệu cho ExcelService
+      const data = {
+        title: exam.title,
+        duration: exam.duration,
+        category: exam.category,
+        sections: exam.sections,
+      };
+
+      // Tạo file Excel
+      const buffer = await this.excelService.export(data);
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader('Content-Disposition', `attachment;`);
+
+      res.end(buffer);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

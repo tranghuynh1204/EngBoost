@@ -12,10 +12,8 @@ export class CreateUserExamDto {
   answers: Map<string, string>;
 
   @IsDate()
-  @Type(() => Date) // Thêm decorator @Type để chuyển đổi chuỗi thành Date
+  @Type(() => Date)
   startTime: Date;
 
-  @IsDate()
-  @Type(() => Date)
-  endTime: Date;
+  duration: number;
 }

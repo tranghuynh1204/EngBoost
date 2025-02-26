@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Comment } from 'src/comment/entities/comment.entity';
+
 import { Section } from 'src/section/entities/section.entity';
 
 export type ExamDocument = HydratedDocument<Exam>;
@@ -24,6 +24,9 @@ export class Exam {
 
   @Prop()
   sectionCount: number;
+
+  @Prop({ default: Date.now })
+  createAt: Date;
 }
 
 export const ExamSchema = SchemaFactory.createForClass(Exam);

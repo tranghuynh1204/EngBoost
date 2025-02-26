@@ -1,10 +1,18 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { UserExamService } from './user-exam.service';
 import { CreateUserExamDto } from './dto/create-user-exam.dto';
 
 import { UserExam } from './entities/user-exam.entity';
 import { User } from 'src/decorator/user.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/shared/enums/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
@@ -20,26 +28,67 @@ export class UserExamController {
     @Body() createUserExamDto: CreateUserExamDto,
     @User() user,
   ): Promise<UserExam> {
-    return this.userExamService.create(createUserExamDto, user.sub); //sau này thêm jwt để biết ng dùng
+    return this.userExamService.create(createUserExamDto, user.sub);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.userExamService.findAll();
-  // }
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/exam/:examId/')
+  async getUserAttemptsByExam(
+    @Param('examId') examId: string,
+    @User() user,
+  ): Promise<UserExam[]> {
+    return await this.userExamService.findAllByExamAndUser(examId, user.sub);
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userExamService.findOne(+id);
-  // }
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/new')
+  async getNew(@User() user) {
+    return await this.userExamService.getNew(user.sub);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserExamDto: UpdateUserExamDto) {
-  //   return this.userExamService.update(+id, updateUserExamDto);
-  // }
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/history')
+  async searchExams(
+    @User() user,
+    @Query('currentPage') currentPage?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    const effectivePage = currentPage || 1;
+    const effectivePageSize = pageSize || 10;
+    return this.userExamService.getHistory(
+      effectivePage,
+      effectivePageSize,
+      user.sub,
+    );
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userExamService.remove(+id);
-  // }
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/analytics')
+  async analytics(@User() user, @Query('days') days: number) {
+    return this.userExamService.analytics(user.sub, days);
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('statistics')
+  async userExamStatistics(@Query('days') days: number) {
+    return this.userExamService.statistics(days);
+  }
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('/exam/:examId/status')
+  async hasUserAttempted(
+    @Param('examId') examId: string,
+    @User() user,
+  ): Promise<{ attempted: boolean }> {
+    const attempted = await this.userExamService.hasUserAttemptedExam(
+      user.sub,
+      examId,
+    );
+    return { attempted };
+  }
 }

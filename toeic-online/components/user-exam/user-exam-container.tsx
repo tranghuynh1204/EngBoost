@@ -11,13 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
+import { TbAbc, TbAccessible, TbCornerRightDown } from "react-icons/tb"
 interface UserExamContainerProps {
   examId: string;
 }
 
 export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
-  const [userExams, setUserExams] = useState<UserExam[]>();
+  const [userExams, setUserExams] = useState<UserExam[] | null>(null);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -31,57 +31,81 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           }
         );
         setUserExams(response.data);
-      } catch (error: unknown) {}
+      } catch (error: unknown) {
+        setUserExams([]);
+      }
     };
     fetchComments();
   }, [examId]);
-  if (!userExams || userExams.length === 0) {
-    return null;
-  }
-  return (
-    <div className="bg-white border border-gray-100 rounded-lg p-6 mt-8">
-      <h2 className="font-bold text-gray-800 mb-4">Kết quả làm bài của bạn:</h2>
 
-      <Table className="w-full text-left">
-        <TableHeader>
-          <TableRow className="border-b border-gray-100">
-            <TableHead className="px-4 py-2 text-gray-600">Ngày làm</TableHead>
-            <TableHead className="px-4 py-2 text-gray-600">Kết quả</TableHead>
-            <TableHead className="px-4 py-2 text-gray-600">
-              Thời gian làm bài
-            </TableHead>
-            <TableHead className="px-4 py-2 text-gray-600"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {userExams.map((userExam) => (
-            <TableRow
-              key={userExam._id}
-              className="hover:bg-gray-100 border-b border-gray-200"
-            >
-              <TableCell className="px-4 py-2 font-medium text-gray-800">
-                {formatDate(userExam.startTime)}
-              </TableCell>
-              <TableCell className="px-4 py-2 text-gray-700">
-                {userExam.result}
-              </TableCell>
-              <TableCell className="px-4 py-2 text-gray-700">
-                {formatTime(userExam.duration)}
-              </TableCell>
-              <TableCell className="px-4 py-2 text-right">
-                <Button
-                  variant="link"
-                  className="text-blue-600 hover:underline"
+  return (
+    <div className="w-full overflow-hidden bg-gradient-to-r from-slate-100 to-slate-50 p-6 border border-slate-400 rounded-md shadow-sm ">
+      <h2 className="font-bold text-gray-800  text-center mb-4">
+        Your Test Results
+      </h2>
+      {userExams && userExams.length > 0 ? (
+        <div className="overflow-auto h-[230px]">
+          <Table className="w-full text-sm text-left ">
+            <TableHeader>
+              <TableRow className="border-b border-gray-100 bg-white ">
+                <TableHead className="px-4 py-2 text-gray-600">Date</TableHead>
+                <TableHead className="px-4 py-2 text-gray-600">
+                  Result
+                </TableHead>
+                <TableHead className="px-4 py-2 text-gray-600">
+                  Duration
+                </TableHead>
+                <TableHead className="px-4 py-2 text-gray-600"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {userExams.map((userExam, index) => (
+                <TableRow
+                  key={userExam._id}
+                  className={`border-b border-slate-400 ${
+                    index % 2 !== 0 ? "bg-white" : "bg-slate-50"
+                  }`}
                 >
-                  <Link href={`/exams/${examId}/result/${userExam._id}`}>
-                    Xem chi tiết
-                  </Link>
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  <TableCell className="px-4 py-2 font-medium text-gray-800">
+                    {formatDate(userExam.startTime)}
+                  </TableCell>
+                  <TableCell className="px-4 py-2 text-gray-700">
+                    {userExam.result}
+                  </TableCell>
+                  <TableCell className="px-4 py-2 text-gray-700">
+                    {formatTime(userExam.duration)}
+                  </TableCell>
+                  <TableCell className="px-4 py-2 text-right">
+                    <Button
+                      variant="link"
+                      className="text-blue-600 text-xs hover:underline"
+                    >
+                      <Link href={`/exams/${examId}/result/${userExam._id}`}>
+                        Details
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <div className="text-center  h-[230px] py-4">
+          <p className="text-gray-700 mt-10 text-sm">
+            You have not taken any practice tests for this exam yet.
+          </p>
+          <Button
+            className="mt-3 bg-slate-800 text-white text-xs px-3 py-0.5 rounded-md hover:bg-slate-800"
+            onClick={() => {
+              const sectionElement = document.getElementById("exam-sections");
+              sectionElement?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Start Now <TbCornerRightDown></TbCornerRightDown>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

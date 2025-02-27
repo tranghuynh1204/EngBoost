@@ -95,29 +95,29 @@ const ExamIdPage = () => {
         {/* Exam Header */}
         <div className="mb-6">
           <div className="flex items-center space-x-2 mb-2">
-            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+            <span className="inline-block bg-slate-400 text-slate-800 text-xs px-2 py-1 rounded-full">
               #{exam.category}
             </span>
           </div>
-          <h1 className="text-3xl text-center font-bold text-gray-800 mb-4">
+          <div className="text-xl text-center font-bold text-gray-800 mb-4">
             {exam.title}
-          </h1>
+          </div>
         </div>
         {/* Updated Tabs using the same styling as your first project */}
         <Tabs defaultValue="1">
           <div className="flex justify-center mb-6">
-            <TabsList className="flex  h-8 border bg-muted/40 border-border/50 rounded-lg p-1">
+            <TabsList className="flex  h-10 border bg-slate-50 border-slate-400 rounded-lg p-1">
               <TabsTrigger
                 value="1"
-                className="flex items-center space-x-2 py-0.5 px-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-none  "
+                className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
               >
                 <TbListNumbers className="w-4 h-4" />
-                <span>Exam Information</span>
+                <span>Information</span>
               </TabsTrigger>
               {isLogin && (
                 <TabsTrigger
                   value="2"
-                  className="flex items-center space-x-2 py-0.5 px-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-none  "
+                  className="flex items-center  space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black"
                 >
                   <TbListCheck className="w-4 h-4" />
                   <span>Transcript</span>
@@ -128,39 +128,83 @@ const ExamIdPage = () => {
 
           <TabsContent value="1">
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-gray-50 to-white p-4 border border-gray-100 rounded-md shadow-sm">
-                <h2 className="font-semibold text-gray-800 mb-2">
-                  Exam Details
-                </h2>
-                <ul className="space-y-3">
-                  <li className="flex items-center text-gray-700">
-                    <TfiTimer className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Duration: {exam.duration} phút</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <GiSpellBook className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Section: {exam.sectionCount} phần</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <TbMessageCircleQuestion className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Questions: {exam.questionCount} câu</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <AiOutlineComment className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Comments: {exam.commentCount} bình luận</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <FaUserAstronaut className="mr-3 text-blue-600 w-5 h-5" />
-                    <span>Users: {exam.userCount} người</span>
-                  </li>
-                </ul>
-              </div>
-              {isLogin && (
-                <div className="mb-6">
-                  <UserExamContainer examId={params.examId as string} />
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="bg-gradient-to-r from-slate-100 to-slate-100 p-6 border border-slate-400 rounded-md shadow-sm w-full md:w-1/2 flex flex-col items-center h-[300px] ">
+                  {/* Centered Title */}
+                  <h2 className="font-semibold  text-gray-800 mb-4 text-center">
+                    Exam Details
+                  </h2>
+
+                  {/* Cards Grid */}
+                  <div className="grid grid-cols-3 gap-6 w-full">
+                    {/* Duration */}
+                    <div className="bg-white p-4 rounded-xl flex flex-col items-center">
+                      {/* <TfiTimer className="text-blue-600 w-6 h-6 mb-2" /> */}
+                      <span className="text-lg font-semibold text-gray-800 mb-1">
+                        {exam.duration}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <TfiTimer className="text-cyan-600 w-4 h-4" />
+                        <span className="text-xs text-gray-500">Minutes</span>
+                      </div>
+                    </div>
+
+                    {/* Sections */}
+                    <div className="bg-white p-4 rounded-xl flex flex-col items-center">
+                      {/* <GiSpellBook className="text-blue-600 w-6 h-6 mb-2" /> */}
+                      <span className="text-lg font-semibold text-gray-800 mb-1">
+                        {exam.sectionCount}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <GiSpellBook className="text-cyan-600 w-4 h-4" />
+                        <span className="text-xs text-gray-500">Sections</span>
+                      </div>
+                    </div>
+
+                    {/* Questions */}
+                    <div className="bg-white p-4  rounded-xl  flex flex-col items-center">
+                      {/* <TbMessageCircleQuestion className="text-blue-600 w-6 h-6 mb-2" /> */}
+                      <span className="text-lg font-semibold text-gray-800 mb-1">
+                        {exam.questionCount}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <TbMessageCircleQuestion className="text-cyan-600 w-4 h-4" />
+                        <span className="text-xs text-gray-500">Questions</span>
+                      </div>
+                    </div>
+
+                    {/* Comments */}
+                    <div className="bg-white p-4 rounded-xl flex flex-col items-center ">
+                      {/* <AiOutlineComment className="text-blue-600 w-6 h-6 mb-2" /> */}
+                      <span className="text-lg font-semibold text-gray-800 mb-1">
+                        {exam.commentCount}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <AiOutlineComment className="text-cyan-600 w-4 h-4" />
+                        <span className="text-xs text-gray-500">Comments</span>
+                      </div>
+                    </div>
+
+                    {/* Users */}
+                    <div className="bg-white p-4 0 rounded-xl flex flex-col items-center col-span-2">
+                      {/* <FaUserAstronaut className="text-blue-600 w-6 h-6 mb-2" /> */}
+                      <span className="text-lg font-semibold text-gray-800 mb-1">
+                        {exam.userCount}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <FaUserAstronaut className="text-cyan-600 w-4 h-4" />
+                        <span className="text-xs text-gray-500">Users</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
-              <div className="mb-6">
+                {isLogin && (
+                  <div className="flex-1 h-[300px] overflow-hidden">
+                    <UserExamContainer examId={params.examId as string} />
+                  </div>
+                )}
+              </div>
+              <div id="exam-sections" className="mb-6">
                 <h2 className="text-2xl font-semibold text-gray-700 mb-4">
                   Exam Sections
                 </h2>
@@ -304,7 +348,6 @@ const ExamIdPage = () => {
         </Tabs>
       </div>
       <CommentContainer />
-      
     </div>
   );
 };

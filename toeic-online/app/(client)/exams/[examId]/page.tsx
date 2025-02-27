@@ -95,7 +95,7 @@ const ExamIdPage = () => {
         {/* Exam Header */}
         <div className="mb-6">
           <div className="flex items-center space-x-2 mb-2">
-            <span className="inline-block bg-slate-400 text-slate-800 text-xs px-2 py-1 rounded-full">
+            <span className="inline-block bg-cyan-50 text-slate-800 text-xs px-2 py-1 rounded-full">
               #{exam.category}
             </span>
           </div>
@@ -106,7 +106,7 @@ const ExamIdPage = () => {
         {/* Updated Tabs using the same styling as your first project */}
         <Tabs defaultValue="1">
           <div className="flex justify-center mb-6">
-            <TabsList className="flex  h-10 border bg-slate-50 border-slate-400 rounded-lg p-1">
+            <TabsList className="flex  h-10 border bg-cyan-50 border-slate-400 rounded-lg p-1">
               <TabsTrigger
                 value="1"
                 className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "

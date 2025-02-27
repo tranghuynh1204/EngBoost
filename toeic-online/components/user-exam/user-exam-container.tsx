@@ -44,7 +44,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
         Your Test Results
       </h2>
       {userExams && userExams.length > 0 ? (
-        <div className="overflow-auto h-[230px]">
+        <div className="overflow-auto h-[210px]">
           <Table className="w-full text-sm text-left ">
             <TableHeader>
               <TableRow className="border-b border-gray-100 bg-white ">

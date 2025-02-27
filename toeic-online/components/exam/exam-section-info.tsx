@@ -33,8 +33,8 @@ export const ExamSectionInfo: React.FC<ExamSectionProps> = ({
       <div className="flex-1">
         {/* Section Header */}
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold text-gray-800">{name}</h3>
-          <span className="text-sm text-gray-600">{questionCount} câu hỏi</span>
+          <h3 className="font-semibold text-gray-800">{name}</h3>
+          <span className="text-xs text-gray-600">{questionCount} câu hỏi</span>
         </div>
 
         {/* Tags */}
@@ -42,7 +42,7 @@ export const ExamSectionInfo: React.FC<ExamSectionProps> = ({
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="bg-blue-50 text-black text-xs px-2 py-1 rounded-full"
+              className="bg-cyan-50 text-black text-xs px-2 py-1 rounded-full"
             >
               #{tag}
             </span>

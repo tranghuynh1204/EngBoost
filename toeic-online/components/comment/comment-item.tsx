@@ -34,7 +34,7 @@ export interface CommentItemProps {
 
 const formSchema = z.object({
   content: z.string().min(1, {
-    message: "Username must be at least 2 characters.",
+    message: "Comment must be at least 1 character.",
   }),
   examId: z.string(),
   repToCommentId: z.string(),
@@ -46,6 +46,7 @@ export const CommentItem = memo(
     const [comments, setComments] = useState<Comment[]>(replies);
     const [isReplying, setIsReplying] = useState<boolean>(false);
     const [isRepliesOpen, setIsRepliesOpen] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -55,24 +56,29 @@ export const CommentItem = memo(
       },
     });
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/comments`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setComments([response.data, ...comments]);
-      form.reset();
-      setIsReplying(false);
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/comments`,
+          values,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setComments([response.data, ...comments]);
+        form.reset();
+        setIsReplying(false);
+      } catch (error) {
+        console.error("Failed to submit reply:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
     };
-
     return (
-      <div className="space-y-4 p-4 border-b border-gray-200">
+      <div className="space-y-3 p-2 ">
         {/* User Information */}
         <div className="flex items-start space-x-4">
           {/* User Avatar */}
@@ -87,12 +93,12 @@ export const CommentItem = memo(
           {/* Comment Content */}
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <p className="text-base font-medium text-gray-900">{user.name}</p>
-              <span className="text-xs text-gray-500">
+              <p className=" font-medium text-gray-900">{user.name}</p>
+              <span className="text-xs text-cyan-600">
                 {formatDate(createdAt)}
               </span>
             </div>
-            <p className="text-gray-800 text-sm bg-white p-3 rounded-lg">
+            <p className="text-gray-700 text-sm bg-white  rounded-lg whitespace-pre-wrap">
               {content}
             </p>
 
@@ -100,10 +106,10 @@ export const CommentItem = memo(
             {isLogin && (
               <button
                 onClick={() => setIsReplying(!isReplying)}
-                className="mt-2 flex items-center text-sm text-blue-600 hover:underline"
+                className="mt-2 flex items-center text-xs text-cyan-600 hover:underline"
               >
-                <ReplyIcon className="w-5 h-5 mr-1" />
-                Trả lời
+                <ReplyIcon className="w-4 h-4 mr-1" />
+                Reply
               </button>
             )}
           </div>
@@ -123,24 +129,26 @@ export const CommentItem = memo(
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Textarea
-                          placeholder="Viết câu trả lời của bạn..."
-                          className="w-full resize-none bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <Textarea
+                            placeholder="Write your reply..."
+                            className="w-full p-4 text-sm border border-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none h-28 pr-16"
+                            {...field}
+                          />
+                          <Button
+                            type="submit"
+                            disabled={isSubmitting || !form.watch("content")}
+                            className="absolute bottom-2 text-sm right-2 bg-cyan-700 text-white rounded-lg hover:bg-cyan-800"
+                          >
+                            {isSubmitting ? "Sending..." : "Send"}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end">
-                  <Button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                  >
-                    Gửi
-                  </Button>
-                </div>
+                
               </form>
             </Form>
           </div>
@@ -151,21 +159,19 @@ export const CommentItem = memo(
           <div>
             <button
               onClick={() => setIsRepliesOpen(!isRepliesOpen)}
-              className="flex items-center text-sm text-gray-500 hover:text-gray-700"
+              className="pl-10 flex items-center text-xs text-gray-500 hover:text-gray-700"
             >
               {isRepliesOpen ? (
-                <ChevronUpIcon className="w-5 h-5 mr-1" />
+                <ChevronUpIcon className="w-4 h-4 mr-1" />
               ) : (
-                <ChevronDownIcon className="w-5 h-5 mr-1" />
+                <ChevronDownIcon className="w-4 h-4 mr-1" />
               )}
-              {isRepliesOpen
-                ? "Ẩn phản hồi"
-                : `Xem ${comments.length} phản hồi`}
+              {isRepliesOpen ? "Hide reply" : `View ${comments.length} replies`}
             </button>
 
             {/* Nested Replies */}
             {isRepliesOpen && (
-              <div className="pl-14 space-y-4 mt-4">
+              <div className="pl-8 space-y-1 mt-1">
                 {comments.map((reply) => (
                   <CommentItem
                     key={reply._id}

@@ -298,9 +298,10 @@ export class UserExamService {
   }
   async hasUserAttemptedExam(userId: string, examId: string): Promise<boolean> {
     const attempt = await this.userExamModel.findOne({
-      where: { userId, examId },
+      user: userId,
+      exam: new Types.ObjectId(examId),
     });
-    return !!attempt; // Returns true if an attempt exists
+    return !!attempt;
   }
   async statistics(days: number) {
     const sinceDate = new Date();

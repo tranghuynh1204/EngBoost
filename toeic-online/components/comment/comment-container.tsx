@@ -22,7 +22,7 @@ import { RootState } from "@/lib/store/store";
 
 const formSchema = z.object({
   content: z.string().min(1, {
-    message: "Bình luận phải có ít nhất 1 kí tự",
+    message: "Comment must be at least 1 character.",
   }),
   examId: z.string(),
 });
@@ -42,7 +42,7 @@ export const CommentContainer = () => {
       examId: params.examId as string,
     },
   });
-
+  const contentValue = form.watch("content");
   const fetchComments = async () => {
     setIsFetchingComments(true);
     try {
@@ -94,7 +94,7 @@ export const CommentContainer = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="bg-white  border border-slate-400 rounded-2xl p-6">
-        <h2 className="text-2xl font-semibold mb-4 text-black">Bình luận</h2>
+        <h2 className=" font-semibold mb-4 text-black">Comment</h2>
         {isLogin ? (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -103,34 +103,35 @@ export const CommentContainer = () => {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="sr-only">Bình luận</FormLabel>
+                    <FormLabel className="sr-only">Comment</FormLabel>
                     <FormControl>
-                      <Textarea
-                        className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-32"
-                        placeholder="Chia sẻ cảm nghĩ của bạn..."
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Textarea
+                          className="w-full p-4 text-sm border border-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none h-32 pr-16"
+                          placeholder="Share your opinion..."
+                          {...field}
+                        />
+                        <Button
+                          type="submit"
+                          className="absolute bottom-3 right-3 bg-cyan-700 text-sm text-white px-4 py-2 rounded-lg hover:bg-cyan-800 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                          disabled={isSubmittingComment || !contentValue.trim()}
+                        >
+                          {isSubmittingComment ? "Sending..." : "Send"}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
-                  disabled={isSubmittingComment} // Disable button while submitting
-                >
-                  {isSubmittingComment ? "Đang gửi..." : "Gửi"}
-                </Button>
-              </div>
+              
             </form>
           </Form>
         ) : (
           <div>Vui lòng đăng nhập để bình luận</div>
         )}
 
-        <div className="space-y-6">
+        <div className="mt-8">
           {isFetchingComments ? (
             <p className="text-center text-gray-500">Đang tải bình luận...</p>
           ) : comments.length > 0 ? (

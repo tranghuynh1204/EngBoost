@@ -78,17 +78,5 @@ export class UserExamController {
   async userExamStatistics(@Query('days') days: number) {
     return this.userExamService.statistics(days);
   }
-  @Roles(Role.USER)
-  @UseGuards(AuthGuard, RolesGuard)
-  @Get('/exam/:examId/status')
-  async hasUserAttempted(
-    @Param('examId') examId: string,
-    @User() user,
-  ): Promise<{ attempted: boolean }> {
-    const attempted = await this.userExamService.hasUserAttemptedExam(
-      user.sub,
-      examId,
-    );
-    return { attempted };
-  }
+  
 }

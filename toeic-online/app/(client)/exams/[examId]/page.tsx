@@ -205,7 +205,7 @@ const ExamIdPage = () => {
                 )}
               </div>
               <div id="exam-sections" className="mb-6">
-                <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                <h2 className=" font-semibold text-gray-700 mb-4">
                   Exam Sections
                 </h2>
                 <div className="flex items-center mb-4">
@@ -215,7 +215,7 @@ const ExamIdPage = () => {
                     onChange={handleSelectEntireExam}
                     className="mr-2"
                   />
-                  <label className="text-lg text-gray-700">
+                  <label className="text-sm text-gray-700">
                     Select All Exam Sections
                   </label>
                 </div>
@@ -234,10 +234,10 @@ const ExamIdPage = () => {
                   ))}
                 </div>
               </div>
-              <div className="mb-6">
+              <div className="mb-6 ">
                 <label
                   htmlFor="time-select"
-                  className="block text-lg font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Select Practice Time:
                 </label>
@@ -245,10 +245,10 @@ const ExamIdPage = () => {
                   onValueChange={(value) => setSelectedTime(value)}
                   defaultValue="0"
                 >
-                  <SelectTrigger id="time-select" className="w-full">
+                  <SelectTrigger id="time-select" className="w-full text-sm">
                     <SelectValue placeholder="Select Practice Time" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent >
                     <SelectItem value="0">No Limit</SelectItem>
                     <SelectItem value="10">5 minutes</SelectItem>
                     <SelectItem value="600">10 minutes</SelectItem>
@@ -282,7 +282,7 @@ const ExamIdPage = () => {
               </div>
               <div className="flex justify-center items-center mb-6">
                 <Button
-                  className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
+                  className="bg-cyan-700 text-sm text-white px-3 py-2 rounded-md hover:bg-cyan-800"
                   disabled={
                     !isEntireExamSelected && selectedSections.length === 0
                   }

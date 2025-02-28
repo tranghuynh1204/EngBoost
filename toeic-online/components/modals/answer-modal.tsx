@@ -55,13 +55,13 @@ export const AnswerModal = () => {
         {/* Group Information */}
         <GroupItem group={group} />
         {/* Question Content */}
-        <div className="mb-4">
-          <strong className="text-gray-900 text-base">
+        <div className="">
+          <strong className="text-zinc-800 text-sm">
             {question.serial}. {question.content}
           </strong>
         </div>
         {/* Options */}
-        <div className="mb-4">
+        <div className="mb-4 ">
           <RadioGroup defaultValue={question.answer} disabled>
             {question.options.map((option, index) => {
               const isCorrect = mapOption[index] === question.correctAnswer;
@@ -72,9 +72,9 @@ export const AnswerModal = () => {
                 <div
                   className={`flex items-center space-x-2 ${
                     isCorrect
-                      ? "text-[rgb(85,124,85)] font-semibold"
+                      ? "text-emerald-700"
                       : isWrongAnswer
-                      ? "text-black"
+                      ? "text-rose-700"
                       : "text-gray-900"
                   }`}
                   key={index}
@@ -85,18 +85,18 @@ export const AnswerModal = () => {
                     id={mapOption[index]}
                     className={`h-4 w-4 rounded-full border-2 ${
                       isCorrect
-                        ? "border-[rgb(85,124,85)] bg-black"
+                        ? " border-emerald-500 bg-emerald-700"
                         : isWrongAnswer
-                        ? "border-red-600 bg-black "
+                        ? "border-rose-500 bg-rose-700 "
                         : "border-gray-400 bg-white"
                     }`}
                   />
                   {/* Nội dung đáp án */}
                   <Label
                     htmlFor={mapOption[index]}
-                    className={`text-base ${
+                    className={`text-sm ${
                       isCorrect
-                        ? "text-[rgb(85,124,85)] font-semibold"
+                        ? "text-[rgb(85,124,85)] font-bold"
                         : isWrongAnswer
                         ? "text-[rgb(250,112,112)]"
                         : "text-gray-900"
@@ -111,7 +111,7 @@ export const AnswerModal = () => {
         </div>
         {/* Answer Explanation */}
         <div
-          className="mb-4 text-gray-700 italic text-sm"
+          className="mb-4 text-zinc-500 bg-slate-100 border border-slate-500 rounded-xl p-4 text-sm"
           dangerouslySetInnerHTML={{ __html: question.answerExplanation }}
         ></div>
       </DialogContent>

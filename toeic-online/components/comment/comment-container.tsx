@@ -147,7 +147,7 @@ export const CommentContainer = () => {
               />
             ))
           ) : (
-            <p className="text-gray-500">Không có bình luận nào.</p>
+            <p className=" text-sm text-center text-gray-500">There are no comments yet.</p>
           )}
         </div>
       </div>
@@ -157,9 +157,9 @@ export const CommentContainer = () => {
           onClick={() => {
             fetchComments();
           }}
-          className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
+          className="bg-cyan-700 text-white px-4 py-2 rounded-lg hover:bg-cyan-800 transition-colors focus:ring-2 focus:ring-gray-500 focus:outline-none"
         >
-          Tải thêm
+          Load more
         </Button>
       </div>
     </div>

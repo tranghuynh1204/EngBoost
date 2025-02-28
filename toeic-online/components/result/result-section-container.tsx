@@ -23,29 +23,31 @@ export const ResultSectionContainer = ({
   sections,
 }: ResultSectionContainerProps) => {
   return (
-    <div className="container border border-gray-100 rounded-lg mx-auto px-4 py-8">
-      <h4 className="text-xl font-semibold text-gray-800 mb-4">
-        Phân tích chi tiết
+    <div className="container border border-slate-400 rounded-xl mx-auto px-6 py-4">
+      <h4 className="text-lg font-semibold text-gray-800 mb-4">
+        Detailed Analysis
       </h4>
 
-      <Tabs defaultValue={sections[0].name} className="w-full">
-        <TabsList className="flex flex-wrap gap-2 mb-4 h-15 text-base bg-gray-100 p-2 rounded-lg">
+      <Tabs defaultValue={sections[0].name} >
+      <div className="flex justify-center mb-6">
+        <TabsList className="flex  h-10 border bg-emerald-50 border-slate-400 rounded-lg p-3">
           {sections.map((section) => (
             <TabsTrigger
               key={section.name}
               value={section.name}
-              className="px-4 py-2 text-base font-medium text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
             >
               {section.name || "Section"}
             </TabsTrigger>
           ))}
         </TabsList>
+        </div>
 
         {sections.map((section) => (
           <TabsContent
             key={section.name}
             value={section.name}
-            className="p-4 bg-gray-50  rounded-lg"
+            className="p-4 bg-slate-50 rounded-lg"
           >
             <ResultSectionItem
               correct={section.correct}

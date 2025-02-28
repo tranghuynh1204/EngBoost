@@ -78,7 +78,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
                   <TableCell className="px-4 py-2 text-right">
                     <Button
                       variant="link"
-                      className="text-blue-600 text-xs hover:underline"
+                      className="text-cyan-600 text-xs hover:underline"
                     >
                       <Link href={`/exams/${examId}/result/${userExam._id}`}>
                         Details
@@ -96,7 +96,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
             You have not taken any practice tests for this exam yet.
           </p>
           <Button
-            className="mt-3 bg-slate-800 text-white text-xs px-3 py-0.5 rounded-md hover:bg-slate-800"
+            className="mt-3 bg-cyan-700 text-white text-xs px-3 py-0.5 rounded-md hover:bg-cyan-800"
             onClick={() => {
               const sectionElement = document.getElementById("exam-sections");
               sectionElement?.scrollIntoView({ behavior: "smooth" });

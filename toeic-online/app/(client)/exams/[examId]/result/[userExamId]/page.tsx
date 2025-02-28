@@ -82,7 +82,8 @@ const UserExamIdPage = () => {
         {/* Header Section */}
         <header className="text-center mb-8">
           <h1 className="text-xl font-bold text-zinc-800">
-          <span className="text-zinc-600">Exam results for </span> {result.exam.title}
+            <span className="text-zinc-600">Exam results for </span>{" "}
+            {result.exam.title}
           </h1>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -221,33 +222,32 @@ const UserExamIdPage = () => {
 
             return (
               <div key={index} className="mb-8">
-                <h2 className="text-xl font-semibold text-black mb-4">
+                <h2 className="font-medium text-zinc-800 mb-4">
                   {section.name}
                 </h2>
-                <div className="grid  grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid  text-sm grid-cols-1 md:grid-cols-3 gap-4">
                   {serials.map((serial) => {
                     const isCorrect =
                       result.mapQuestion[serial].answer ===
                       result.mapQuestion[serial].correctAnswer;
                     const isAnswered = !!result.mapQuestion[serial].answer;
                     const userAnswer =
-                      result.mapQuestion[serial].answer || "Chưa trả lời";
+                      result.mapQuestion[serial].answer || "Not answer yet";
 
                     return (
                       <div
                         key={serial}
-                        className="flex items-start  text-gray-700 space-x-3"
+                        className="flex items-center text-gray-700 space-x-3"
                       >
                         {/* Số thứ tự câu hỏi */}
                         <span
-                          className={`flex items-center justify-center rounded-2xl px-3 py-1 text-white font-semibold text-sm ${
+                          className={`flex items-center  rounded-xl w-9 h-9 justify-center  px-3 py-1 text-white font-semibold text-sm ${
                             isCorrect
-                              ? "bg-[rgb(85,124,85)]"
+                              ? "bg-emerald-500"
                               : isAnswered
-                              ? "bg-[rgb(250,112,112)]"
-                              : "bg-gray-400"
+                              ? "bg-rose-500"
+                              : "bg-zinc-500"
                           }`}
-                          style={{ width: "48px", height: "32px" }}
                         >
                           {serial}
                         </span>
@@ -261,7 +261,11 @@ const UserExamIdPage = () => {
                             :{" "}
                             <span
                               className={
-                                isAnswered && !isCorrect ? " text-red-600" : ""
+                                userAnswer === "Not answer yet"
+                                  ? "text-zinc-400"
+                                  : isAnswered && !isCorrect
+                                  ? "text-rose-600"
+                                  : ""
                               }
                             >
                               {userAnswer}
@@ -282,9 +286,9 @@ const UserExamIdPage = () => {
                                 })
                               )
                             }
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium ml-2"
+                            className="text-cyan-600 hover:text-cyan-800 hover:underline text-xs font-medium ml-2"
                           >
-                            [Chi tiết]
+                            [Details]
                           </button>
                         </div>
                       </div>

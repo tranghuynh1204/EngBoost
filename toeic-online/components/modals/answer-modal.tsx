@@ -34,11 +34,11 @@ export const AnswerModal = () => {
     >
       <DialogContent
         aria-labelledby="dialog-title"
-        className="w-[900px] max-h-[90vh] max-w-full overflow-y-auto"
+        className="w-[900px] max-h-[90vh] max-w-full bg-slate-50 overflow-y-auto"
       >
         <DialogHeader>
           <DialogTitle className="text-lg font-bold">
-            Đáp án chi tiết #{question.serial}
+            Detailed Answer #{question.serial}
           </DialogTitle>
         </DialogHeader>
         {/* Tags */}
@@ -46,7 +46,7 @@ export const AnswerModal = () => {
           {question.tags.map((tag, index) => (
             <span
               key={index}
-              className="text-[12px] px-2 py-1 rounded bg-[rgb(242,255,233)] text-gray-700"
+              className="text-[12px] px-2 py-1 rounded bg-cyan-50 text-gray-700"
             >
               #{tag}
             </span>

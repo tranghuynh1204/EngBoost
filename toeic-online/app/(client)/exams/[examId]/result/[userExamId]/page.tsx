@@ -82,7 +82,7 @@ const UserExamIdPage = () => {
         {/* Header Section */}
         <header className="text-center mb-8">
           <h1 className="text-xl font-bold text-zinc-800">
-          <span className="text-zinc-600">Exam Results for </span> {result.exam.title}
+          <span className="text-zinc-600">Exam results for </span> {result.exam.title}
           </h1>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

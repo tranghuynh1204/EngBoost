@@ -47,7 +47,7 @@ export const ResultSectionContainer = ({
           <TabsContent
             key={section.name}
             value={section.name}
-            className="p-4 bg-gray-50  rounded-lg"
+            className="p-4 bg-slate-50 rounded-lg"
           >
             <ResultSectionItem
               correct={section.correct}

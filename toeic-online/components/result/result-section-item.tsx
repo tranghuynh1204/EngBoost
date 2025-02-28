@@ -32,12 +32,12 @@ export const ResultSectionItem = ({
     <div>
       <Table>
         <TableHeader>
-          <TableRow className="text-base">
-            <TableHead>Phân loại câu hỏi</TableHead>
-            <TableHead>Số câu đúng</TableHead>
-            <TableHead>Số câu sai</TableHead>
-            <TableHead>Số câu bỏ qua</TableHead>
-            <TableHead>Danh sách câu hỏi</TableHead>
+          <TableRow className="text-sm">
+            <TableHead className="font-semibold text-zinc-700">Question classification</TableHead>
+            <TableHead className="font-semibold text-zinc-700">Correct answer</TableHead>
+            <TableHead className="font-semibold text-zinc-700">Wrong answer</TableHead>
+            <TableHead className="font-semibold text-zinc-700">Skipped answer</TableHead>
+            <TableHead className="font-semibold text-zinc-700">List question</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

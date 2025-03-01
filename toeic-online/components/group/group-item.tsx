@@ -8,7 +8,7 @@ interface GroupItemProps {
 
 export const GroupItem = ({ group }: GroupItemProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Audio Player */}
       {group.audio && (
         <audio

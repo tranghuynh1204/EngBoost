@@ -39,7 +39,7 @@ export const GroupItem = ({ group }: GroupItemProps) => {
       {/* Document Text */}
       {group.documentText && (
         <div
-          className=" bg-slate-100 text-sm p-4 rounded-xl  border text-zinc-700"
+          className=" bg-slate-100 text-sm p-4 rounded-xl  border border-slate-500 text-zinc-700"
           dangerouslySetInnerHTML={{ __html: group.documentText }}
         ></div>
       )}

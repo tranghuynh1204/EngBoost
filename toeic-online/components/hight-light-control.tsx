@@ -3,6 +3,8 @@ import { Button } from "./ui/button";
 import { openModal } from "@/lib/store/modal-slice";
 import { useDispatch } from "react-redux";
 import { MdOutlineLibraryAdd } from "react-icons/md";
+import { TbMessage2Plus } from "react-icons/tb";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 export const HightLightControl = () => {
   const dispatch = useDispatch();
   const [position, setPosition] = useState({
@@ -67,12 +69,24 @@ export const HightLightControl = () => {
         top: `${position.top}px`,
         left: `${position.left}px`,
       }}
-      className={`absolute bg-blue-100
+      className={`absolute bg-cyan-50 border rounded-lg border-cyan-400
        ${hidden ? "hidden" : ""}`}
     >
-      <Button onClick={onClick}>
-        <MdOutlineLibraryAdd size={22} />
-      </Button>
+      <TooltipProvider>
+        <Tooltip >
+          <TooltipTrigger asChild > 
+            <Button
+              onClick={onClick}
+              className="p-1 h-8 w-8 flex items-center justify-center"
+            >
+              <TbMessage2Plus size={18} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="bg-black text-white" side="right" >
+            <p>Add to Flashcards</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };

@@ -91,7 +91,7 @@ const ExamIdPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       {/* White Frame Container */}
-      <div className="container mx-auto px-6 py-6 bg-white shadow-sm border border-slate-400 rounded-2xl p-6">
+      <div className="container mx-auto px-6 py-6 bg-white shadow-sm border border-slate-500 rounded-2xl p-6">
         {/* Exam Header */}
         <div className="mb-6">
           <div className="flex items-center space-x-2 mb-2">

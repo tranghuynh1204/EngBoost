@@ -24,8 +24,8 @@ export const FlashcardItem = ({
         rounded-lg
         p-4
         border
-        border-slate-300
-        hover:border-slate-400
+        border-slate-400
+        hover:border-slate-500
         transition-transform
         transform
         hover:scale-105

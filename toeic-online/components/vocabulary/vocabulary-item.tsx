@@ -16,6 +16,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Divide, Edit3, Trash2, Volume2 } from "lucide-react";
+import { TbProgressCheck, TbTrash } from "react-icons/tb";
+import { Button } from "../ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface VocabularyItemProps {
   owner: boolean;
@@ -38,7 +41,24 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
           },
         }
       );
-      window.location.reload();
+      toast({
+        description: (
+          <div className="flex items-center space-x-3">
+            <TbProgressCheck className="text-green-500 flex-shrink-0" size={22} />
+            <div>
+              <span className="block font-semibold">Deleted Successfully</span>
+              <span className="block text-sm text-gray-600">
+                The vocabulary has been deleted.
+              </span>
+            </div>
+          </div>
+        ),
+        variant: "success",
+      });
+      // Optionally, wait a moment before reloading so the user sees the toast:
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       //thêm dùm cái thông báo
     } catch {
     } finally {
@@ -59,108 +79,116 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
     }
   };
   return (
-    <div className="p-4 mb-4 border border-[rgb(185,180,199)] rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow">
-      {/* Header: Word, Part of Speech, and Audio */}
-      <div className="flex justify-between items-center">
-        <div className="flex-1">
-          <div className="text-lg font-bold text-[rgb(53,47,68)]">
-            {vocabulary.word}
-            {vocabulary.partOfSpeech && (
-              <span className="text-sm text-[rgb(92,84,112)]">
-                ({vocabulary.partOfSpeech})
-              </span>
-            )}
-          </div>
-          <div className="flex items-center space-x-4 mt-2 text-gray-600">
-            <button
-              className="text-[rgb(92, 84, 112)] hover:text-[rgb(92,84,112)] flex items-center"
-              onClick={() => togglePlayPause(ukAudioRef.current)}
-            >
-              <Volume2 className="w-4 h-4" />
-              <span>UK</span>
-              <audio preload="none" ref={ukAudioRef}>
-                <source
-                  src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=1`}
-                />
-              </audio>
-            </button>
-            <button
-              className="text-[rgb(92, 84, 112)] hover:text-[rgb(92,84,112)] flex items-center"
-              onClick={() => togglePlayPause(usAudioRef.current)}
-            >
-              <Volume2 className="w-4 h-4" />
-              <span>US</span>
-              <audio preload="none" ref={usAudioRef}>
-                <source
-                  src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=2`}
-                />
-              </audio>
-            </button>
-          </div>
-        </div>
-        {vocabulary.image && (
-          <Image
-            src={vocabulary.image}
-            width={250}
-            height={250}
-            alt="Vocabulary"
-            className="rounded-md object-cover"
-          />
-        )}
-      </div>
-
-      {/* Word + Definition (Compact Line) */}
-      <div className="mt-4">
-        <div className="flex items-center space-x-4">
-          <div className="flex-1 text-sm">
-            <div className="font-medium text-gray-900">
-              <strong>{vocabulary.word}: </strong>
-              {vocabulary.mean}
+    <div
+      onDoubleClick={() =>
+        dispatch(
+          openModal({
+            type: "UpdateVocabulary",
+            data: { vocabulary },
+          })
+        )
+      }
+      className="
+      group
+        flex flex-col justify-between
+        bg-slate-50
+        w-[350px]
+        h-[290px]
+        rounded-lg
+        p-4
+        border
+        border-slate-400
+        hover:border-slate-500
+        transition-transform transform hover:scale-105 hover:shadow-sm
+        duration-200 ease-in-out cursor-pointer
+      "
+    >
+      {/* Header: Image/Icon, Word, Part of Speech, and Audio Controls */}
+      <div className="flex justify-between items-start">
+        <div className="flex items-center space-x-3">
+          {vocabulary.image ? (
+            <Image
+              src={vocabulary.image}
+              alt={vocabulary.word ?? "Vocabulary image"}
+              width={50}
+              height={50}
+              className="rounded-lg object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-10 h-10 bg-sky-100 rounded-lg">
+              {/* Fallback icon or placeholder */}
+              <span className="text-sky-600 text-xs">N/A</span>
+            </div>
+          )}
+          <div>
+            <div className="text-lg font-bold text-[rgb(53,47,68)]">
+              {vocabulary.word}
+              {vocabulary.partOfSpeech && (
+                <span className="text-sm text-[rgb(92,84,112)] ml-1">
+                  ({vocabulary.partOfSpeech})
+                </span>
+              )}
+            </div>
+            <div className="flex items-center space-x-2 mt-1 text-gray-600 text-xs">
+              <button
+                className="flex items-center space-x-1 text-[rgb(92,84,112)] hover:text-[rgb(92,84,112)]"
+                onClick={() => togglePlayPause(ukAudioRef.current)}
+              >
+                <Volume2 className="w-4 h-4" />
+                <span>UK</span>
+                <audio preload="none" ref={ukAudioRef}>
+                  <source
+                    src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=1`}
+                  />
+                </audio>
+              </button>
+              <button
+                className="flex items-center space-x-1 text-[rgb(92,84,112)] hover:text-[rgb(92,84,112)]"
+                onClick={() => togglePlayPause(usAudioRef.current)}
+              >
+                <Volume2 className="w-4 h-4" />
+                <span>US</span>
+                <audio preload="none" ref={usAudioRef}>
+                  <source
+                    src={`https://dict.youdao.com/dictvoice?audio=${vocabulary.word}&type=2`}
+                  />
+                </audio>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Examples (if any) */}
-      {vocabulary.example && (
-        <div className="mt-2 text-sm text-[rgb(185, 180, 199)]">
-          <strong>Example:</strong> {vocabulary.example}
+      {/* Body: Full Details */}
+      <div className="mt-5 flex-grow overflow-y-auto text-sm text-gray-700 whitespace-pre-wrap">
+        <div className="mb-2">
+          <strong>Definition:</strong>
+          <div>{vocabulary.mean}</div>
         </div>
-      )}
-
-      {/* Notes (if any) */}
-      {vocabulary.notes && (
-        <div className="mt-2 text-sm text-[rgb(185,180,199)]">
-          <strong>Note:</strong> {vocabulary.notes}
-        </div>
-      )}
-
+        {vocabulary.example && (
+          <div className="mb-2">
+            <strong>Example:</strong>
+            <div>{vocabulary.example}</div>
+          </div>
+        )}
+        {vocabulary.notes && (
+          <div>
+            <strong>Note:</strong>
+            <div>{vocabulary.notes}</div>
+          </div>
+        )}
+      </div>
       {/* Actions: Edit and Delete */}
       {owner && (
         <div className="flex justify-end items-center mt-4 space-x-4">
-          <button
-            className="flex items-center space-x-1 text-blue-600 hover:underline"
-            onClick={() =>
-              dispatch(
-                openModal({
-                  type: "UpdateVocabulary",
-                  data: { vocabulary },
-                })
-              )
-            }
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>Edit</span>
-          </button>
           <AlertDialog>
             <AlertDialogTrigger
-              className="flex items-center space-x-1 text-red-600 hover:underline"
+              className="hidden group-hover:flex items-center space-x-1 rounded-md text-slate-800 hover:text-rose-600 hover:bg-rose-50 hover:underline px-2 py-2"
               disabled={deleting}
             >
-              <Trash2 className="w-4 h-4" />
-              <span>Delete</span>
+              <TbTrash className="w-4 h-4" />
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="bg-slate-50 border border-slate-400">
               <AlertDialogHeader>
                 <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                 <AlertDialogDescription>

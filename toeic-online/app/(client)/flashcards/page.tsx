@@ -50,7 +50,7 @@ const FlashcardPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
-      <main className="container mx-auto px-6 py-4 bg-white shadow-sm rounded-2xl border border-slate-300">
+      <main className="container mx-auto px-6 py-4 bg-white shadow-sm rounded-2xl border border-slate-400">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-bold">Exam</h1>
           {/* <button
@@ -79,7 +79,7 @@ const FlashcardPage = () => {
                   )
                 }
                 className="flex flex-col justify-between bg-slate-50 w-[230px] h-[180px] rounded-lg 
-                p-4 border-2 border-dashed border-slate-300 hover:border-slate-400 transition-transform 
+                p-4 border-2 border-dashed border-slate-400 hover:border-slate-400 transition-transform 
                 transform hover:scale-105 hover:shadow-sm duration-200 ease-in-out cursor-pointer"
               >
                 {/* Icon + Title */}

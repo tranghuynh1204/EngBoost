@@ -40,7 +40,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Flashcard } from "@/types";
-import { TbCodePlus, TbHeartPlus } from "react-icons/tb";
+import { TbCodePlus, TbHeartPlus, TbProgressCheck } from "react-icons/tb";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   flashcard: z.string(),
@@ -122,7 +123,7 @@ export const CreateVocabularyModal = () => {
       if (!values.title || values.title.length < 2) {
         form.setError("title", {
           type: "required",
-          message: "Title phải có ít nhất 2 ký tự khi tạo mới danh sách.",
+          message: "Title must have at least 2 characters when creating a new list.",
         });
         form.setFocus("title");
         return;
@@ -136,7 +137,7 @@ export const CreateVocabularyModal = () => {
       if (!values.flashcard || values.flashcard.trim() === "") {
         form.setError("flashcard", {
           type: "required",
-          message: "Phải chọn 1 list từ vựng",
+          message: "You must select a vocabulary list.",
         });
         form.setFocus("flashcard");
         return;
@@ -184,6 +185,18 @@ export const CreateVocabularyModal = () => {
         file: undefined,
       });
       dispatch(closeModal());
+      
+      toast({
+        title: "Success!",
+        description: (
+          <div className="flex items-center space-x-2">
+            <TbProgressCheck className="text-green-600" size={18} />
+            <span>Vocabulary added successfully.</span>
+          </div>
+        ),
+        variant: "success",
+      });
+
       if (isReload) {
         window.location.reload();
       }
@@ -202,7 +215,7 @@ export const CreateVocabularyModal = () => {
     >
       <DialogContent
         aria-labelledby="dialog-title"
-        className="w-[700px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-auto p-6 bg-slate-50 rounded-lg shadow-xl"
+        className="w-[700px] max-w-full max-h-[95vh] lg:max-w-screen-lg overflow-y-auto p-6 bg-slate-50 rounded-lg shadow-xl"
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-gray-800">
@@ -220,10 +233,10 @@ export const CreateVocabularyModal = () => {
                       setCreateFlashCard(!createFlashCard);
                     }}
                     type="button"
-                    className="text-xs text-zinc-700 font-light px-2 py-3 bg-white  "
+                    className="text-sm text-zinc-700 font-light px-2 py-3 bg-white  "
                   >
-                    <TbHeartPlus className="text-rose-400" size={18} /> New
-                    Flashcard
+                    <TbHeartPlus className="text-rose-400" size={18} />{" "}
+                    {createFlashCard ? "Use Saved List" : "New Flashcard"}
                   </Button>
                 )}
               </div>
@@ -241,7 +254,7 @@ export const CreateVocabularyModal = () => {
                     render={({ field }) => (
                       <FormItem className="space-y-2">
                         <FormLabel className="text-sm text-gray-700">
-                          Chọn list từ vựng
+                          Select Vocabulary List
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -267,7 +280,7 @@ export const CreateVocabularyModal = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage className="text-xs text-rose-500"/>
                       </FormItem>
                     )}
                   />
@@ -279,16 +292,16 @@ export const CreateVocabularyModal = () => {
                       name="title"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm text-gray-700">
-                            Tiêu đề
+                          <FormLabel className="text-sm text-gray-700  ">
+                            Title
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                              className="w-full border p-2  border-slate-500 rounded-md  focus:ring-2 focus:ring-sky-500"
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-rose-500 text-xs" />
                         </FormItem>
                       )}
                     />
@@ -298,12 +311,12 @@ export const CreateVocabularyModal = () => {
                       render={({ field }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className="text-sm text-gray-700">
-                            Mô tả
+                            Description
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                              className="w-full border p-2  border-slate-500 rounded-md  focus:ring-2 focus:ring-sky-500"
                             />
                           </FormControl>
                           <FormMessage />
@@ -372,8 +385,8 @@ export const CreateVocabularyModal = () => {
                         field: { value, onChange, ...fieldProps },
                       }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm text-gray-700">
-                            Picture
+                          <FormLabel className="text-sm text-gray-700 font-semibold">
+                            Image
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -398,7 +411,7 @@ export const CreateVocabularyModal = () => {
                       name="partOfSpeech"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm text-gray-700">
+                          <FormLabel className="text-sm text-gray-700 font-semibold">
                             Word form
                           </FormLabel>
                           <FormControl>
@@ -417,8 +430,8 @@ export const CreateVocabularyModal = () => {
                       name="pronunciation"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm text-gray-700">
-                            Phiên âm
+                          <FormLabel className="text-sm text-gray-700 font-semibold">
+                          Pronunciation
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -436,8 +449,8 @@ export const CreateVocabularyModal = () => {
                       name="example"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm text-gray-700">
-                            Ví dụ
+                          <FormLabel className="text-sm text-gray-700 font-semibold">
+                            Example
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -455,8 +468,8 @@ export const CreateVocabularyModal = () => {
                       name="notes"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm text-gray-700">
-                            Ghi chú
+                          <FormLabel className="text-sm text-gray-700 font-semibold">
+                            Note
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -473,8 +486,8 @@ export const CreateVocabularyModal = () => {
               </Accordion>
 
               {/* Submit Button */}
-              <div className="justify-items-center">
-                <Button className="" type="submit" disabled={isSubmitting}>
+              <div className="flex font-semibold justify-center">
+                <Button type="submit" disabled={isSubmitting}>
                   Submit
                 </Button>
               </div>

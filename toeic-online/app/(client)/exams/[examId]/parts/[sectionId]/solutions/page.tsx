@@ -59,7 +59,7 @@ const SectionIdPage = () => {
     <div className="container mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-center mb-2">
+        <h1 className="text-xl font-bold text-center mb-2">
           Đáp án/Transcript: {exam.title}
         </h1>
         <h2 className="text-xl text-gray-700 text-center">

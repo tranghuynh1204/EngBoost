@@ -17,7 +17,7 @@ export const Counter = ({ onSubmit, counter, isSubmit }: CounterProps) => {
   }, []);
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
+      <h2 className="text-2xl font-semibold mb-6 mt-2 text-center text-cyan-700">
         <span>
           <span className="font-bold">{formatTime(count)}</span>
         </span>
@@ -26,9 +26,9 @@ export const Counter = ({ onSubmit, counter, isSubmit }: CounterProps) => {
         <Button
           onClick={onSubmit}
           disabled={isSubmit}
-          className="w-full flex items-center justify-center px-4 py-2 border border-white bg-black text-white rounded-lg shadow hover:bg-gray-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full flex items-center justify-center bg-cyan-700 text-sm text-white px-4 py-2 rounded-lg hover:bg-cyan-800"
         >
-          Nộp bài
+          Submit
         </Button>
       </div>
     </div>

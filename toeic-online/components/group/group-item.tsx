@@ -8,7 +8,7 @@ interface GroupItemProps {
 
 export const GroupItem = ({ group }: GroupItemProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Audio Player */}
       {group.audio && (
         <audio
@@ -39,7 +39,7 @@ export const GroupItem = ({ group }: GroupItemProps) => {
       {/* Document Text */}
       {group.documentText && (
         <div
-          className=" p-4 rounded-xl  border text-gray-800"
+          className=" bg-slate-100 text-sm p-4 rounded-xl  border border-slate-500 text-zinc-700"
           dangerouslySetInnerHTML={{ __html: group.documentText }}
         ></div>
       )}

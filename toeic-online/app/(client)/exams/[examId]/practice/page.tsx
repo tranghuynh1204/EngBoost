@@ -209,134 +209,153 @@ const PracticeExamPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 flex space-x-6">
-      {/* Sidebar or Highlight Control */}
-      <HightLightControl />
-      <div className="flex-1 overflow-y-auto">
-        {/* Exam Title */}
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          {exam.title}
-        </h1>
+    <div className="min-h-screen bg-slate-50 py-8">
+      <div className="container bg-white rounded-xl border border-slate-500 mx-auto p-6 flex space-x-6">
+        {/* Sidebar or Highlight Control */}
+        <HightLightControl />
+        <div className="flex-1 overflow-y-auto">
+          {/* Exam Title */}
+          <h1 className="text-xl font-bold mb-6 text-center text-gray-800">
+            {exam.title}
+          </h1>
 
-        {/* Tabs for Sections */}
-        <Tabs
-          className="w-full"
-          value={exam.sections[indexSection]._id}
-          defaultValue={exam.sections[0]._id}
-        >
-          {/* Tabs List */}
-          <TabsList className="flex space-x-2  p-2 rounded-lg mb-6 shadow">
-            {exam.sections.map((section, index) => (
-              <TabsTrigger
-                value={section._id}
-                key={section._id}
-                onClick={() => setIndexSection(index)}
-                className="px-4 py-2 font-medium text-gray-700 hover:text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 data-[state=active]:bg-gray-200 data-[state=active]:text-gray-900 data-[state=active]:font-bold"
-              >
-                {section.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          {/* Tabs for Sections */}
+          <Tabs
+            className=""
+            value={exam.sections[indexSection]._id}
+            defaultValue={exam.sections[0]._id}
+          >
+            {/* Tabs List */}
+            <div className="flex justify-center mb-4">
+              <TabsList className="inline-flex space-x-2 items-center h-10 border bg-cyan-50 border-slate-400 rounded-lg p-4 w-auto">
+                {exam.sections.map((section, index) => (
+                  <TabsTrigger
+                    value={section._id}
+                    key={section._id}
+                    onClick={() => setIndexSection(index)}
+                    className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black"
+                  >
+                    {section.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
-          {/* Tabs Content */}
-          {exam.sections.map((section) => (
-            <TabsContent value={section._id} key={section._id}>
-              {/* Section Title */}
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                {section.name}
-              </h2>
+            {/* Tabs Content */}
+            {exam.sections.map((section) => (
+              <TabsContent value={section._id} key={section._id}>
+                {/* Section Title */}
+                <h2 className=" w-full font-semibold mb-4 text-zinc-800">
+                  {section.name}
+                </h2>
 
-              {/* Groups */}
-              {section.groups.map((group, index) => (
-                <div key={index} className="mb-8">
-                  <GroupItem group={group} />
+                {/* Groups */}
+                {section.groups.map((group, index) => (
+                  <div key={index} className="mb-8">
+                    <GroupItem group={group} />
 
-                  {/* Questions */}
-                  {group.questions.map((question) => (
-                    <div
-                      key={question.serial}
-                      id={`question-${question.serial}`}
-                      className="mb-6 p-4 border border-gray-200 rounded-lg shadow bg-white"
-                    >
-                      <p className="mb-4 text-lg font-medium text-gray-900">
-                        {question.serial}. {question.content}
-                      </p>
-                      <RadioGroup
-                        defaultValue={
-                          answeredQuestions.current?.[question.serial]
-                        }
-                        onValueChange={(value) => {
-                          if (childRef.current)
-                            childRef.current.callMe(question.serial);
-                          answeredQuestions.current[question.serial] = value;
-                        }}
+                    {/* Questions */}
+                    {group.questions.map((question) => (
+                      <div
+                        key={question.serial}
+                        id={`question-${question.serial}`}
+                        className="mb-6 mt-4 p-4 border border-slate-500 rounded-xl bg-slate-50"
                       >
-                        <div className="space-y-3">
-                          {question.options.map((option, oIndex) => (
-                            <div
-                              className="flex items-center space-x-3"
-                              key={oIndex}
-                            >
-                              <RadioGroupItem
-                                value={mapOption[oIndex]}
-                                id={`${question.serial}-${mapOption[oIndex]}`}
-                                className="cursor-pointer"
-                              />
-                              <Label
-                                htmlFor={`${question.serial}-${mapOption[oIndex]}`}
-                                className="text-gray-700 cursor-pointer"
+                        <p className="mb-4 text-sm font-semibold text-gray-900">
+                          {question.serial}. {question.content}
+                        </p>
+                        <RadioGroup
+                          defaultValue={
+                            answeredQuestions.current?.[question.serial]
+                          }
+                          onValueChange={(value) => {
+                            if (childRef.current)
+                              childRef.current.callMe(question.serial);
+                            answeredQuestions.current[question.serial] = value;
+                          }}
+                        >
+                          <div className="space-y-3 text-sm">
+                            {question.options.map((option, oIndex) => (
+                              <div
+                                className="flex items-center space-x-3"
+                                key={oIndex}
                               >
-                                {option}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  ))}
+                                <RadioGroupItem
+                                  value={mapOption[oIndex]}
+                                  id={`${question.serial}-${mapOption[oIndex]}`}
+                                  className="
+        peer
+        h-4 w-4
+        rounded-full
+        border
+        border-cyan-600
+        text-white
+        ring-offset-white
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-offset-2
+        focus-visible:ring-cyan-400
+        data-[state=checked]:bg-cyan-600
+        data-[state=checked]:border-cyan-700
+      "
+                                />
+
+                                <Label
+                                  htmlFor={`${question.serial}-${mapOption[oIndex]}`}
+                                  className="text-gray-700 cursor-pointer"
+                                >
+                                  {option}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {/* Navigation Buttons */}
+                <div
+                  className={`flex mt-8 ${
+                    indexSection !== 0 ? "justify-between" : "justify-end"
+                  }`}
+                >
+                  {indexSection !== 0 && (
+                    <Button
+                      onClick={handlePrevious}
+                      className="px-3 py-2 text-sm  bg-cyan-700 text-white hover:bg-cyan-900 transition"
+                    >
+                      Previous
+                    </Button>
+                  )}
+                  {indexSection < exam.sections.length - 1 && (
+                    <Button
+                      onClick={handleNext}
+                      className="px-3 py-2 text-sm  bg-cyan-700 text-white hover:bg-cyan-900 transition"
+                    >
+                      Next
+                    </Button>
+                  )}
                 </div>
-              ))}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
 
-              {/* Navigation Buttons */}
-              <div
-                className={`flex mt-8 ${
-                  indexSection !== 0 ? "justify-between" : "justify-end"
-                }`}
-              >
-                {indexSection !== 0 && (
-                  <Button
-                    onClick={handlePrevious}
-                    className="px-6 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black transition"
-                  >
-                    Previous
-                  </Button>
-                )}
-                {indexSection < exam.sections.length - 1 && (
-                  <Button
-                    onClick={handleNext}
-                    className="px-6 py-2 text-sm font-medium rounded-md bg-gray-700 text-white hover:bg-black transition"
-                  >
-                    Next
-                  </Button>
-                )}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
-      </div>
-
-      <div className="w-64 hidden lg:block sticky top-20 self-start space-y-6">
-        <Counter
-          onSubmit={onSubmit}
-          isSubmit={isSubmit}
-          counter={countRef.current}
-        />
-        <QuestionTracker
-          answeredQuestionsRef={answeredQuestions.current}
-          ref={childRef}
-          sections={exam.sections}
-          onNavigate={handleNavigate}
-        />
+        <div className="w-64 hidden lg:block sticky top-20 self-start space-y-6">
+          <Counter
+            onSubmit={onSubmit}
+            isSubmit={isSubmit}
+            counter={countRef.current}
+          />
+          <QuestionTracker
+            answeredQuestionsRef={answeredQuestions.current}
+            ref={childRef}
+            sections={exam.sections}
+            onNavigate={handleNavigate}
+          />
+        </div>
       </div>
     </div>
   );

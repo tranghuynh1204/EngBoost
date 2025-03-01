@@ -12,7 +12,7 @@ export const SolutionItem = ({ groups }: SolutionItemProps) => {
       {groups.map((group, index) => (
         <div
           key={index}
-          className="bg-white p-6 rounded-lg shadow-lg border border-gray-200"
+          className="bg-white border border-slate-400 p-6 rounded-xl "
         >
           {/* Group Content */}
           <GroupItem group={group} />
@@ -22,15 +22,15 @@ export const SolutionItem = ({ groups }: SolutionItemProps) => {
             {group.questions.map((question) => (
               <div
                 key={question.serial}
-                className="mb-6 p-4 rounded-md bg-gray-50 shadow-sm border border-gray-100"
+                className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-500"
               >
-                <div className="flex items-start space-x-4">
-                  <span className="font-bold text-lg text-blue-600">
+                <div className="flex items-center space-x-4">
+                  <span className="font-bold text-cyan-600">
                     {question.serial}.
                   </span>
-                  <p className="text-gray-800">
+                  <p className="text-sm text-gray-800">
                     Đáp án đúng là:{" "}
-                    <span className="font-semibold text-green-600">
+                    <span className="font-semibold text-emerald-500">
                       {question.correctAnswer}
                     </span>
                   </p>

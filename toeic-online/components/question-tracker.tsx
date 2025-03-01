@@ -29,7 +29,7 @@ const QuestionTracker = forwardRef(
     return (
       <div>
         {/* Questions Grid with Scroll */}
-        <ScrollArea className="h-[542px] rounded-md border p-3">
+        <ScrollArea className="h-[542px] rounded-xl border border-slate-500 p-3">
           {/* Set a fixed height */}
           <div className="flex flex-col space-y-3">
             {sections.map((section, sIndex) => (
@@ -44,8 +44,8 @@ const QuestionTracker = forwardRef(
                           onClick={() => onNavigate(question.serial, sIndex)}
                           className={`w-8 h-8 flex flex-col items-center justify-center border rounded-lg transition duration-200 focus:outline-none focus:ring-2 ${
                             answeredQuestions[question.serial]
-                              ? "border-green-500 bg-green-100 hover:bg-green-200 focus:ring-green-500"
-                              : "border-gray-400 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500"
+                              ? "border-cyan-500 bg-cyan-100 hover:bg-cyan-200 "
+                              : "border-zinc-500 bg-zinc-100 hover:bg-zinc-300 focus:ring-gray-300"
                           }`}
                           aria-label={`Question ${question.serial}, ${
                             answeredQuestions[question.serial]
@@ -53,7 +53,7 @@ const QuestionTracker = forwardRef(
                               : "not answered"
                           }`}
                         >
-                          <span className="text-xs font-medium text-gray-700">
+                          <span className="text-xs font-medium text-zinc-700">
                             {question.serial}
                           </span>
                         </button>

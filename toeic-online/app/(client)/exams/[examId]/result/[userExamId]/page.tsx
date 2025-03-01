@@ -78,7 +78,7 @@ const UserExamIdPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
-      <div className="container bg-white shadow-sm border border-slate-400 rounded-2xl  mx-auto px-4 py-8">
+      <div className="container bg-white border border-slate-500 rounded-2xl  mx-auto px-4 py-8">
         {/* Header Section */}
         <header className="text-center mb-8">
           <h1 className="text-xl font-bold text-zinc-800">

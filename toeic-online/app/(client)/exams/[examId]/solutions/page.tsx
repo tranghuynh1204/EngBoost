@@ -61,7 +61,7 @@ const SolutionsPage = () => {
     <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+        <h1 className="text-xl font-bold text-gray-800 mb-2">
           Đáp án/Transcript: {exam.title}
         </h1>
       </div>

@@ -74,14 +74,15 @@ export const CreateFlashcardModal = () => {
       onOpenChange={() => {
         dispatch(closeModal());
       }}
+      
     >
       <DialogContent
         ria-labelledby="dialog-title"
-        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-scroll"
+        className="w-[700px] max-w-full max-h-[95vh] lg:max-w-screen-lg overflow-y-scroll p-6 bg-slate-50 rounded-lg shadow-xl"
       >
         {/* Chỉnh độ dài ở đây nè nhưng tuyệt đối không được bỏ cái max-w-full */}
         <DialogHeader>
-          <DialogTitle>Chỉnh sửa list từ vựng</DialogTitle>
+          <DialogTitle>Add Flashcard</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

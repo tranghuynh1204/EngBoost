@@ -50,7 +50,7 @@ const FlashcardPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
-      <main className="container mx-auto px-6 py-4 bg-white shadow-sm rounded-2xl border border-slate-300">
+      <main className="container mx-auto px-6 py-4 bg-white shadow-sm rounded-2xl border border-slate-400">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-bold">Exam</h1>
           {/* <button

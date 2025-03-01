@@ -23,7 +23,7 @@ export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
         {
           params: {
             currentPage: page,
-            pageSize: 2,
+            pageSize: 6,
           },
 
           headers: {
@@ -49,6 +49,7 @@ export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
   }
   return (
     <div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-7">
       {vocabularies.map((vocabulary) => (
         <VocabularyItem
           owner={owner}
@@ -56,9 +57,10 @@ export const VocabularyContainer = ({ owner }: VocabularyContainerProps) => {
           key={vocabulary._id}
         />
       ))}
-      <div>
-        <PaginationCustom currentPage={currentPage} totalPages={totalPages} />
-      </div>
     </div>
+    <div className="mt-6">
+      <PaginationCustom currentPage={currentPage} totalPages={totalPages} />
+    </div>
+  </div>
   );
 };

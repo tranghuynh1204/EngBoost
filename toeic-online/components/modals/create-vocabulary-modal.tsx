@@ -40,6 +40,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Flashcard } from "@/types";
+import { TbCodePlus, TbHeartPlus } from "react-icons/tb";
 
 const formSchema = z.object({
   flashcard: z.string(),
@@ -201,276 +202,285 @@ export const CreateVocabularyModal = () => {
     >
       <DialogContent
         aria-labelledby="dialog-title"
-        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-auto p-6 bg-white rounded-lg shadow-xl"
+        className="w-[700px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-auto p-6 bg-slate-50 rounded-lg shadow-xl"
       >
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold text-gray-800">
-            Thêm từ vựng
+          <DialogTitle className="text-xl font-semibold text-gray-800">
+            Add new vocabulary
           </DialogTitle>
         </DialogHeader>
+        <div className="bg-white border border-slate-500  rounded-xl p-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Flashcard Creation */}
+              <div>
+                {flashcards && !flashcardId && (
+                  <Button
+                    onClick={() => {
+                      setCreateFlashCard(!createFlashCard);
+                    }}
+                    type="button"
+                    className="text-xs text-zinc-700 font-light px-2 py-3 bg-white  "
+                  >
+                    <TbHeartPlus className="text-rose-400" size={18} /> New
+                    Flashcard
+                  </Button>
+                )}
+              </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Flashcard Creation */}
-            <div>
-              {flashcards && !flashcardId && (
-                <Button
-                  onClick={() => {
-                    setCreateFlashCard(!createFlashCard);
-                  }}
-                  type="button"
-                >
-                  + Tạo list từ mới
-                </Button>
-              )}
-            </div>
-
-            <div>
-              {flashcardId && (
-                <div className="text-gray-600">
-                  List từ: {vocabulary.flashcard?.title}
-                </div>
-              )}
-              {!flashcardId && flashcards.length > 0 && !createFlashCard && (
-                <FormField
-                  control={form.control}
-                  name="flashcard"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel className="text-sm text-gray-700">
-                        Chọn list từ vựng
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger
-                            ref={field.ref}
-                            className="w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                          >
-                            <SelectValue placeholder="Chọn list từ vựng" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {flashcards.map((flashcard) => (
-                            <SelectItem
-                              key={flashcard._id}
-                              value={flashcard._id}
+              <div>
+                {flashcardId && (
+                  <div className="text-gray-600">
+                    List từ: {vocabulary.flashcard?.title}
+                  </div>
+                )}
+                {!flashcardId && flashcards.length > 0 && !createFlashCard && (
+                  <FormField
+                    control={form.control}
+                    name="flashcard"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm text-gray-700">
+                          Chọn list từ vựng
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger
+                              ref={field.ref}
+                              className="w-full border border-slate-500 text-sm rounded-md  focus:ring-2 focus:ring-cyan-500"
                             >
-                              {flashcard.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              {createFlashCard && !flashcardId && (
-                <div className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Tiêu đề
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </FormControl>
+                              <SelectValue placeholder="Chọn list từ vựng" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {flashcards.map((flashcard) => (
+                              <SelectItem
+                                key={flashcard._id}
+                                value={flashcard._id}
+                                className="text-sm"
+                              >
+                                {flashcard.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Mô tả
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Main Vocabulary Form Fields */}
-            <FormField
-              control={form.control}
-              name="word"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-sm text-gray-700">
-                    Từ mới
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                )}
+                {createFlashCard && !flashcardId && (
+                  <div className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Tiêu đề
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="mean"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-sm text-gray-700">
-                    Định nghĩa
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Mô tả
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  </div>
+                )}
+              </div>
 
-            {/* Accordion for Additional Information */}
-            <Accordion
-              type="single"
-              collapsible
-              className="border-2 rounded-lg"
-            >
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="bg-gray-200 text-black p-3 rounded-md hover:bg-gray-300 transition duration-200">
-                  Thêm phiên âm, ví dụ, ảnh, ghi chú ...
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 p-4">
-                  <FormField
-                    control={form.control}
-                    name="file"
-                    render={({ field: { value, onChange, ...fieldProps } }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Ảnh
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...fieldProps}
-                            type="file"
-                            accept="image/*"
-                            onChange={(event) =>
-                              onChange(
-                                event.target.files && event.target.files[0]
-                              )
-                            }
-                            className="w-full border rounded-md p-2"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600 italic font-semibold mt-1 text-sm" />
-                      </FormItem>
-                    )}
-                  />
+              {/* Main Vocabulary Form Fields */}
+              <FormField
+                control={form.control}
+                name="word"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-sm text-gray-700">
+                      New word
+                    </FormLabel>
+                    <FormControl className="text-xs">
+                      <Input
+                        {...field}
+                        className="text-xs bg-white  border border-slate-500 rounded-md p-2 focus:ring-2 focus:ring-sky-400"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  <FormField
-                    control={form.control}
-                    name="partOfSpeech"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Từ loại
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="mean"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-sm text-gray-700">
+                      Definition
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className="w-full bg-white border border-slate-500 rounded-md p-2 focus:ring-2 focus:ring-sky-400"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  <FormField
-                    control={form.control}
-                    name="pronunciation"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Phiên âm
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              {/* Accordion for Additional Information */}
+              <Accordion
+                type="single"
+                collapsible
+                className="border border-slate-500 bg-white rounded-lg"
+              >
+                <AccordionItem value="item-1">
+                  <AccordionTrigger className="items-center bg-white text-zinc-700 p-3 rounded-md hover:bg-slate-50 transition duration-200">
+                    <TbCodePlus size={18} />
+                    Add Pronunciation, Example, Image, Notes ...
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 p-4">
+                    <FormField
+                      control={form.control}
+                      name="file"
+                      render={({
+                        field: { value, onChange, ...fieldProps },
+                      }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Picture
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...fieldProps}
+                              type="file"
+                              accept="image/*"
+                              onChange={(event) =>
+                                onChange(
+                                  event.target.files && event.target.files[0]
+                                )
+                              }
+                              className="w-full border border-slate-500 rounded-md p-2"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-600 italic font-semibold mt-1 text-sm" />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="example"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Ví dụ
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="partOfSpeech"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Word form
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              className="w-full border border-slate-500 rounded-md p-2 focus:ring-2 focus:ring-sky-400"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-sm text-gray-700">
-                          Ghi chú
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-500 italic font-semibold mt-1"></FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                    <FormField
+                      control={form.control}
+                      name="pronunciation"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Phiên âm
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              className="w-full border border-slate-500 rounded-md p-2 focus:ring-2 focus:ring-sky-400"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-            {/* Submit Button */}
-            <Button type="submit" disabled={isSubmitting}>
-              Submit
-            </Button>
-          </form>
-        </Form>
+                    <FormField
+                      control={form.control}
+                      name="example"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Ví dụ
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              className="w-full border border-slate-500 rounded-md p-2 focus:ring-2 focus:ring-sky-400"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="notes"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm text-gray-700">
+                            Ghi chú
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              className="w-full border border-slate-500 rounded-md p-2 focus:ring-2 focus:ring-sky-400"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-500 italic font-semibold mt-1"></FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              {/* Submit Button */}
+              <div className="justify-items-center">
+                <Button className="" type="submit" disabled={isSubmitting}>
+                  Submit
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -26,6 +26,7 @@ import {
   TbDeviceIpadHorizontalPlus,
   TbDotsVertical,
   TbEdit,
+  TbId,
   TbPlus,
 } from "react-icons/tb";
 import { useDispatch } from "react-redux";
@@ -79,9 +80,14 @@ const FlashcardIdPage = () => {
       <main className="container mx-auto px-8 py-4 bg-white shadow-sm rounded-2xl border border-slate-400">
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-slate-800">
-            {flashcard.title}
-          </h1>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center w-10 h-10  bg-sky-100 rounded-lg">
+              <TbId className="text-sky-600" size={20} />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-700">
+              {flashcard.title}
+            </h2>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -148,7 +154,7 @@ const FlashcardIdPage = () => {
 
         {/* Vocabulary List */}
         <div>
-          <VocabularyContainer owner={flashcard.owner} />
+          <VocabularyContainer owner={flashcard.owner} flashcard={flashcard} />
         </div>
       </main>
     </div>

@@ -32,6 +32,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+import { TbProgressCheck } from "react-icons/tb";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   word: z.string().min(2, { message: "Từ mới phải có ít nhất 2 ký tự." }),
@@ -101,7 +103,19 @@ export const UpdateVocabularyModal = () => {
         file: undefined,
       });
       dispatch(closeModal());
-      window.location.reload();
+      toast({
+        title: "Success!",
+        description: (
+          <div className="flex items-center space-x-2">
+            <TbProgressCheck className="text-green-600" size={18} />
+            <span>Vocabulary updated successfully.</span>
+          </div>
+        ),
+        variant: "success",
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
     } finally {
       setIsSubmitting(false);

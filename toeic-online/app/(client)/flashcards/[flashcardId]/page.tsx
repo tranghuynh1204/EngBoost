@@ -92,9 +92,9 @@ const FlashcardIdPage = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="secondary"
-                className="rounded-full bg-slate-100 size-8 p-0"
+                className="rounded-full text-sky-700  bg-slate-100 size-8 p-0"
               >
-                <TbDotsVertical className="icon-sm text-slate-800 text-muted-foreground" />
+                <TbDotsVertical className="icon-sm text-sky-700" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

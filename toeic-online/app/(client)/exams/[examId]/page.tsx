@@ -99,7 +99,7 @@ const ExamIdPage = () => {
               #{exam.category}
             </span>
           </div>
-          <div className="text-xl text-center font-bold text-gray-800 mb-4">
+          <div className="text-2xl text-center font-bold text-gray-800 mb-4">
             {exam.title}
           </div>
         </div>
@@ -248,7 +248,7 @@ const ExamIdPage = () => {
                   <SelectTrigger id="time-select" className="w-full text-sm">
                     <SelectValue placeholder="Select Practice Time" />
                   </SelectTrigger>
-                  <SelectContent >
+                  <SelectContent>
                     <SelectItem value="0">No Limit</SelectItem>
                     <SelectItem value="10">5 minutes</SelectItem>
                     <SelectItem value="600">10 minutes</SelectItem>
@@ -304,33 +304,36 @@ const ExamIdPage = () => {
           </TabsContent>
           {isLogin && (
             <TabsContent value="2">
-              <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+              <div className="space-y-6">
+                {/* Exam Answer Card */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-300 flex justify-between items-center">
+                  <h2 className=" text-gray-800">
+                    Answers for Exam Sections
+                  </h2>
                   <Button
                     variant="link"
-                    className="text-blue-600 hover:underline"
+                    className="text-sky-600 hover:underline"
                   >
                     <Link href={`/exams/${params.examId}/solutions`}>
-                      View Exam Answer
+                      Exam Answer
                     </Link>
                   </Button>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                    Answers for Exam Sections
-                  </h2>
-                  <ul className="space-y-2">
+
+                {/* Exam Sections Transcript Card */}
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-300 ">
+                  <ul className="space-y-3">
                     {exam.sections.map((section) => (
                       <li
                         key={section._id}
-                        className="flex items-center justify-between p-3 border rounded-md bg-white hover:shadow-sm"
+                        className="flex items-center justify-between p-4 border text-gray-600 border-slate-300 rounded-md bg-white hover:text-black transition-colors"
                       >
-                        <div className="text-gray-700">
-                          <span className="font-medium">{section.name}</span>
-                        </div>
+                        <span className="text-gray-700 font-medium">
+                          {section.name}
+                        </span>
                         <Button
                           variant="link"
-                          className="text-blue-600 hover:underline text-sm font-semibold"
+                          className="text-sky-600 hover:underline text-xs font-semibold"
                         >
                           <Link
                             href={`/exams/${params.examId}/parts/${section._id}/solutions`}

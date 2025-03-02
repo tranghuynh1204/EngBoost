@@ -58,29 +58,30 @@ const SolutionsPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header Section */}
-      <div className="mb-8 text-center">
-        <h1 className="text-xl font-bold text-gray-800 mb-2">
-          Đáp án/Transcript: {exam.title}
-        </h1>
+    <div className="py-8 bg-slate-50 min-h-screen">
+      <div className="container mx-auto px-6 py-6 bg-white shadow-sm border border-slate-400 rounded-2xl p-6">
+      <div className="text-xl font-bold text-center text-zinc-600 mb-4">
+        Transcript{" "}
+        <span className="text-cyan-700">{exam.title}</span>
       </div>
 
       {/* Tabs Section */}
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <Tabs defaultValue={exam.sections[0].name} className="w-full">
+      
+        <Tabs defaultValue={exam.sections[0].name} className="">
           {/* Tabs List */}
-          <TabsList className="flex flex-wrap justify-center mb-6">
+          <div className="flex justify-center mb-2">
+          <TabsList className="inline-flex h-10 border bg-cyan-50 border-slate-400 rounded-lg p-2">
             {exam.sections.map((section, index) => (
               <TabsTrigger
                 value={section.name}
                 key={index}
-                className="px-4 py-2 m-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
               >
                 {section.name}
               </TabsTrigger>
             ))}
           </TabsList>
+          </div>
 
           {/* Tabs Content */}
           {exam.sections.map((section, index) => (
@@ -89,6 +90,7 @@ const SolutionsPage = () => {
             </TabsContent>
           ))}
         </Tabs>
+     
       </div>
     </div>
   );

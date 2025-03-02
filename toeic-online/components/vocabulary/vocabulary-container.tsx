@@ -74,7 +74,7 @@ export const VocabularyContainer = ({
           }
           className="flex flex-col justify-between bg-slate-50  w-[290px]
           h-[270px]  rounded-lg 
-                  p-4 border-2 border-dashed border-slate-400 hover:border-slate-500 transition-transform 
+                  p-3 border-2 border-dashed border-slate-400 hover:border-slate-500 transition-transform 
                   transform hover:scale-105 hover:shadow-sm duration-200 ease-in-out cursor-pointer"
         >
           {/* Icon + Title */}
@@ -91,7 +91,7 @@ export const VocabularyContainer = ({
           Expand your flashcard collection with new vocabulary.
           </p>
           {/* Horizontal rule + Link-like text */}
-          <hr className="my-2 mt-2 border-sky-200" />
+          <hr className="my-2 mt-2 border-sky-100" />
           <div className=" text-xs text-gray-500 hover:underline">
             → Import vocabulary now
           </div>

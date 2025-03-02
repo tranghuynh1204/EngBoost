@@ -26,6 +26,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+import { toast } from "@/hooks/use-toast";
+import { TbProgressCheck } from "react-icons/tb";
 
 const formSchema = z.object({
   title: z.string().min(2, { message: "title phải có ít nhất 2 ký tự." }),
@@ -61,7 +63,19 @@ export const CreateFlashcardModal = () => {
 
       form.reset();
       dispatch(closeModal());
-      window.location.reload();
+      toast({
+        title: "Success!",
+        description: (
+          <div className="flex items-center space-x-2">
+            <TbProgressCheck className="text-green-600" size={18} />
+            <span>Flashcard created successfully.</span>
+          </div>
+        ),
+        variant: "success",
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
     } finally {
       setIsSubmitting(false);

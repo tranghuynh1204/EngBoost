@@ -15,7 +15,7 @@ const ExamCard = ({ exam }: ExamCardProps) => {
       </div>
       <div className="text-gray-600 text-xs space-y-2">
         <div className="flex items-center space-x-2">
-          <Clock className="w-4 h-4 text-blue-400" />
+          <Clock className="w-4 h-4 text-cyan-600" />
           <span>
             <span className="font-semibold">Duration:</span> {exam.duration}{" "}
             mins
@@ -23,7 +23,7 @@ const ExamCard = ({ exam }: ExamCardProps) => {
         </div>
 
         <div className="flex items-center space-x-2">
-          <HelpCircle className="w-4 h-4 text-blue-500" />
+          <HelpCircle className="w-4 h-4 text-cyan-600" />
           <span>
             <span className="font-semibold">Question:</span>{" "}
             {exam.questionCount}
@@ -31,27 +31,27 @@ const ExamCard = ({ exam }: ExamCardProps) => {
         </div>
 
         <div className="flex items-center space-x-2">
-          <GiSpellBook className="w-4 h-4 text-blue-400" />
+          <GiSpellBook className="w-4 h-4 text-cyan-600" />
           <span>
             <span className="font-semibold">Section:</span> {exam.sectionCount}
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <AiOutlineComment className="w-4 h-4 text-blue-400" />
+          <AiOutlineComment className="w-4 h-4 text-cyan-600" />
           <span>
             <span className="font-semibold">Comment:</span> {exam.commentCount}
           </span>
         </div>
 
         <div className="flex items-center space-x-2  text-xs">
-          <TbUserStar className="w-4 h-4 text-blue-400" />
+          <TbUserStar className="w-4 h-4 text-cyan-600" />
           <span>
             <span className="font-semibold">User: </span> {exam.userCount}
           </span>
         </div>
       </div>
       <div className="text-center mt-2">
-        <span className="inline-block bg-blue-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
+        <span className="inline-block bg-cyan-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
           {exam.category}
         </span>
       </div>

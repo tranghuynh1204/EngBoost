@@ -57,39 +57,42 @@ const DetailResultPage = () => {
     <div className="py-8 bg-slate-50 min-h-screen">
       {/* Page Header */}
       <div className="container mx-auto px-6 py-6 bg-white shadow-sm border border-slate-400 rounded-2xl p-6">
-      <div className="text-xl font-bold text-zinc-600 mb-4">
-        Transcript{" "}
-        <span className="text-cyan-700">{userExam.exam.title}</span>
-      </div>
+        <div className="text-xl text-center font-bold text-zinc-600 mb-2">
+          Transcript{" "}
+          <span className="text-cyan-700">{userExam.exam.title}</span>
+        </div>
 
-      {/* Tabs Component */}
-      <div className=" rounded-xl p-4">
-        <Tabs defaultValue={userExam.sections[0].name} className="space-y-4 justify-items-center">
-          {/* Tabs List */} 
-          <TabsList className="inline-flex  h-10 border bg-cyan-50 border-slate-400 rounded-lg p-2 ">
+        {/* Tabs Component */}
+        <div className=" rounded-xl p-4">
+          <Tabs
+            defaultValue={userExam.sections[0].name}
+            className="space-y-4 justify-items-center"
+          >
+            {/* Tabs List */}
+            <TabsList className="inline-flex  h-10 border bg-cyan-50 border-slate-400 rounded-lg p-2 ">
+              {userExam.sections.map((section, index) => (
+                <TabsTrigger
+                  value={section.name}
+                  key={index}
+                  className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
+                >
+                  {section.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {/* Tabs Content */}
             {userExam.sections.map((section, index) => (
-              <TabsTrigger
+              <TabsContent
                 value={section.name}
                 key={index}
-                className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
+                className="mt-4 w-full pt-4"
               >
-                {section.name}
-              </TabsTrigger>
+                <SolutionItem {...section} />
+              </TabsContent>
             ))}
-          </TabsList>
-
-          {/* Tabs Content */}
-          {userExam.sections.map((section, index) => (
-            <TabsContent
-              value={section.name}
-              key={index}
-              className="mt-4 w-full pt-4"
-            >
-              <SolutionItem {...section} />
-            </TabsContent>
-          ))}
-        </Tabs>
-      </div>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

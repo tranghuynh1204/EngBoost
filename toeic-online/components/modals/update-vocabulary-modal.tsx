@@ -126,7 +126,7 @@ export const UpdateVocabularyModal = () => {
     >
       <DialogContent
         ria-labelledby="dialog-title"
-        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-scroll"
+        className="w-[600px] max-w-full bg-slate-50 max-h-full lg:max-w-screen-lg overflow-y-scroll"
       >
         {/* Chỉnh độ dài ở đây nè nhưng tuyệt đối không được bỏ cái max-w-full */}
         <DialogHeader>

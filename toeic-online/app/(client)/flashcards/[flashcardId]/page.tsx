@@ -22,7 +22,13 @@ import {
   useSearchParams,
 } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { TbDotsVertical, TbPlus } from "react-icons/tb";
+import {
+  TbDeviceIpadHorizontalPlus,
+  TbDotsVertical,
+  TbEdit,
+  TbId,
+  TbPlus,
+} from "react-icons/tb";
 import { useDispatch } from "react-redux";
 
 const FlashcardIdPage = () => {
@@ -74,17 +80,25 @@ const FlashcardIdPage = () => {
       <main className="container mx-auto px-8 py-4 bg-white shadow-sm rounded-2xl border border-slate-400">
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-slate-800">
-            {flashcard.title}
-          </h1>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center w-10 h-10  bg-sky-100 rounded-lg">
+              <TbId className="text-sky-600" size={20} />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-700">
+              {flashcard.title}
+            </h2>
+          </div>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="secondary" className="rounded-full bg-slate-100 size-8 p-0">
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                className="rounded-full bg-slate-100 size-8 p-0"
+              >
                 <TbDotsVertical className="icon-sm text-slate-800 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="mt-2 mr-4 text-sm bg-white border border-slate-400 min-w-[150px] dark:bg-background-alt"
+              className="mt-2 mr-2 rounded-lg text-sm bg-white border border-slate-400 min-w-[160px] dark:bg-background-alt"
               onCloseAutoFocus={(e) => e.preventDefault()}
             >
               <DropdownMenuItem
@@ -98,7 +112,7 @@ const FlashcardIdPage = () => {
                 }
               >
                 <div className="flex items-center space-x-2">
-                  <Edit3 className="size-3.5 text-muted-foreground" />
+                  <TbEdit className="size-4 text-zinc-700" />
                   <span>Edit Flashcard</span>
                 </div>
               </DropdownMenuItem>
@@ -114,7 +128,7 @@ const FlashcardIdPage = () => {
                 }
               >
                 <div className="flex items-center space-x-2">
-                  <TbPlus className="size-3.5 text-muted-foreground" />
+                  <TbDeviceIpadHorizontalPlus className="size-4 text-zinc-700" />
                   <span>Add Vocabulary</span>
                 </div>
               </DropdownMenuItem>
@@ -140,7 +154,7 @@ const FlashcardIdPage = () => {
 
         {/* Vocabulary List */}
         <div>
-          <VocabularyContainer owner={flashcard.owner} />
+          <VocabularyContainer owner={flashcard.owner} flashcard={flashcard} />
         </div>
       </main>
     </div>

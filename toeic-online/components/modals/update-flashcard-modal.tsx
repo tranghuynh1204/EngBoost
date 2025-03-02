@@ -26,9 +26,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+import { toast } from "@/hooks/use-toast";
+import { TbProgressCheck } from "react-icons/tb";
 
 const formSchema = z.object({
-  title: z.string().min(2, { message: "title phải có ít nhất 2 ký tự." }),
+  title: z.string().min(2, { message: "Title must have at least 2 characters." }),
   description: z.string(),
 });
 export const UpdateFlashcardModal = () => {
@@ -61,7 +63,19 @@ export const UpdateFlashcardModal = () => {
 
       form.reset();
       dispatch(closeModal());
-      window.location.reload();
+      toast({
+        title: "Success!",
+        description: (
+          <div className="flex items-center space-x-2">
+            <TbProgressCheck className="text-green-600" size={18} />
+            <span>Flashcard updated successfully.</span>
+          </div>
+        ),
+        variant: "success",
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
     } finally {
       setIsSubmitting(false);
@@ -81,11 +95,11 @@ export const UpdateFlashcardModal = () => {
     >
       <DialogContent
         ria-labelledby="dialog-title"
-        className="w-[600px] max-w-full max-h-full lg:max-w-screen-lg overflow-y-scroll"
+        className="w-[600px] max-w-full max-h-full bg-slate-50 lg:max-w-screen-lg overflow-y-scroll"
       >
         {/* Chỉnh độ dài ở đây nè nhưng tuyệt đối không được bỏ cái max-w-full */}
         <DialogHeader>
-          <DialogTitle>Chỉnh sửa list từ vựng</DialogTitle>
+          <DialogTitle>Edit Flashcard</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -94,7 +108,7 @@ export const UpdateFlashcardModal = () => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tiêu đề</FormLabel>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -108,7 +122,7 @@ export const UpdateFlashcardModal = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô tả</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -117,9 +131,11 @@ export const UpdateFlashcardModal = () => {
               )}
             />
 
-            <Button type="submit" disabled={isSubmitting}>
-              Submit
-            </Button>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isSubmitting} className="bg-zinc-500 hover:bg-zinc-700 text-white">
+                Submit
+              </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>

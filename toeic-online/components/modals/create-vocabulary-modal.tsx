@@ -198,7 +198,9 @@ export const CreateVocabularyModal = () => {
       });
 
       if (isReload) {
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error) {
     } finally {

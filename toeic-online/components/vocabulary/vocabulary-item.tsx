@@ -125,9 +125,9 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
               className="rounded-lg object-cover"
             />
           ) : (
-            <div className="flex items-center justify-center w-10 h-10 bg-sky-100 rounded-lg">
+            <div className="flex items-center justify-center w-[70px] h-[70px] bg-sky-100 rounded-lg">
               {/* Fallback icon or placeholder */}
-              <span className="text-sky-600 text-xs">N/A</span>
+              <span className="text-sky-600 ">N/A</span>
             </div>
           )}
           <div>
@@ -186,7 +186,7 @@ export const VocabularyItem = ({ owner, vocabulary }: VocabularyItemProps) => {
         {/* Fixed Note Area */}
         {vocabulary.notes && (
           <div className="flex-shrink-0 mt-3 min-h-[40px] pointer-events-none transition-opacity group-hover:opacity-100 group-hover:pointer-events-auto">
-            <hr className="border-sky-200 mb-2" />
+            <hr className="border-sky-100 mb-2" />
             <div className="text-xs text-gray-500 whitespace-pre-wrap overflow-y-auto max-h-8">
               {vocabulary.notes}
             </div>

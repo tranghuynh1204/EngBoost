@@ -38,7 +38,7 @@ const chartConfig = {
 
 export const ExamChart = () => {
   const [total, setTotal] = useState<number | undefined>();
-  const [data, setData] = useState<any[] | undefined>([]);
+  const [data, setData] = useState<any[]>([]);
 
   const fetchData = async () => {
     try {
@@ -52,7 +52,10 @@ export const ExamChart = () => {
       );
       const updatedData = response.data.data.map((item: { key: string }) => ({
         ...item,
-        fill: (chartConfig as Record<string, { label: string; color?: string }>)[item.key]?.color || "#000",
+        fill:
+          (chartConfig as Record<string, { label: string; color?: string }>)[
+            item.key
+          ]?.color || "#000",
       }));
       setTotal(response.data.total);
       setData(updatedData);
@@ -63,12 +66,29 @@ export const ExamChart = () => {
     fetchData();
   }, []);
 
+  const legendItems = (
+    Object.keys(chartConfig) as Array<keyof typeof chartConfig>
+  )
+    .filter((key) => key !== "value")
+    .map((key) => {
+      // Cast to the type that definitely includes color
+      const configEntry = chartConfig[key] as { label: string; color: string };
+      // Find matching data item (if available)
+      const item = data?.find((d) => d.key === key);
+      return {
+        key,
+        label: configEntry.label,
+        color: configEntry.color,
+        value: item ? item.value : 0,
+      };
+    });
+
   return (
     <Card className="bg-white border border-slate-500 shadow-slate-500 text-[#212529]">
       {/* Card Header: matching the style of the user chart */}
       <CardHeader className="p-4">
-      <CardTitle className="flex items-center text-lg font-extrabold">
-        <TbChartBar className="mr-2" />
+        <CardTitle className="flex items-center text-lg font-extrabold mb-2">
+          <TbChartBar className="mr-2" />
           Exams: {total}
         </CardTitle>
       </CardHeader>
@@ -97,34 +117,42 @@ export const ExamChart = () => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label
-              }
+              tickFormatter={(value) => {
+                const item = data.find((d) => d.key === value);
+                return item ? item.value : "";
+              }}
               style={{ fill: "#343A40" }}
             />
             <ChartTooltip
               cursor={false}
               content={
-                <ChartTooltipContent
-                  className="bg-white border border-slate-400 text-black p-2 rounded-lg"
-                />
+                <ChartTooltipContent className="bg-white border border-slate-400 text-black p-2 rounded-lg" />
               }
             />
-            {/* Updated bar style to match the accent color from the user chart */}
             <Bar
               dataKey="value"
               strokeWidth={2}
               radius={8}
               fillOpacity={0.8}
-              fill="#0ea5e9" // Same accent color as the UserChart line
+              fill="#0ea5e9" // fallback accent color; individual bars could also use <Cell> if needed
             />
           </BarChart>
         </ChartContainer>
       </CardContent>
 
-      {/* Card Footer */}
-      <CardFooter className="flex-col gap-2 text-xs text-[#495057]">
-        Exams by Category
+      {/* Card Footer: Custom Legend */}
+      <CardFooter className="flex flex-wrap justify-center gap-4 text-xs text-[#495057]">
+        {legendItems.map((legend) => (
+          <div key={legend.key} className="flex items-center gap-2">
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: legend.color }}
+            ></span>
+            <span>
+              {legend.label}: {legend.value}
+            </span>
+          </div>
+        ))}
       </CardFooter>
     </Card>
   );

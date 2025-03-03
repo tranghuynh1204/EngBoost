@@ -59,7 +59,8 @@ const chartConfig = {
 
 export const UserExamChart = () => {
   const [total, setTotal] = useState();
-  const [data, setData] = useState();
+  const [data, setData] = useState<any[]>([]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,6 +95,21 @@ export const UserExamChart = () => {
   useEffect(() => {
     fetchData(7);
   }, []);
+  const legendItems = (
+    Object.keys(chartConfig) as Array<keyof typeof chartConfig>
+  )
+    .filter((key) => key !== "value")
+    .map((key) => {
+      // Find matching data item by key (API returns "part 1", etc.)
+      const item = data?.find((d) => d.key === key);
+      return {
+        key,
+        label: chartConfig[key].label,
+        color: (chartConfig[key] as { label: string; color: string }).color,
+        value: item ? item.value : 0,
+      };
+    });
+
   return (
     <div className="">
       <Card className=" text-[#212529] bg-white border border-slate-500 shadow-slate-500">
@@ -158,7 +174,8 @@ export const UserExamChart = () => {
                 data={data}
                 dataKey="value"
                 nameKey="key"
-                innerRadius={60}
+                outerRadius="90%" // Increase outer radius to fill more space
+                innerRadius={60} // Decrease inner radius to make the donut thicker
                 strokeWidth={5}
               >
                 <Label
@@ -194,8 +211,18 @@ export const UserExamChart = () => {
             </PieChart>
           </ChartContainer>
         </CardContent>
-        <CardFooter className="flex-col gap-2 text-xs text-[#495057]">
-          Exam breakdown by category
+        <CardFooter className="flex flex-wrap justify-center gap-4 text-xs text-[#495057]">
+          {legendItems.map((legend) => (
+            <div key={legend.key as string} className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: legend.color }}
+              ></span>
+              <span>
+                {legend.label}: {legend.value}
+              </span>
+            </div>
+          ))}
         </CardFooter>
       </Card>
     </div>

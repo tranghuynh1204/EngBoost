@@ -219,7 +219,7 @@ export const UserExamChart = () => {
                 style={{ backgroundColor: legend.color }}
               ></span>
               <span>
-                {legend.label}: {legend.value}
+                {legend.label}
               </span>
             </div>
           ))}

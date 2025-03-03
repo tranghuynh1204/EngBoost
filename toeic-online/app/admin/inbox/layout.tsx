@@ -11,7 +11,7 @@ export default function InboxLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="max-h-screen max-w-[1210px] mx-auto mt-6 rounded-lg shadow-md border border-gray-200 bg-white">
+    <div className="max-h-screen max-w-[1210px] mx-auto rounded-lg shadow-md border border-gray-200 bg-white">
       <ResizablePanelGroup
         direction="horizontal"
         className="w-full h-full rounded-lg bg-gray-50"

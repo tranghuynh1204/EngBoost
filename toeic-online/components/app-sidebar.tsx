@@ -21,6 +21,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { cn } from "@/lib/utils";
 
 // Menu items.
 const items = [
@@ -44,44 +46,62 @@ const items = [
 export function AppSidebar() {
   const pathName = usePathname();
   return (
-    <Sidebar className="bg-[#F8F9FA] text-[#212529] border-r border-[#E9ECEF] shadow-md">
+    <Sidebar className="bg-slate-50 border-r border-slate-500 shadow-md w-64 min-h-screen p-3">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[#495057] uppercase text-sm font-semibold mb-2">
+          <SidebarGroupLabel className="text-muted-foreground uppercase text-xs font-semibold mb-4">
             Application
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {/* Home Menu Item */}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathName === "/admin"} // Check exact match for Home
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md transition duration-200 data-[active=true]:bg-[#343A40] data-[active=true]:text-white hover:bg-[#E9ECEF]"
-                >
-                  <a href="/admin" className="flex items-center space-x-2">
-                    <BarChartBig />
-                    <span>Home</span>
-                  </a>
-                </SidebarMenuButton>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathName === "/admin"}
+                      className={cn(
+                        "flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-medium transition",
+                        "hover:bg-accent hover:text-accent-foreground",
+                        pathName === "/admin" &&
+                          "bg-primary text-primary-foreground"
+                      )}
+                    >
+                      <a href="/admin" className="flex items-center space-x-2">
+                        <BarChartBig className="w-5 h-5" />
+                        <span>Home</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  <TooltipContent  className="text-white bg-zinc-800" side="bottom">Home</TooltipContent>
+                </Tooltip>
               </SidebarMenuItem>
 
-              {/* Dynamic Menu Items */}
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathName === `/admin/${item.url}`} // Exact match for each item
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md transition duration-200 data-[active=true]:bg-[#343A40] data-[active=true]:text-white hover:bg-[#E9ECEF]"
-                  >
-                    <a
-                      href={`/admin/${item.url}`}
-                      className="flex items-center space-x-2"
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathName === `/admin/${item.url}`}
+                        className={cn(
+                          "flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-medium transition",
+                          "hover:bg-accent hover:text-accent-foreground",
+                          pathName === `/admin/${item.url}` &&
+                            "bg-primary text-primary-foreground"
+                        )}
+                      >
+                        <a
+                          href={`/admin/${item.url}`}
+                          className="flex items-center space-x-2"
+                        >
+                          <item.icon className="w-5 h-5" />
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </TooltipTrigger>
+                    <TooltipContent className="text-white bg-zinc-800" side="bottom">{item.title}</TooltipContent>
+                  </Tooltip>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

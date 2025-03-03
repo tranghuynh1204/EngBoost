@@ -55,7 +55,7 @@ const ExamPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchExamData(currentTab, searchTerm, page); //can be ""
+    fetchExamData("", searchTerm, page); //can be ""
   }, [currentTab, page, searchTerm]);
 
   const debouncedSearch = useCallback(

@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TbUserPlus, TbUsersPlus } from "react-icons/tb";
 const formSchema = z.object({
   days: z.string(),
 });
@@ -77,46 +78,52 @@ export const UserChart = () => {
     fetchData(7);
   }, []);
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-4"
-        >
-          <FormField
-            control={form.control}
-            name="days"
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="bg-[#DEE2E6] text-[#212529] border border-[#ADB5BD]">
-                      <SelectValue placeholder="Select Timeframe" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="bg-white text-[#212529]">
-                    <SelectItem value="7">7 Days</SelectItem>
-                    <SelectItem value="30">1 Month</SelectItem>
-                    <SelectItem value="365">1 Year</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="bg-[#343A40] text-white hover:bg-[#212529]">
-            Search
-          </Button>
-        </form>
-      </Form>
-      <Card className="bg-[#F8F9FA] text-[#212529] border border-[#ADB5BD]">
-        <CardHeader className="border-b p-4">
-          <CardTitle className="text-lg font-semibold">
-            Total New Users: {total}
-          </CardTitle>
+    <div className=" ">
+      <Card className="bg-white border border-slate-500 shadow-slate-500 text-[#212529] ">
+        <CardHeader className="p-4">
+          <div className="flex w-full items-center justify-between">
+            <CardTitle className="flex items-center text-lg font-extrabold">
+              <TbUsersPlus className="mr-2" />
+              New Users: {total}
+            </CardTitle>
+            <Form {...form}>
+              <form className="w-1/3">
+                <FormField
+                  control={form.control}
+                  name="days"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          fetchData(Number(value));
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="text-[#212529] text-xs border border-slate-500">
+                            <SelectValue placeholder="Select Timeframe" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white text-[#212529] text-xs">
+                          <SelectItem className="text-xs" value="7">
+                            Week
+                          </SelectItem>
+                          <SelectItem className="text-xs" value="30">
+                            Month
+                          </SelectItem>
+                          <SelectItem className="text-xs" value="365">
+                            Year
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </div>
         </CardHeader>
         <CardContent>
           <ChartContainer
@@ -126,7 +133,7 @@ export const UserChart = () => {
                 color: "#343A40",
               },
             }}
-            className="aspect-auto h-[250px] w-full"
+            className="aspect-auto h-[200px] w-full"
           >
             <LineChart
               accessibilityLayer
@@ -137,7 +144,7 @@ export const UserChart = () => {
               }}
             >
               <CartesianGrid
-                stroke="#DEE2E6"
+                stroke="#bae6fd"
                 vertical={false}
                 strokeDasharray="3 3"
               />
@@ -159,7 +166,7 @@ export const UserChart = () => {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    className="bg-gray-400 text-black p-2 rounded-lg"
+                    className="bg-white border border-slate-400 text-black p-2 rounded-lg"
                     nameKey="views"
                     labelFormatter={(value) => {
                       return new Date(value).toLocaleDateString("en-US", {
@@ -174,14 +181,16 @@ export const UserChart = () => {
               <Line
                 dataKey="value"
                 type="monotone"
-                stroke="#ADB5BD"
+                stroke="#0ea5e9"
                 strokeWidth={2}
                 dot={false}
               />
             </LineChart>
           </ChartContainer>
         </CardContent>
-        <CardFooter className="text-sm">User Growth Over Time</CardFooter>
+        <CardFooter className="flex-col gap-2 text-xs text-[#495057]">
+          User Growth Over Time
+        </CardFooter>
       </Card>
     </div>
   );

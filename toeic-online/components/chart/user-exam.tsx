@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TbChartBar, TbChartDonut } from "react-icons/tb";
 const formSchema = z.object({
   days: z.string(),
 });
@@ -44,17 +45,22 @@ const chartConfig = {
   },
   toeic: {
     label: "Toeic",
-    color: "black", // Darker gray for contrast
+    color: "#0284c7",
   },
   ielts: {
     label: "Ielts",
-    color: "#6C757D", // Muted dark gray for differentiation
+    color: "#38bdf8",
+  },
+  "part 1": {
+    label: "Section",
+    color: "#06b6d4",
   },
 } satisfies ChartConfig;
 
 export const UserExamChart = () => {
   const [total, setTotal] = useState();
-  const [data, setData] = useState();
+  const [data, setData] = useState<any[]>([]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -77,7 +83,10 @@ export const UserExamChart = () => {
       );
       const updatedData = response.data.data.map((item: { key: string }) => ({
         ...item,
-        fill: `var(--color-${item.key})`,
+        fill:
+          (chartConfig as Record<string, { label: string; color?: string }>)[
+            item.key
+          ]?.color || "#000",
       }));
       setTotal(response.data.total);
       setData(updatedData); // Lưu kết quả vào state
@@ -86,62 +95,87 @@ export const UserExamChart = () => {
   useEffect(() => {
     fetchData(7);
   }, []);
+  const legendItems = (
+    Object.keys(chartConfig) as Array<keyof typeof chartConfig>
+  )
+    .filter((key) => key !== "value")
+    .map((key) => {
+      // Find matching data item by key (API returns "part 1", etc.)
+      const item = data?.find((d) => d.key === key);
+      return {
+        key,
+        label: chartConfig[key].label,
+        color: (chartConfig[key] as { label: string; color: string }).color,
+        value: item ? item.value : 0,
+      };
+    });
+
   return (
-    <div className="bg-[#F8F9FA] p-4 rounded-lg shadow-md">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="days"
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="bg-[#E9ECEF] text-[#212529] border border-[#ADB5BD]">
-                      <SelectValue placeholder="Select Timeframe" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="bg-[#F8F9FA] text-[#495057]">
-                    <SelectItem value="7">7 Days</SelectItem>
-                    <SelectItem value="30">1 Month</SelectItem>
-                    <SelectItem value="365">1 Year</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="bg-[#343A40] text-white hover:bg-[#212529]">
-            Search
-          </Button>
-        </form>
-      </Form>
-      <Card className="flex flex-col text-[#212529] bg-white rounded-lg mt-6">
-        <CardHeader className="items-center pb-0">
-          <CardTitle className="text-lg font-semibold">
-            Exam Statistics
-          </CardTitle>
+    <div className="">
+      <Card className=" text-[#212529] bg-white border border-slate-500 shadow-slate-500">
+        <CardHeader className="p-4">
+          <div className="flex w-full items-center justify-between">
+            <CardTitle className="flex items-center text-lg font-extrabold">
+              <TbChartDonut className="mr-2" />
+              Exam Statistics
+            </CardTitle>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3">
+                <FormField
+                  control={form.control}
+                  name="days"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          fetchData(Number(value));
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="text-[#212529] text-xs border border-slate-500">
+                            <SelectValue placeholder="Select Timeframe" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white text-[#212529] text-xs">
+                          <SelectItem className="text-xs" value="7">
+                            Week
+                          </SelectItem>
+                          <SelectItem className="text-xs" value="30">
+                            Month
+                          </SelectItem>
+                          <SelectItem className="text-xs" value="365">
+                            Year
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </div>
         </CardHeader>
-        <CardContent className="flex-1 pb-0">
+        <CardContent className="">
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px]"
+            className="mx-auto aspect-square max-h-[200px] w-full"
           >
             <PieChart>
               <ChartTooltip
                 cursor={false}
                 content={
-                  <ChartTooltipContent className="bg-[#ADB5BD] text-[#212529] p-2 rounded-lg" />
+                  <ChartTooltipContent className="bg-white border border-slate-400 text-[#212529] p-2 rounded-lg" />
                 }
               />
               <Pie
                 data={data}
                 dataKey="value"
                 nameKey="key"
-                innerRadius={60}
+                outerRadius="90%" // Increase outer radius to fill more space
+                innerRadius={60} // Decrease inner radius to make the donut thicker
                 strokeWidth={5}
               >
                 <Label
@@ -177,8 +211,18 @@ export const UserExamChart = () => {
             </PieChart>
           </ChartContainer>
         </CardContent>
-        <CardFooter className="flex-col gap-2 text-sm text-[#495057]">
-          Exam breakdown by category
+        <CardFooter className="flex flex-wrap justify-center gap-4 text-xs text-[#495057]">
+          {legendItems.map((legend) => (
+            <div key={legend.key as string} className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: legend.color }}
+              ></span>
+              <span>
+                {legend.label}
+              </span>
+            </div>
+          ))}
         </CardFooter>
       </Card>
     </div>

@@ -1,11 +1,9 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts";
-
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -18,6 +16,7 @@ import {
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { TbChartBar } from "react-icons/tb";
 
 const chartConfig = {
   value: {
@@ -25,19 +24,24 @@ const chartConfig = {
   },
   toeic: {
     label: "Toeic",
-    color: "black", // Darker shade for distinction
+    color: "#0284c7",
   },
   ielts: {
     label: "Ielts",
-    color: "#6C757D", // Muted dark gray for contrast
+    color: "#38bdf8",
+  },
+  "part 1": {
+    label: "Section",
+    color: "#06b6d4",
   },
 } satisfies ChartConfig;
+
 export const ExamChart = () => {
-  const [total, setTotal] = useState();
-  const [data, setData] = useState();
+  const [total, setTotal] = useState<number | undefined>();
+  const [data, setData] = useState<any[] | undefined>([]);
+
   const fetchData = async () => {
     try {
-      // Gọi API với số ngày là 7 (7 ngày gần nhất)
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/statistics`,
         {
@@ -46,31 +50,45 @@ export const ExamChart = () => {
           },
         }
       );
-      console.log(response.data);
       const updatedData = response.data.data.map((item: { key: string }) => ({
         ...item,
-        fill: `var(--color-${item.key})`,
+        fill: (chartConfig as Record<string, { label: string; color?: string }>)[item.key]?.color || "#000",
       }));
       setTotal(response.data.total);
-      setData(updatedData); // Lưu kết quả vào state
+      setData(updatedData);
     } catch {}
   };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <Card className="bg-[#F8F9FA] text-[#212529] rounded-lg shadow-lg p-4">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          Tổng số bài thi: {total}
+    <Card className="bg-white border border-slate-500 shadow-slate-500 text-[#212529]">
+      {/* Card Header: matching the style of the user chart */}
+      <CardHeader className="p-4">
+      <CardTitle className="flex items-center text-lg font-extrabold">
+        <TbChartBar className="mr-2" />
+          Exams: {total}
         </CardTitle>
       </CardHeader>
+
+      {/* Card Content: chart area */}
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={data} className="mx-auto">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[200px] w-full"
+        >
+          <BarChart
+            accessibilityLayer
+            data={data}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
             <CartesianGrid
-              stroke="#E9ECEF"
+              stroke="#bae6fd"
               vertical={false}
               strokeDasharray="3 3"
             />
@@ -82,26 +100,31 @@ export const ExamChart = () => {
               tickFormatter={(value) =>
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
-              style={{ fill: "#495057" }} // Dark gray for X-axis labels
+              style={{ fill: "#343A40" }}
             />
             <ChartTooltip
               cursor={false}
               content={
-                <ChartTooltipContent className="bg-[#ADB5BD] text-[#212529] p-2 rounded-lg" />
+                <ChartTooltipContent
+                  className="bg-white border border-slate-400 text-black p-2 rounded-lg"
+                />
               }
             />
+            {/* Updated bar style to match the accent color from the user chart */}
             <Bar
               dataKey="value"
               strokeWidth={2}
               radius={8}
               fillOpacity={0.8}
-              fill="#6C757D" // Consistent muted color for bars
+              fill="#0ea5e9" // Same accent color as the UserChart line
             />
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="text-sm text-[#495057]">
-        Đếm bài thi theo phân loại
+
+      {/* Card Footer */}
+      <CardFooter className="flex-col gap-2 text-xs text-[#495057]">
+        Exams by Category
       </CardFooter>
     </Card>
   );

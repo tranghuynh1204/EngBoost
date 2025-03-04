@@ -116,14 +116,14 @@ const HistoryExams: React.FC = () => {
     <div className="bg-white rounded-xl border border-slate-500 p-6 w-[1000px]">
       <div className="mt-5 mb-8">
         <h2 className="text-xl font-bold mb-1 text-gray-800">
-        <button className="text-sky-600 bg-sky-50 px-3 py-2 rounded-lg mr-3 ">
+          <button className="text-sky-600 bg-sky-50 px-3 py-2 rounded-lg mr-3 ">
             <TbHistoryToggle size={20} />
           </button>
           Exam History
-          </h2>
+        </h2>
         <p className="text-sm text-gray-600 leading-relaxed mb-8">
-          Get a detailed overview of your past exam activities, including completed exams, scores,
-          and performance trends over time.
+          Get a detailed overview of your past exam activities, including
+          completed exams, scores, and performance trends over time.
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ">

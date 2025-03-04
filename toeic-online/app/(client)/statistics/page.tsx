@@ -101,12 +101,10 @@ const Statisticspage = () => {
     return <NotFound />;
   }
   return (
-    <div className="bg-white rounded-xl border border-slate-500 p-6 w-full">
-      {/* Heading & Description (similar to HistoryExams) */}
+    <div className="bg-white rounded-xl border border-slate-500 p-6 w-[1000px]">
+      {/* Heading & Description - match HistoryExams */}
       <div className="mt-5 mb-8">
-        <h2 className="text-xl font-bold mb-1 text-gray-800">
-          Statistics
-        </h2>
+        <h2 className="text-xl font-bold mb-1 text-gray-800">Statistics</h2>
         <p className="text-sm text-gray-600 leading-relaxed mb-8">
           View comprehensive statistics on your exam performance over different timeframes.
         </p>

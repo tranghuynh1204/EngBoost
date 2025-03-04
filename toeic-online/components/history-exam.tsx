@@ -113,7 +113,7 @@ const HistoryExams: React.FC = () => {
 
   // Render exams as cards
   return (
-    <div className="bg-white rounded-xl border border-slate-500 p-6 w-full">
+    <div className="bg-white rounded-xl border border-slate-500 p-6 w-[1000px]">
       <div className="mt-5 mb-8">
         <h2 className="text-xl font-bold mb-1 text-gray-800">
         <button className="text-sky-600 bg-sky-50 px-3 py-2 rounded-lg mr-3 ">

@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Loading from "@/components/loading";
 import Statisticspage from "../statistics/page"; // Adjust the import path accordingly
-import HistoryExams from "../history/page";
+import HistoryExams from "@/components/history-exam";
 import { MdHistoryEdu } from "react-icons/md";
 
 interface UserProfile {
@@ -26,13 +26,13 @@ const ProfilePage: React.FC = () => {
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedMenu, setSelectedMenu] = useState<string>("Profile");
+  const [selectedMenu, setSelectedMenu] = useState<string>("History Exams");
 
   useEffect(() => {
-    if (!isLogin) {
-      router.push("/login");
-      return;
-    }
+    // if (!isLogin) {
+    //   router.push("/login");
+    //   return;
+    // }
 
     const fetchUserProfile = async () => {
       try {
@@ -72,59 +72,6 @@ const ProfilePage: React.FC = () => {
   // Function to render the main content based on selected menu
   const renderContent = () => {
     switch (selectedMenu) {
-      case "Profile":
-      case "Profile":
-        return (
-          <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-lg">
-              <div className="flex justify-center">
-                <div className="w-28 h-28 rounded-full bg-gray-800 flex items-center justify-center mb-6 shadow-inner">
-                  <span className="text-4xl font-bold text-white">
-                    {user.name.charAt(0)}
-                  </span>
-                </div>
-              </div>
-              <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-4">
-                Welcome, {user.name}
-              </h2>
-              <p className="text-center text-gray-600 mb-8">
-                Manage your account information below.
-              </p>
-              <div className="space-y-6">
-                <div>
-                  <Label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-800"
-                  >
-                    Name
-                  </Label>
-                  <Input
-                    type="text"
-                    id="name"
-                    value={user.name}
-                    readOnly
-                    className="mt-2 block w-full rounded-lg bg-gray-100 border border-gray-300 text-gray-800 focus:ring-gray-500 focus:border-gray-500"
-                  />
-                </div>
-                <div>
-                  <Label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-800"
-                  >
-                    Email
-                  </Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    value={user.email}
-                    readOnly
-                    className="mt-2 block w-full rounded-lg bg-gray-100 border border-gray-300 text-gray-800 focus:ring-gray-500 focus:border-gray-500"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
       case "History Exams":
         return <HistoryExams />;
       case "Statistics":
@@ -135,62 +82,62 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-50 flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md">
-        <div className="p-6">
-          <div className="flex items-center justify-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">
-                {user.name.charAt(0)}
-              </span>
+      <div className="max-w-7xl mx-auto px-2 py-8 flex gap-8">
+        {/* Sidebar */}
+        <aside className="w-64 bg-white rounded-lg border border-slate-500">
+          <div className="p-6">
+            {/* User info */}
+            <div className="flex flex-col items-center mb-4 border-b border-slate-500 pb-4">
+              <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-2 shadow-inner">
+                <span className="text-2xl font-bold text-white">
+                  {user.name.charAt(0)}
+                </span>
+              </div>
+              <h2 className="text-lg font-extrabold text-gray-800 text-center">
+                Welcome, {user.name}
+              </h2>
+              <p className="text-sm text-gray-600 text-center">{user.email}</p>
+              <p className="mt-1 text-xs text-gray-500 text-center">
+                Manage your account information
+              </p>
             </div>
+            {/* Navigation items */}
+            <nav>
+              <ul>
+                <li>
+                  <button
+                    onClick={() => setSelectedMenu("History Exams")}
+                    className={`w-full text-left px-4 py-2 rounded-none  border-slate-500 ${
+                      selectedMenu === "History Exams"
+                        ? "bg-slate-200 text-gray-900"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    History Exams
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => setSelectedMenu("Statistics")}
+                    className={`w-full text-left px-4 py-2 rounded-none ${
+                      selectedMenu === "Statistics"
+                        ? "bg-slate-200 text-gray-900"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    Statistics
+                  </button>
+                </li>
+              </ul>
+            </nav>
           </div>
-          <nav>
-            <ul>
-              <li>
-                <button
-                  onClick={() => setSelectedMenu("Profile")}
-                  className={`w-full text-left px-4 py-2 rounded-md mb-2 ${
-                    selectedMenu === "Profile"
-                      ? "bg-gray-200 text-gray-900"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  Profile
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setSelectedMenu("History Exams")}
-                  className={`w-full text-left px-4 py-2 rounded-md mb-2 ${
-                    selectedMenu === "History Exams"
-                      ? "bg-gray-200 text-gray-900"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  History Exams
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setSelectedMenu("Statistics")}
-                  className={`w-full text-left px-4 py-2 rounded-md ${
-                    selectedMenu === "Statistics"
-                      ? "bg-gray-200 text-gray-900"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  Statistics
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
+        </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6">{renderContent()}</main>
+        {/* Main content */}
+        <main className="flex-1">{renderContent()}</main>
+      </div>
     </div>
   );
 };

@@ -101,9 +101,19 @@ const Statisticspage = () => {
     return <NotFound />;
   }
   return (
-    <div className="bg-gray-100 p-8 rounded-xl shadow-lg space-y-8 max-w-7xl mx-auto">
+    <div className="bg-white rounded-xl border border-slate-500 p-6 w-full">
+      {/* Heading & Description (similar to HistoryExams) */}
+      <div className="mt-5 mb-8">
+        <h2 className="text-xl font-bold mb-1 text-gray-800">
+          Statistics
+        </h2>
+        <p className="text-sm text-gray-600 leading-relaxed mb-8">
+          View comprehensive statistics on your exam performance over different timeframes.
+        </p>
+      </div>
+
       {/* Filter Form */}
-      <Card className="p-6 bg-white shadow-lg">
+      <div className="mb-8">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -141,7 +151,7 @@ const Statisticspage = () => {
             </Button>
           </form>
         </Form>
-      </Card>
+      </div>
 
       {/* Statistics Tabs */}
       <Tabs defaultValue={Object.keys(result)[0]} className="space-y-6">
@@ -249,7 +259,7 @@ const Statisticspage = () => {
                                       day: "numeric",
                                     });
                                   }}
-                                  style={{ fill: "#1F2937", fontSize: "12px" }} // Tailwind's gray-800
+                                  style={{ fill: "#1F2937", fontSize: "12px" }}
                                 />
                                 <ChartTooltip
                                   content={
@@ -271,13 +281,13 @@ const Statisticspage = () => {
                                 <Line
                                   type="monotone"
                                   dataKey="precision"
-                                  stroke="#1F2937" // Tailwind's gray-800
+                                  stroke="#1F2937"
                                   strokeWidth={3}
                                   dot={{
                                     r: 4,
                                     stroke: "#1F2937",
                                     strokeWidth: 2,
-                                    fill: "#D1D5DB", // Tailwind's gray-300
+                                    fill: "#D1D5DB",
                                   }}
                                   activeDot={{ r: 6 }}
                                 />
@@ -300,5 +310,4 @@ const Statisticspage = () => {
     </div>
   );
 };
-
 export default Statisticspage;

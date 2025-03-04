@@ -1,5 +1,3 @@
-// components/Header.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -27,22 +25,78 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Badge } from "./ui/badge";
+import { TbLogout, TbUserCheck, TbUserScan } from "react-icons/tb";
+
+interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+  roles: string[]; // e.g., ["user", "moderator"]
+}
+interface UserBadgeProps {
+  label: string;
+  variant: "default" | "destructive" | "outline" | "secondary";
+  className: string;
+}
 const Header = () => {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
+
+  // Helper: returns the badge label and variant based on user's roles.
+  const getUserBadgeProps = (): {
+    label: string;
+    variant: "rose" | "amber" | "sky";
+  } | null => {
+    if (!user || !user.roles || user.roles.length === 0) return null;
+    if (user.roles.includes("admin")) {
+      return { label: "Admin", variant: "rose" };
+    }
+    if (user.roles.includes("moderator")) {
+      return { label: "Moderator", variant: "amber" };
+    }
+    // Fallback role: active user
+    return { label: "Active Member", variant: "sky" };
+  };
+
+  const userBadgeProps = getUserBadgeProps();
+
+  // Fetch user profile from API
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        const accessToken = localStorage.getItem("access_token");
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setUser(response.data);
+      } catch (error: any) {
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [router]);
 
   const checkLoginStatus = async () => {
     try {
       const refreshToken = localStorage.getItem("refresh_token");
       if (refreshToken) {
-        // Gửi yêu cầu đến backend để refresh access token
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-          {
-            refresh_token: refreshToken,
-          }
+          { refresh_token: refreshToken }
         );
         const { access_token, refresh_token } = response.data;
         localStorage.setItem("access_token", access_token);
@@ -57,22 +111,18 @@ const Header = () => {
       dispatch(setIsLogin(false));
     }
   };
-  // Kiểm tra trạng thái đăng nhập khi component được render
+
+  // Check login status and handle scroll events.
   useEffect(() => {
-    checkLoginStatus(); // Indicate that hydration has completed
+    checkLoginStatus();
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [dispatch]);
+
   const logout = () => {
     router.push("/");
     localStorage.removeItem("access_token");
@@ -156,20 +206,47 @@ const Header = () => {
         ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              <div className="flex items-center space-x-2">
+                {userBadgeProps && (
+                  <Badge variant={userBadgeProps.variant}>
+                    {userBadgeProps.label}
+                  </Badge>
+                )}
+                <Avatar>
+                  <AvatarImage src={"https://github.com/shadcn.png"} />
+                  <AvatarFallback>
+                    {user?.name?.charAt(0).toUpperCase() || "CN"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="bg-slate-50 rounded-md shadow-lg p-2">
+              {user && user.roles.includes("admin") && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/admin")}
+                    className="flex items-center gap-2 rounded-md hover:bg-slate-100 transition-colors"
+                  >
+                    <TbUserCheck className="w-4 h-4 text-zinc-500" />
+                    <span> Admin Dashboard </span>
+                  </DropdownMenuItem>
+                  <div className="border-b border-slate-400 my-2" />
+                </>
+              )}
               <DropdownMenuItem
-                onClick={() => {
-                  router.push("/profile");
-                }}
+                onClick={() => router.push("/profile")}
+                className="flex items-center gap-2 rounded-md hover:bg-slate-100 transition-colors"
               >
-                Profile
+                <TbUserScan className="w-4 h-4 text-zinc-500" />
+                <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={logout}
+                className="flex items-center gap-2 rounded-md hover:bg-slate-100 transition-colors"
+              >
+                <TbLogout className="w-4 h-4 text-zinc-500" />
+                <span>Logout</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}

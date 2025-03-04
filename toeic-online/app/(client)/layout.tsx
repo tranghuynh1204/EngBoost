@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 import { UpdateFlashcardModal } from "@/components/modals/update-flashcard-modal";
 import { CreateFlashcardModal } from "@/components/modals/create-flashcard-modal";
-import Header from "@/components/header";
+import Header from "@/components/Header";
 export default function Layout({
   children,
 }: Readonly<{

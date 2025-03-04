@@ -82,7 +82,7 @@ const Statisticspage = () => {
       days: "7",
     },
   });
-
+  const fixedOrder = ["toeic", "ielts", "part 1"];
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     fetchData(Number(data.days));
   };
@@ -231,15 +231,21 @@ const Statisticspage = () => {
       <Tabs defaultValue={Object.keys(result)[0]}>
         <div className="flex justify-between mb-6">
           <TabsList className="flex space-x-3 border bg-emerald-50 border-slate-400 rounded-lg overflow-x-auto">
-            {Object.keys(result).map((key) => (
-              <TabsTrigger
-                key={key}
-                value={key}
-                className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
-              >
-                {key}
-              </TabsTrigger>
-            ))}
+            {Object.keys(result)
+              .sort(
+                (a, b) =>
+                  fixedOrder.indexOf(a.toLowerCase()) -
+                  fixedOrder.indexOf(b.toLowerCase())
+              )
+              .map((key) => (
+                <TabsTrigger
+                  key={key}
+                  value={key}
+                  className="flex items-center space-x-2 py-1 px-3 text-sm uppercase font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
+                >
+                  {key}
+                </TabsTrigger>
+              ))}
           </TabsList>
           <div className="flex justify-end w-[500px]">
             <Form {...form}>
@@ -285,29 +291,54 @@ const Statisticspage = () => {
           </div>
         </div>
 
-        {Object.entries(result).map(([key, value]) => (
-          <TabsContent key={key} value={key}>
-            <div className="p-6 shadow-lg rounded-lg">
-              <div className="flex justify-between  gap-4">
-                <div className="text-base font-semibold text-gray-800">
-                  Total exam:{" "}
-                  <span className="text-gray-600">{value.examsCount}</span>
+        {Object.entries(result)
+          .sort(
+            ([keyA], [keyB]) =>
+              fixedOrder.indexOf(keyA.toLowerCase()) -
+              fixedOrder.indexOf(keyB.toLowerCase())
+          )
+          .map(([key, value]) => (
+            <TabsContent key={key} value={key}>
+              <div className="p-6 shadow-lg rounded-lg">
+                <div className="flex justify-between  gap-4">
+                  <div className="text-base font-semibold text-gray-800">
+                    Total exam:{" "}
+                    <span className="text-gray-600">{value.examsCount}</span>
+                  </div>
+                  <div className="text-base font-semibold text-gray-800">
+                    Duration:{" "}
+                    <span className="text-gray-600">
+                      {formatTime(value.duration)}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-base font-semibold text-gray-800">
-                  Duration:{" "}
-                  <span className="text-gray-600">
-                    {formatTime(value.duration)}
-                  </span>
+                <div className="flex gap-4 mt-4">
+                  {Object.entries(value.sections).map(
+                    ([sectionKey, sectionData]) => {
+                      const { correct, questionCount } = sectionData.precision;
+                      // Calculate the percentage precision (if questionCount > 0)
+                      const percentage =
+                        questionCount > 0
+                          ? ((correct / questionCount) * 100).toFixed(2)
+                          : "0.00";
+                      return (
+                        <div
+                          key={sectionKey}
+                          className="text-xs font-medium text-zinc-500"
+                        >
+                          {sectionKey}: {percentage}%
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+                {/* Combined Area Chart for Listening & Reading */}
+                <div className="mt-6">
+                  <AreaChartComponent sections={value.sections} />
                 </div>
               </div>
-
-              {/* Combined Area Chart for Listening & Reading */}
-              <div className="mt-6">
-                <AreaChartComponent sections={value.sections} />
-              </div>
-            </div>
-          </TabsContent>
-        ))}
+            </TabsContent>
+          ))}
       </Tabs>
     </div>
   );

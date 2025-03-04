@@ -1,7 +1,14 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-
+import React, { useEffect, useState } from "react";
+import {
+  CartesianGrid,
+  XAxis,
+  Area,
+  AreaChart,
+  Tooltip,
+  Legend,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -10,15 +17,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,40 +43,50 @@ import {
 import Loading from "@/components/loading";
 import NotFound from "@/components/not-found";
 import { formatTime } from "@/types";
+import { TbPresentationAnalytics } from "react-icons/tb";
+import axios from "axios";
+
 const formSchema = z.object({
   days: z.string(),
 });
 
+interface SectionData {
+  date: string;
+  precision: number;
+}
+
+interface Sections {
+  [key: string]: {
+    examsCount: number;
+    precision: { correct: number; questionCount: number };
+    data: SectionData[];
+  };
+}
+
+interface ExamResult {
+  examsCount: number;
+  sections: Sections;
+  duration: number;
+}
+
+type ResultType = {
+  [key: string]: ExamResult;
+};
+
 const Statisticspage = () => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [result, setResult] = useState<{
-    [key: string]: {
-      examsCount: number;
-      sections: {
-        [key: string]: {
-          examsCount: number;
-          precision: {
-            correct: number;
-            questionCount: number;
-          };
-          data: {
-            date: string;
-            precision: number;
-          }[];
-        };
-      };
-      duration: number;
-    };
-  }>();
+  const [result, setResult] = useState<ResultType>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       days: "7",
     },
   });
-  function onSubmit(data: z.infer<typeof formSchema>) {
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
     fetchData(Number(data.days));
-  }
+  };
+
   const fetchData = async (days: number) => {
     try {
       const response = await axios.get(
@@ -86,214 +99,213 @@ const Statisticspage = () => {
         }
       );
       setResult(response.data);
-    } catch {
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchData(7);
   }, []);
+
   if (loading) {
     return <Loading />;
   }
   if (!result) {
     return <NotFound />;
   }
+
+  // For each exam type (e.g., ielts, toeic, part 1), we want to merge the Listening and Reading data
+  // into one chart. We'll assume that if both sections exist, they share the same dates.
+  const mergeSectionData = (sections: Sections) => {
+    const listeningData = sections["Listening"]?.data || [];
+    const readingData = sections["Reading"]?.data || [];
+    // Create an array of data points. We'll merge by index for simplicity.
+    const dataPoints = listeningData.map((d, i) => ({
+      date: d.date,
+      Listening: d.precision,
+      Reading: readingData[i] ? readingData[i].precision : 0,
+    }));
+    return dataPoints;
+  };
+  const renderCustomLegend = (props: any) => {
+    const { payload } = props;
+    return (
+      <div className="flex justify-center gap-4 text-xs text-black mt-2">
+        {payload?.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center gap-2">
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            ></span>
+            <span>{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  // Custom Area Chart component to display Listening & Reading data together
+  const AreaChartComponent = ({ sections }: { sections: Sections }) => {
+    const chartData = mergeSectionData(sections);
+    return (
+      <ChartContainer
+        config={{ user: { label: "Precision", color: "#1F2937" } }}
+        className="aspect-video h-[300px] w-full"
+      >
+        <AreaChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid
+            stroke="#d1fae5"
+            vertical={false}
+            strokeDasharray="3 3"
+          />
+
+          {/* XAxis with axis line and tick line removed, 
+            and tickMargin adjusted so the date is "on top" */}
+          <XAxis
+            dataKey="date"
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={(date) =>
+              new Date(date).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })
+            }
+            style={{ fill: "#1F2937", fontSize: "12px" }}
+          />
+
+          {/* Tooltip with no vertical cursor line */}
+          <Tooltip
+            cursor={false}
+            contentStyle={{ border: "1px solid #D1D5DB", borderRadius: "8px" }}
+          />
+
+          <Legend content={renderCustomLegend} />
+
+          <Area
+            type="monotone"
+            dataKey="Listening"
+            stackId="1"
+            stroke="#4ade80"
+            fill="#4ade80"
+            fillOpacity={0.4}
+          />
+          <Area
+            type="monotone"
+            dataKey="Reading"
+            stackId="1"
+            stroke="#047857"
+            fill="#047857"
+            fillOpacity={0.4}
+          />
+        </AreaChart>
+      </ChartContainer>
+    );
+  };
+
   return (
-    <div className="bg-gray-100 p-8 rounded-xl shadow-lg space-y-8 max-w-7xl mx-auto">
+    <div className="bg-white rounded-xl border border-slate-500 p-6 w-[1000px]">
+      {/* Heading & Description */}
+      <div className="mt-5 mb-4">
+        <h2 className="text-xl font-bold mb-1 text-gray-800">
+          <button className="text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg mr-3">
+            <TbPresentationAnalytics size={20} />
+          </button>
+          Statistics
+        </h2>
+        <p className="text-sm text-gray-600 leading-relaxed mb-8">
+          View comprehensive statistics on your exam performance over different
+          timeframes.
+        </p>
+      </div>
+
       {/* Filter Form */}
-      <Card className="p-6 bg-white shadow-lg">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col sm:flex-row items-center gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="days"
-              render={({ field }) => (
-                <FormItem className="w-full sm:w-1/3">
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full bg-white text-black border border-gray-300 shadow-sm rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200">
-                        <SelectValue placeholder="Select Timeframe" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white text-black">
-                      <SelectItem value="7">7 Days</SelectItem>
-                      <SelectItem value="30">1 Month</SelectItem>
-                      <SelectItem value="365">1 Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              className="w-full sm:w-auto bg-gray-600 text-white px-6 py-2 rounded-md shadow hover:bg-gray-800 transition-colors duration-200 border border-gray-400"
-            >
-              Search
-            </Button>
-          </form>
-        </Form>
-      </Card>
 
       {/* Statistics Tabs */}
-      <Tabs defaultValue={Object.keys(result)[0]} className="space-y-6">
-        <TabsList className="flex space-x-3 overflow-x-auto">
-          {Object.keys(result).map((key) => (
-            <TabsTrigger
-              key={key}
-              value={key}
-              className="w-24 px-2 py-2 bg-gray-600 text-white rounded-md shadow-sm hover:bg-gray-800 focus:ring-2 focus:ring-gray-100 transition-colors duration-200"
-            >
-              {key}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <Tabs defaultValue={Object.keys(result)[0]}>
+        <div className="flex justify-between mb-6">
+          <TabsList className="flex space-x-3 border bg-emerald-50 border-slate-400 rounded-lg overflow-x-auto">
+            {Object.keys(result).map((key) => (
+              <TabsTrigger
+                key={key}
+                value={key}
+                className="flex items-center space-x-2 py-1 px-3 text-sm font-medium text-muted-foreground  hover:text-black focus:outline-none rounded-lg transition-all data-[state=active]:bg-white data-[state=active]:text-black "
+              >
+                {key}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="flex justify-end w-[500px]">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col sm:flex-row items-center gap-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="days"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          fetchData(Number(value));
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-40 text-[#212529] text-sm border border-sky-100">
+                            <SelectValue placeholder="Select Timeframe" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white text-[#212529] ">
+                          <SelectItem className="text-sm" value="7">
+                            Week
+                          </SelectItem>
+                          <SelectItem className="text-sm" value="30">
+                            Month
+                          </SelectItem>
+                          <SelectItem className="text-sm" value="365">
+                            Year
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </div>
+        </div>
 
         {Object.entries(result).map(([key, value]) => (
           <TabsContent key={key} value={key}>
-            <Card className="p-6 bg-white shadow-lg rounded-lg">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="text-lg font-semibold text-gray-800">
-                  Số đề đã làm:{" "}
+            <div className="p-6 shadow-lg rounded-lg">
+              <div className="flex justify-between  gap-4">
+                <div className="text-base font-semibold text-gray-800">
+                  Total exam:{" "}
                   <span className="text-gray-600">{value.examsCount}</span>
                 </div>
-                <div className="text-lg font-semibold text-gray-800">
-                  Thời gian luyện thi:{" "}
+                <div className="text-base font-semibold text-gray-800">
+                  Duration:{" "}
                   <span className="text-gray-600">
                     {formatTime(value.duration)}
                   </span>
                 </div>
               </div>
 
-              {/* Nested Sections Tabs */}
-              <Tabs
-                defaultValue={Object.keys(value.sections)[0]}
-                className="mt-6"
-              >
-                <TabsList className="flex space-x-2 overflow-x-auto">
-                  {Object.keys(value.sections).map((sectionKey) => (
-                    <TabsTrigger
-                      key={sectionKey}
-                      value={sectionKey}
-                      className="px-3 py-1.5 bg-gray-600 text-white rounded-md shadow-sm hover:bg-gray-800 focus:ring-2 focus:ring-gray-100 transition-colors duration-200"
-                    >
-                      {sectionKey}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-
-                {Object.entries(value.sections).map(
-                  ([sectionKey, sectionValue]) => (
-                    <TabsContent key={sectionKey} value={sectionKey}>
-                      <Card className="p-4 bg-white rounded-md shadow-lg mt-4">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                          <div className="text-md font-medium text-gray-800">
-                            Số đề đã làm:{" "}
-                            <span className="text-gray-600">
-                              {sectionValue.examsCount}
-                            </span>
-                          </div>
-                          <div className="text-md font-medium text-gray-800 mt-2 sm:mt-0">
-                            Độ chính xác:{" "}
-                            <span className="text-gray-600">
-                              {sectionValue.precision.correct}/
-                              {sectionValue.precision.questionCount}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Chart */}
-                        <Card className="mt-4 bg-white text-gray-800 border border-gray-400 shadow-lg">
-                          <CardContent>
-                            <ChartContainer
-                              config={{
-                                user: {
-                                  label: "Precision",
-                                  color: "#1F2937", // Tailwind's gray-800
-                                },
-                              }}
-                              className="aspect-video h-[300px] w-full"
-                            >
-                              <LineChart
-                                data={sectionValue.data}
-                                margin={{
-                                  top: 20,
-                                  right: 30,
-                                  left: 0,
-                                  bottom: 5,
-                                }}
-                              >
-                                <CartesianGrid
-                                  stroke="#D1D5DB" // Tailwind's gray-300
-                                  vertical={false}
-                                  strokeDasharray="3 3"
-                                />
-                                <XAxis
-                                  dataKey="date"
-                                  tickLine={false}
-                                  axisLine={false}
-                                  tickMargin={10}
-                                  minTickGap={40}
-                                  tickFormatter={(value) => {
-                                    const date = new Date(value);
-                                    return date.toLocaleDateString("en-US", {
-                                      month: "short",
-                                      day: "numeric",
-                                    });
-                                  }}
-                                  style={{ fill: "#1F2937", fontSize: "12px" }} // Tailwind's gray-800
-                                />
-                                <ChartTooltip
-                                  content={
-                                    <ChartTooltipContent
-                                      className="bg-white text-gray-800 p-3 rounded-lg border border-gray-400 shadow-lg"
-                                      nameKey="precision"
-                                      labelFormatter={(value) => {
-                                        return new Date(
-                                          value
-                                        ).toLocaleDateString("en-US", {
-                                          month: "short",
-                                          day: "numeric",
-                                          year: "numeric",
-                                        });
-                                      }}
-                                    />
-                                  }
-                                />
-                                <Line
-                                  type="monotone"
-                                  dataKey="precision"
-                                  stroke="#1F2937" // Tailwind's gray-800
-                                  strokeWidth={3}
-                                  dot={{
-                                    r: 4,
-                                    stroke: "#1F2937",
-                                    strokeWidth: 2,
-                                    fill: "#D1D5DB", // Tailwind's gray-300
-                                  }}
-                                  activeDot={{ r: 6 }}
-                                />
-                              </LineChart>
-                            </ChartContainer>
-                          </CardContent>
-                          <CardFooter className="text-sm text-gray-600">
-                            Độ chính xác qua các ngày
-                          </CardFooter>
-                        </Card>
-                      </Card>
-                    </TabsContent>
-                  )
-                )}
-              </Tabs>
-            </Card>
+              {/* Combined Area Chart for Listening & Reading */}
+              <div className="mt-6">
+                <AreaChartComponent sections={value.sections} />
+              </div>
+            </div>
           </TabsContent>
         ))}
       </Tabs>

@@ -39,7 +39,7 @@ const chartConfig = {
 export const ExamChart = () => {
   const [total, setTotal] = useState<number | undefined>();
   const [data, setData] = useState<any[]>([]);
-
+  const fixedOrder: Array<keyof typeof chartConfig> = ["toeic", "ielts", "part 1"];
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -57,8 +57,11 @@ export const ExamChart = () => {
             item.key
           ]?.color || "#000",
       }));
+      const sortedData = updatedData.sort(
+        (a:any, b:any) => fixedOrder.indexOf(a.key) - fixedOrder.indexOf(b.key)
+      );
       setTotal(response.data.total);
-      setData(updatedData);
+      setData(sortedData);
     } catch {}
   };
 

@@ -7,6 +7,8 @@ import { formatTime } from "@/types"; // Replace with the correct path to your `
 import { FaClock, FaCheckCircle } from "react-icons/fa";
 import { MdOutlineCategory, MdDateRange } from "react-icons/md";
 import { HiOutlineClipboardList } from "react-icons/hi";
+import { TbBlockquote, TbClockEdit, TbClockQuestion, TbScoreboard } from "react-icons/tb";
+import { Button } from "./ui/button";
 
 interface UserExamCardProps {
   userExam: UserExam;
@@ -24,26 +26,39 @@ const UserExamCard: React.FC<UserExamCardProps> = ({ userExam }) => {
       : "Unknown";
 
   return (
-    <div className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition">
-      <h3 className="text-lg font-bold text-center text-[rgb(53,47,68)] flex items-center gap-2">
-        {exam.title}
-      </h3>
-      <p className="text-sm text-gray-600 flex items-center gap-2">
-        <HiOutlineClipboardList className="text-blue-400" />
-        Sections: {sectionsDisplay}
-      </p>
-      <p className="text-sm text-gray-600 flex items-center gap-2">
-        <FaCheckCircle className="text-blue-400" />
-        Result: {result}
-      </p>
-      <p className="text-sm text-gray-600 flex items-center gap-2">
-        <FaClock className="text-blue-400" />
-        Duration: {formatTime(duration)}
-      </p>
-      <p className="text-sm text-gray-600 flex items-center gap-2">
-        <MdDateRange className="text-blue-400" />
-        Attempted On: {new Date(startTime).toLocaleDateString()}
-      </p>
+    <div className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition w-68">
+      <div className="flex justify-between items-center">
+        <h3 className="text-base font-bold text-zinc-600">{exam.title}</h3>
+        <span className="text-xs text-zinc-400 flex items-center gap-1">
+          <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
+            <TbClockEdit size={15} />
+          </button>
+          {new Date(startTime).toLocaleDateString()}
+        </span>
+      </div>
+      <div className="mt-4 grid grid-cols-1 gap-2">
+        <p className="text-sm text-gray-600 flex items-center gap-2">
+          <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
+            <TbBlockquote size={15} />
+          </button>
+          <span className="font-medium">Sections:</span>
+          <span>{sectionsDisplay}</span>
+        </p>
+        <p className="text-sm text-gray-600 flex items-center gap-2">
+          <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
+            <TbScoreboard size={15} />
+          </button>
+          <span className="font-medium">Result:</span>
+          <span>{result}</span>
+        </p>
+        <p className="text-sm text-gray-600 flex items-center gap-2">
+        <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
+            <TbClockQuestion size={15} />
+          </button>
+          <span className="font-medium">Duration:</span>
+          <span>{formatTime(duration)}</span>
+        </p>
+      </div>
     </div>
   );
 };

@@ -9,13 +9,14 @@ import NotFound from "@/components/not-found";
 import { HistoryResponse, UserExam } from "@/types"; // Ensure correct import paths
 import UserExamCard from "./user-exam-card"; // Ensure correct import path
 import { PaginationCustom } from "./pagination-custom";
+import { TbBlockquote, TbHistoryToggle } from "react-icons/tb";
 const HistoryExams: React.FC = () => {
   // State variables
   const [loading, setLoading] = useState<boolean>(true);
   const [exams, setExams] = useState<UserExam[]>([]); // Initialize as an empty array
   const [totalExams, setTotalExams] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize] = useState<number>(10); // Can be made dynamic if needed
+  const [pageSize] = useState<number>(12); // Can be made dynamic if needed
   const [error, setError] = useState<string | null>(null);
 
   // Calculate total pages based on total exams and page size
@@ -112,9 +113,20 @@ const HistoryExams: React.FC = () => {
 
   // Render exams as cards
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 w-full">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Exam History</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="bg-white rounded-xl border border-slate-500 p-6 w-[1000px]">
+      <div className="mt-5 mb-8">
+        <h2 className="text-xl font-bold mb-1 text-gray-800">
+          <button className="text-sky-600 bg-sky-50 px-3 py-2 rounded-lg mr-3 ">
+            <TbHistoryToggle size={20} />
+          </button>
+          Exam History
+        </h2>
+        <p className="text-sm text-gray-600 leading-relaxed mb-8">
+          Get a detailed overview of your past exam activities, including
+          completed exams, scores, and performance trends over time.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ">
         {exams.map((userExam) => (
           <UserExamCard key={userExam._id} userExam={userExam} />
         ))}

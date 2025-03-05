@@ -11,26 +11,32 @@ export default function InboxLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="max-h-screen max-w-[1210px] mx-auto rounded-lg shadow-md border border-gray-200 bg-white">
+    <div className="max-h-screen max-w-[1210px] mx-auto   bg-white">
+      <header className="mb-8 px-6">
+        <h1 className="text-xl text-zinc-700 font-extrabold mt-6 mb-2">Inbox</h1>
+        <p className="text-sm text-zinc-500">
+          View and manage your latest messages and stay updated.
+        </p>
+      </header>
       <ResizablePanelGroup
         direction="horizontal"
-        className="w-full h-full rounded-lg bg-gray-50"
+        className="w-full h-full px-6"
       >
         {/* Sidebar */}
         <ResizablePanel
           defaultSize={25}
           minSize={15} // Allow smaller resizing
           maxSize={40} // Allow larger resizing
-          className="bg-gray-100 border-r border-gray-300"
+          className="bg-slate-50 rounded-lg "
         >
           <SideBarChat />
         </ResizablePanel>
 
         {/* Resizable Divider */}
-        <ResizableHandle className="bg-gray-300 w-[4px] cursor-col-resize" />
+        <ResizableHandle className="bg-gray-300 w-[2px] cursor-col-resize" />
 
         {/* Main Content */}
-        <ResizablePanel defaultSize={75} className="p-4">
+        <ResizablePanel defaultSize={75} className="">
           {children}
         </ResizablePanel>
       </ResizablePanelGroup>

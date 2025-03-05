@@ -66,7 +66,7 @@ export const ChatContent = ({ socket }: ChatContentProps) => {
 
   return (
     <div
-      className="flex-1 overflow-y-auto h-full bg-[#F8F9FA] p-4 space-y-3 rounded-lg shadow-inner"
+      className="flex-1 overflow-y-auto h-full bg-white p-4 space-y-3 rounded-lg shadow-inner"
       ref={chatContainerRef}
       onScroll={handleScroll}
     >

@@ -27,8 +27,8 @@ export const MessageItem = memo(
         <div
           className={`relative max-w-[70%] p-3 rounded-lg shadow-md transition-transform duration-200 ${
             isAdmin
-              ? "bg-[#E9ECEF] text-[#212529]" // Other users' messages
-              : "bg-[#343A40] text-white" // My messages
+              ? "bg-gray-100 text-zinc-700" // Other users' messages
+              : "bg-sky-100 text-zinc-700" // My messages
           } ${
             isClicked ? "translate-y-[-5px]" : "translate-y-0"
           } hover:shadow-lg`}

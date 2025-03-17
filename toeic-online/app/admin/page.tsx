@@ -9,7 +9,7 @@ const AdminPage = () => {
     <div className=" ">
       <main className=" mx-auto px-6 py-6  ">
       <header className="mb-8">
-          <h1 className="text-xl text-zinc-700 font-extrabold mb-2">
+          <h1 className="text-xl text-zinc-700 font-extrabold c">
             Admin Dashboard
           </h1>
           <p className="text-sm text-zinc-500">

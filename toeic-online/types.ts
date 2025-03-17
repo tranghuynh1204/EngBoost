@@ -162,6 +162,9 @@ import { format } from "date-fns";
 
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
   return format(date, "dd/MM/yyyy HH:mm:ss");
 };
 

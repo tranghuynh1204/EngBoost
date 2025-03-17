@@ -17,32 +17,49 @@ export const SideBarChat = () => {
     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
       transports: ["websocket"],
     });
-
+  
     socket.emit("admin");
-
+  
     socket.on("new_message", (newMessage) => {
-      if (newMessage.length || newMessage.length === 0) {
-        setUserInboxs((prevMessages) => [...prevMessages, ...newMessage]);
+      if (Array.isArray(newMessage)) {
+        const enrichedMessages = newMessage.map((msg) => ({
+          ...msg,
+          user: msg.user || { _id: "default", name: "Unknown" },
+          timestamp: msg.timestamp || new Date().toISOString(),
+        }));
+        const updatedCounts = { ...unreadCounts };
+        enrichedMessages.forEach((msg) => {
+          // Now msg.user is always defined.
+          updatedCounts[msg.user._id] = (updatedCounts[msg.user._id] || 0) + 1;
+        });
+        setUserInboxs((prevMessages) => [...prevMessages, ...enrichedMessages]);
+        setUnreadCounts(updatedCounts);
       } else {
+        const enrichedMessage = {
+          ...newMessage,
+          user: newMessage.user || { _id: "default", name: "Unknown" },
+          timestamp: newMessage.timestamp || new Date().toISOString(),
+        };
         setUserInboxs((prevMessages) => [
-          newMessage,
+          enrichedMessage,
           ...prevMessages.filter(
-            (item) => item.user._id !== newMessage.user._id
+            (item) => item.user._id !== enrichedMessage.user._id
           ),
         ]);
-
-        // Cập nhật số lượng tin nhắn chưa đọc
         setUnreadCounts((prevCounts) => ({
           ...prevCounts,
-          [newMessage.user._id]: (prevCounts[newMessage.user._id] || 0) + 1,
+          [enrichedMessage.user._id]:
+            (prevCounts[enrichedMessage.user._id] || 0) + 1,
         }));
       }
     });
-
+    
+  
     return () => {
       socket.disconnect();
     };
   }, []);
+  
 
   const handleUserClick = (userId: string) => {
     setActiveUserId(userId);
@@ -54,13 +71,14 @@ export const SideBarChat = () => {
   };
 
   return (
-    <ScrollArea className="flex flex-col space-y-4 min-w-[300px] w-full bg-white border-r border-gray-300 p-4">
+    <ScrollArea className="flex flex-col  min-w-[200px] max-h-[600px] rounded-md bg-slate-50 border border-slate-300 ">
       {userInboxs.map((item) => (
         <SideBarItem
           key={item.user._id}
           _id={item.user._id}
           name={item.user.name}
           content={item.content}
+          timestamp={item.timestamp}
           unreadCount={unreadCounts[item.user._id] || 0}
           onClick={() => handleUserClick(item.user._id)}
           isActive={activeUserId === item.user._id}

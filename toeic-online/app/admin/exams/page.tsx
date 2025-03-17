@@ -1,9 +1,42 @@
 "use client";
-import { CldUploadWidget } from "next-cloudinary";
+import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
-const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
-import Spreadsheet from "react-spreadsheet";
+import { useRef, useState, useEffect } from "react";
+import { TbUpload } from "react-icons/tb";
+
+// Dynamically import JoditEditor with loading state
+const JoditEditor = dynamic(() => import("jodit-react"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-64 bg-slate-50 rounded-lg border border-slate-300 animate-pulse">
+      <div className="p-4 text-sm text-slate-400">Loading editor...</div>
+    </div>
+  ),
+});
+
+// Dynamically import Cloudinary widget
+const CldUploadWidget = dynamic(
+  () => import("next-cloudinary").then((mod) => mod.CldUploadWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-[145px] h-[38px] bg-slate-100 rounded-lg animate-pulse" />
+    ),
+  }
+);
+
+// Dynamically import Spreadsheet with loading state
+const Spreadsheet = dynamic(
+  () => import("react-spreadsheet").then((mod) => mod.Spreadsheet),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="text-xs text-slate-500 p-4 bg-slate-50 rounded border border-slate-200">
+        Loading spreadsheet data...
+      </div>
+    ),
+  }
+);
 
 const AdminExamsPage = () => {
   const [data, setData] = useState<{ value: string; readOnly: boolean }[][]>(
@@ -11,72 +44,110 @@ const AdminExamsPage = () => {
   );
   const editor = useRef(null);
   const [content, setContent] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleChange = (value: string) => {
-    console.log(value);
     setContent(value);
   };
 
-  return (
-    <div className="bg-gray-100 p-8">
-      <div className="bg-white p-8 rounded-lg shadow-lg space-y-8 max-w-5xl mx-auto">
-        <h1 className="text-black text-2xl font-semibold text-center">
-          Admin Exams Page
-        </h1>
+  const handleUploadSuccess = (result: any) => {
+    setData((prevData) => [
+      ...prevData,
+      [
+        { value: result?.info.original_filename, readOnly: true },
+        { value: result?.info.secure_url, readOnly: true },
+      ],
+    ]);
+  };
 
-        <CldUploadWidget
-          signatureEndpoint="/api/sign-cloudinary-params"
-          onSuccess={(result: any) => {
-            setData((prevData) => [
-              ...prevData,
-              [
-                { value: result?.info.original_filename, readOnly: true },
-                { value: result?.info.secure_url, readOnly: true },
-              ],
-            ]);
-          }}
-        >
-          {({ open }) => {
-            function handleOnClick() {
-              open();
-            }
-            return (
-              <button
-                onClick={handleOnClick}
-                className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-all duration-200 ease-in-out shadow-md"
-              >
-                Upload an Image
-              </button>
-            );
-          }}
-        </CldUploadWidget>
-
-        {data.length > 0 && (
-          <div className="bg-gray-50 p-6 rounded-lg shadow-inner">
-            <h2 className="text-gray-800 font-medium mb-4">Spreadsheet</h2>
-            <div className="max-w-4xl mx-auto overflow-auto">
-              <Spreadsheet data={data} />
-            </div>
+  if (!mounted) {
+    return (
+      <div className="bg-gray-100 min-h-screen p-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg space-y-4">
+          <div className="animate-pulse">
+            <div className="h-6 bg-slate-200 rounded w-1/4 mb-2" />
+            <div className="h-4 bg-slate-200 rounded w-1/2" />
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
 
-        <div>
-          <h2 className="text-gray-800 font-medium mb-4">
-            HTML Content Editor
-          </h2>
-          <JoditEditor
-            ref={editor}
-            value={content}
-            onChange={handleChange}
-            className="w-full h-[70%] mt-4 bg-gray-50 text-gray-800 border border-gray-300 rounded-lg"
-          />
-          <style>{`.jodit-wysiwyg{height:300px !important; background-color: #f9fafb !important; color: #1f2937 !important; border-radius: 8px !important;}`}</style>
+  return (
+    <div className="bg-white p-6 rounded-lg space-y-4 w-full mx-auto">
+      {/* Header Section */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-xl text-zinc-700 font-extrabold">Exam Page</h1>
+          <p className="text-sm text-zinc-500 max-w-2xl">
+            ffortlessly review exam details in the admin editor and copy exam
+            data into Excel for streamlined analysis and reporting.
+          </p>
         </div>
 
-        <div className="mt-4 p-6 bg-gray-50 text-gray-800 border border-gray-300 rounded-lg shadow-md">
-          <h2 className="text-gray-800 font-semibold mb-2">Editor Output</h2>
-          {content}
+        <div className="sm:mt-0">
+          <CldUploadWidget
+            signatureEndpoint="/api/sign-cloudinary-params"
+            onSuccess={handleUploadSuccess}
+          >
+            {({ open }) => (
+              <Button
+                onClick={() => open()}
+                className="bg-white border border-slate-300 text-sm text-zinc-700 rounded-lg hover:bg-slate-100 transition-all duration-200 ease-in-out shadow-sm"
+              >
+                <TbUpload className="w-4 h-4 mr-2" />
+                Upload Image
+              </Button>
+            )}
+          </CldUploadWidget>
         </div>
+      </header>
+
+      {/* Spreadsheet Section */}
+      {data.length > 0 && (
+        <div className="border border-slate-200 bg-slate-50 p-4 rounded-lg">
+          <div className="max-w-6xl mx-auto overflow-auto">
+            <Spreadsheet
+              data={data}
+              columnLabels={["Filename", "URL"]}
+              className="text-xs"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Editor Section */}
+      <div className="space-y-4">
+        <h2 className="text-zinc-700 text-sm font-medium">
+          HTML Content Editor
+        </h2>
+        <JoditEditor
+          ref={editor}
+          value={content}
+          onChange={handleChange}
+          className="w-full bg-slate-50 text-gray-800 border border-slate-300 rounded-lg"
+          config={{
+            readonly: false,
+            toolbarButtonSize: "small",
+            theme: "default",
+            height: 400,
+          }}
+        />
+      </div>
+
+      {/* Preview Section */}
+      <div className="mt-4 p-4 bg-slate-50 text-zinc-700 border border-slate-200 rounded-lg">
+        <h2 className="text-gray-800 font-semibold mb-2 text-sm">
+          Editor Preview
+        </h2>
+        <div
+          className="prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+
+"use client";
 import { AnswerModal } from "@/components/modals/answer-modal";
 import { CreateVocabularyModal } from "@/components/modals/create-vocabulary-modal";
 import { UpdateVocabularyModal } from "@/components/modals/update-vocabulary-modal";

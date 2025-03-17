@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 
 import ExamCard from "@/components/exam/exam-card";
 import { useSearchParams } from "next/navigation";
@@ -104,4 +104,10 @@ const ExamPage: React.FC = () => {
     </div>
   );
 };
-export default ExamPage;
+const ExamPageWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <ExamPage />
+  </Suspense>
+);
+
+export default ExamPageWithSuspense;

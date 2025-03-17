@@ -1,6 +1,6 @@
 "use client";
 import { Exam } from "@/types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   useParams,
   usePathname,
@@ -20,6 +20,7 @@ const SectionIdPage = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
   useEffect(() => {
     const fetchExam = async () => {
       try {
@@ -34,9 +35,13 @@ const SectionIdPage = () => {
           }
         );
         setExam(response.data);
-      } catch (error: any) {
-        if (error.response.status === 401) {
-          router.replace(`/login?next=${pathname}?${searchParams}`);
+      } catch (error: unknown) {
+        // Handle AxiosError and check the response status
+        if (axios.isAxiosError(error)) {
+          // Now TypeScript knows that `error` is an AxiosError
+          if (error.response?.status === 401) {
+            router.replace(`/login?next=${pathname}?${searchParams}`);
+          }
         }
       } finally {
         setIsLoading(false);
@@ -46,7 +51,7 @@ const SectionIdPage = () => {
     if (params.examId) {
       fetchExam();
     }
-  }, []);
+  }, [params.examId, params.sectionId, pathname, searchParams, router]);
 
   if (isLoading) {
     return <Loading />;
@@ -76,3 +81,4 @@ const SectionIdPage = () => {
 };
 
 export default SectionIdPage;
+

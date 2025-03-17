@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Suspense } from "react";
 import axios from "axios";
 import {
   Table,
@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PiExport } from "react-icons/pi";
 import { Input } from "@/components/ui/input";
-export const ExamList = () => {
+const ExamList = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -373,4 +373,10 @@ export const ExamList = () => {
   );
 };
 
-export default ExamList;
+const ExamListWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <ExamList />
+  </Suspense>
+);
+
+export default ExamListWithSuspense;

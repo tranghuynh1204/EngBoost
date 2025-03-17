@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import Image from "next/image";

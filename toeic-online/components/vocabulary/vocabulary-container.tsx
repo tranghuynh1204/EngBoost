@@ -1,3 +1,4 @@
+"use client";
 import { Flashcard, Vocabulary } from "@/types";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";

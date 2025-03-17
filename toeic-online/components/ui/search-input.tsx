@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import { TbSearch } from "react-icons/tb";
 

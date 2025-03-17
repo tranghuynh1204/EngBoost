@@ -1,3 +1,4 @@
+"use client";
 import { Exam } from "@/types";
 import { Clock, MessageSquare, Layers, HelpCircle } from "lucide-react";
 import { AiOutlineComment } from "react-icons/ai";

@@ -44,5 +44,7 @@ export default {
   		}
   	}
   },
-  plugins: [require('tailwind-scrollbar')],
+  plugins: [
+    // other plugins, but no tailwind-scrollbar
+  ],
 } satisfies Config;

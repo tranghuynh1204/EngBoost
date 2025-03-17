@@ -5,7 +5,7 @@ import { openModal } from "@/lib/store/modal-slice";
 import { Flashcard } from "@/types";
 import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 
@@ -125,5 +125,11 @@ const FlashcardPage = () => {
     </div>
   );
 };
+// Wrap the page component in Suspense boundary for client-side rendering
+const FlashcardPageWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <FlashcardPage />
+  </Suspense>
+);
 
-export default FlashcardPage;
+export default FlashcardPageWithSuspense;

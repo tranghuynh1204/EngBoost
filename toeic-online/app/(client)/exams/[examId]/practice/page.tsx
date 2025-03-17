@@ -1,5 +1,3 @@
-// pages/exams/[examId]/practice/[practiceSessionId]/page.tsx
-
 "use client";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
@@ -9,36 +7,59 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
+import dynamic from "next/dynamic";
 
-import { Exam, mapOption } from "@/types"; // Define your types accordingly
+import { Exam, mapOption } from "@/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import QuestionTracker from "@/components/question-tracker";
 import { GroupItem } from "@/components/group/group-item";
 import { HightLightControl } from "@/components/hight-light-control";
-import { Counter } from "@/components/counter";
 import Loading from "@/components/loading";
 import NotFound from "@/components/not-found";
+
+// Dynamically import components with browser APIs
+const QuestionTracker = dynamic(
+  () => import("@/components/question-tracker"),
+  { ssr: false }
+);
+
+const Counter = dynamic(
+  () => import("@/components/counter"),
+  { ssr: false }
+);
+
 interface ChildComponentRef {
   callMe: (serial: string) => void;
 }
+
 const PracticeExamPage = () => {
   const { examId } = useParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const sectionIds = useSearchParams().getAll("sectionId");
-  const selectedTime = Number(searchParams.get("time"));
-  const countRef = useRef(0);
-  const startTime = new Date();
-  const [exam, setExam] = useState<Exam | null>(null);
-  const answeredQuestions = useRef<Record<string, string>>({});
-  const [indexSection, setIndexSection] = useState<number>(0);
-  const childRef = useRef<ChildComponentRef>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [indexSection, setIndexSection] = useState<number>(0);
   const [isSubmit, setIsSubmit] = useState(false);
+
+  const sectionIds = searchParams.getAll("sectionId");
+  const selectedTime = Number(searchParams.get("time"));
+  
+  const countRef = useRef(0);
+  const startTime = useRef(new Date());
+  const answeredQuestions = useRef<Record<string, string>>({});
+  const childRef = useRef<ChildComponentRef>(null);
+
+  // Store access token in state after mount
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Client-side only code
+    setAccessToken(localStorage.getItem("access_token"));
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -49,72 +70,60 @@ const PracticeExamPage = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedTime]);
+
+  const fetchPracticeSession = useCallback(async () => {
+    if (!accessToken || !sectionIds || !examId) return;
+
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
+        { id: examId, sectionIds },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      setExam(response.data);
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        router.replace(`/login?next=${pathname}?${searchParams}`);
+      }
+    }
+  }, [accessToken, examId, sectionIds, router, pathname, searchParams]);
+
+  const fetchDraft = useCallback(async () => {
+    if (!accessToken || !exam) return;
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts/get`,
+        { sections: sectionIds, selectedTime, exam: examId },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      
+      if (response.data) {
+        answeredQuestions.current = response.data.answers;
+        countRef.current = response.data.duration;
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [accessToken, exam, sectionIds, selectedTime, examId]);
 
   useEffect(() => {
-    const fetchPracticeSession = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/exams/practice`,
-          {
-            id: examId,
-            sectionIds,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setExam(response.data);
-      } catch (error: any) {
-        if (error.response?.status === 401) {
-          router.replace(`/login?next=${pathname}?${searchParams}`);
-        }
-      }
-    };
-
-    if (sectionIds && examId) {
+    if (accessToken) {
       fetchPracticeSession();
     }
-  }, []);
+  }, [accessToken, fetchPracticeSession]);
 
   useEffect(() => {
-    const fetchDraft = async () => {
-      try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/user-exam-drafts/get`,
-          {
-            sections: sectionIds,
-            selectedTime: selectedTime,
-            exam: examId,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = response.data;
-        if (data) {
-          answeredQuestions.current = data.answers;
-          countRef.current = data.duration;
-        }
-      } catch (error: any) {
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (exam) {
+    if (exam && accessToken) {
       fetchDraft();
     }
-  }, [exam]);
+  }, [exam, accessToken, fetchDraft]);
 
-  const handleTabClose = async (event: BeforeUnloadEvent) => {
+  const handleTabClose = useCallback(async (event: BeforeUnloadEvent) => {
+    if (!accessToken) return;
+    
     event.preventDefault();
     try {
       await axios.post(
@@ -124,27 +133,22 @@ const PracticeExamPage = () => {
           answers: answeredQuestions.current,
           sections: sectionIds,
           duration: countRef.current,
-          startTime,
+          startTime: startTime.current,
           selectedTime,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Replace with dynamic token if necessary
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
     } catch (error) {
-      console.log("Error submitting answers:", error);
+      console.error("Error saving draft:", error);
     }
-  };
+  }, [accessToken, examId, sectionIds, selectedTime]);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", handleTabClose);
-    return () => {
-      window.removeEventListener("beforeunload", handleTabClose);
-    };
-  }, []);
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", handleTabClose);
+      return () => window.removeEventListener("beforeunload", handleTabClose);
+    }
+  }, [handleTabClose]);
 
   const handleNavigate = useCallback(
     async (questionSerial: string, index: number) => {

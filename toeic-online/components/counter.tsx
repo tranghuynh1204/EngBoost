@@ -3,13 +3,17 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { formatTime } from "@/types";
+
 interface CounterProps {
   onSubmit: () => void;
   counter: number;
   isSubmit: boolean;
 }
-export const Counter = ({ onSubmit, counter, isSubmit }: CounterProps) => {
+
+// Changed from named export to default export
+export default function Counter({ onSubmit, counter, isSubmit }: CounterProps) {
   const [count, setCount] = useState(counter);
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setCount((prev) => prev + 1);
@@ -17,12 +21,11 @@ export const Counter = ({ onSubmit, counter, isSubmit }: CounterProps) => {
 
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-6 mt-2 text-center text-cyan-700">
-        <span>
-          <span className="font-bold">{formatTime(count)}</span>
-        </span>
+        <span className="font-bold">{formatTime(count)}</span>
       </h2>
       <div className="mb-6">
         <Button
@@ -35,4 +38,4 @@ export const Counter = ({ onSubmit, counter, isSubmit }: CounterProps) => {
       </div>
     </div>
   );
-};
+}

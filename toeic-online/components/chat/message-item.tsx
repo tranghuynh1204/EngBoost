@@ -1,3 +1,5 @@
+"use client";
+
 import { formatDate } from "@/types";
 import React, { memo, useState } from "react";
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { Group } from "@/types";
 import React from "react";
 import Image from "next/image";

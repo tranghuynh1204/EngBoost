@@ -1,3 +1,5 @@
+"use client";
+
 import { formatDate, formatTime, UserExam } from "@/types";
 import axios from "axios";
 import Link from "next/link";

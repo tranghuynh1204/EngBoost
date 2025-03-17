@@ -1,3 +1,5 @@
+"use client";
+
 import { Group } from "@/types";
 import React from "react";
 import { GroupItem } from "../group/group-item";

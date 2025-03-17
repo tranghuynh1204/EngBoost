@@ -1,3 +1,5 @@
+"use client";
+
 import { SideBarChat } from "@/components/chat/side-bar-chat";
 import {
   ResizableHandle,

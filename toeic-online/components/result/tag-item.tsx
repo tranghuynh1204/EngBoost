@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useDispatch, useSelector } from "react-redux";

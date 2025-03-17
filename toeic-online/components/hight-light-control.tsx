@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { openModal } from "@/lib/store/modal-slice";

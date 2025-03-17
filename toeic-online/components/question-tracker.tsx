@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { Section } from "@/types";
 import { ScrollArea } from "./ui/scroll-area";

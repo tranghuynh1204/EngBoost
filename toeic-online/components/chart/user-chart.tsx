@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import {

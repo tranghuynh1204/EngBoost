@@ -1,3 +1,5 @@
+"use client";
+
 import { Comment, formatDate } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

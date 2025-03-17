@@ -1,3 +1,5 @@
+"use client";
+
 import { CircleStackIcon } from "@heroicons/react/24/solid";
 import React from "react";
 

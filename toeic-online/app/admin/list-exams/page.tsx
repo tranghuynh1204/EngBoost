@@ -23,7 +23,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PiExport } from "react-icons/pi";
 import { Input } from "@/components/ui/input";
-export const ExamList = () => {
+
+const ExamList = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -53,6 +54,7 @@ export const ExamList = () => {
       new Set(exams.map((exam) => exam.category).filter(Boolean))
     );
   }, [exams]);
+  
   useEffect(() => {
     setTitle(searchParams.get("title") || "");
     setCategory(searchParams.get("category") || "");
@@ -60,6 +62,7 @@ export const ExamList = () => {
     setEndDate(searchParams.get("endDate") || "");
     setCurrentPage(Number(searchParams.get("page")) || 1);
   }, [searchParams]);
+  
   // Update query parameters in the URL
   const updateQuery = (newParams: Record<string, string | number>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -206,6 +209,7 @@ export const ExamList = () => {
   useEffect(() => {
     fetchExamData();
   }, [category, title, startDate, endDate, currentPage]);
+  
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
@@ -377,4 +381,5 @@ export const ExamList = () => {
   );
 };
 
+// This is the key change - making it a default export
 export default ExamList;

@@ -16,7 +16,7 @@ import { MailService } from 'src/mail/mail.service';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET_KEY');
-        const expiresIn = configService.get<string>('JWT_EXPIRATION_TIME')?.trim() || '7d';
+        const expiresIn = configService.get<string>('JWT_EXPIRATION_TIME')?.trim()?.replace(/['"]/g, '') || '7d';
     
         console.log('JWT_SECRET_KEY =', secret);
         console.log('JWT_EXPIRATION_TIME =', expiresIn);

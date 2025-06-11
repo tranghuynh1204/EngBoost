@@ -9,25 +9,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartConfig = {
-  user: {
-    label: "user",
-    color: "red",
-  },
-} satisfies ChartConfig;
+
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -42,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TbUserPlus, TbUsersPlus } from "react-icons/tb";
+import { TbUsersPlus } from "react-icons/tb";
 const formSchema = z.object({
   days: z.string(),
 });
@@ -56,9 +49,6 @@ export const UserChart = () => {
       days: "7",
     },
   });
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    fetchData(Number(data.days));
-  }
   const fetchData = async (days: number) => {
     try {
       const response = await axios.get(

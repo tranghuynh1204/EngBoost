@@ -12,7 +12,7 @@ export const getDateFromObjectId = (id: string): Date => {
     const timestamp = parseInt(timestampHex, 16) * 1000; // Convert to milliseconds
     return new Date(timestamp);
   } catch (error) {
-    console.error('Invalid ObjectID:', id);
+    console.error('Invalid ObjectID:', id, 'Error:', error);
     return new Date(); // Fallback to current date on error
   }
 };

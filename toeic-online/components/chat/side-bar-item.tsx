@@ -6,7 +6,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useRouter } from "next/navigation";
 import { formatDate } from "@/types";
 import { Badge } from "../ui/badge";
 
@@ -30,7 +29,6 @@ export const SideBarItem = ({
   isActive,
 }: SideBarItemProps) => {
   console.log(timestamp);
-  const router = useRouter();
   return (
     <div
       className={`flex items-center px-4 py-3 my-1 mt-2 cursor-pointer hover:bg-[#E9ECEF] transition duration-200 rounded-md ${

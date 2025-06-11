@@ -34,8 +34,8 @@ const SectionIdPage = () => {
           }
         );
         setExam(response.data);
-      } catch (error: any) {
-        if (error.response.status === 401) {
+      } catch (error: unknown)  {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
         }
       } finally {

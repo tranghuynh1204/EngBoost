@@ -15,15 +15,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Divide, Edit3, Trash2, Volume2 } from "lucide-react";
+import {  Volume2 } from "lucide-react";
 import {
   TbArrowBack,
   TbArrowForward,
   TbProgressCheck,
-  TbStatusChange,
   TbTrash,
 } from "react-icons/tb";
-import { Button } from "../ui/button";
 import { toast } from "@/hooks/use-toast";
 
 interface VocabularyItemProps {

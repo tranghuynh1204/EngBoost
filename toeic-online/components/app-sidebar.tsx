@@ -1,14 +1,5 @@
 "use client";
-import {
-  Calendar,
-  Upload,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  List,
-  BarChartBig,
-} from "lucide-react";
+import { Upload, Inbox, List, BarChartBig } from "lucide-react";
 
 import {
   Sidebar,
@@ -73,7 +64,12 @@ export function AppSidebar() {
                       </a>
                     </SidebarMenuButton>
                   </TooltipTrigger>
-                  <TooltipContent  className="text-white bg-zinc-800" side="bottom">Home</TooltipContent>
+                  <TooltipContent
+                    className="text-white bg-zinc-800"
+                    side="bottom"
+                  >
+                    Home
+                  </TooltipContent>
                 </Tooltip>
               </SidebarMenuItem>
 
@@ -100,7 +96,12 @@ export function AppSidebar() {
                         </a>
                       </SidebarMenuButton>
                     </TooltipTrigger>
-                    <TooltipContent className="text-white bg-zinc-800" side="bottom">{item.title}</TooltipContent>
+                    <TooltipContent
+                      className="text-white bg-zinc-800"
+                      side="bottom"
+                    >
+                      {item.title}
+                    </TooltipContent>
                   </Tooltip>
                 </SidebarMenuItem>
               ))}

@@ -9,7 +9,7 @@ import NotFound from "@/components/not-found";
 import { HistoryResponse, UserExam } from "@/types"; // Ensure correct import paths
 import UserExamCard from "./user-exam-card"; // Ensure correct import path
 import { PaginationCustom } from "./pagination-custom";
-import { TbBlockquote, TbHistoryToggle } from "react-icons/tb";
+import { TbHistoryToggle } from "react-icons/tb";
 const HistoryExams: React.FC = () => {
   // State variables
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,13 +60,18 @@ const HistoryExams: React.FC = () => {
 
       setTotalExams(response.data.totalPages * parsedPageSize);
       setCurrentPage(!isNaN(parsedCurrentPage) ? parsedCurrentPage : 1);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Fetch Error:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "An error occurred while fetching exam history."
-      );
+    
+      let errorMessage = "An error occurred while fetching exam history.";
+    
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+    
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -79,17 +84,7 @@ const HistoryExams: React.FC = () => {
   }, [currentPage]);
 
   // Handlers for pagination
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
 
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
 
   // Render loading state
   if (loading) {

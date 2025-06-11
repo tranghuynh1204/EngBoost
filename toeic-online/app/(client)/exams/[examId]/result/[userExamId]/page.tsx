@@ -50,8 +50,8 @@ const UserExamIdPage = () => {
   const router = useRouter();
   const [result, setResult] = useState<UserExamResult>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [recommended, setRecommended] = useState<SectionFeedback[]>([]);
-  const [loadingRec, setLoadingRec] = useState(true);
+  const [_recommended, setRecommended] = useState<SectionFeedback[]>([]);
+  const [_loadingRec, setLoadingRec] = useState(true);
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -67,6 +67,7 @@ const UserExamIdPage = () => {
           }
         );
         setResult(response.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);

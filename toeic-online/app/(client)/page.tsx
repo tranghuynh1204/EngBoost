@@ -26,7 +26,7 @@ const Home = () => {
           }
         );
         setRecentlyAttemptedExams(response.data || []);
-      } catch (error) {}
+      } catch  {}
     };
 
     const fetchRecentlyCreatedExams = async () => {
@@ -35,7 +35,7 @@ const Home = () => {
           `${process.env.NEXT_PUBLIC_API_URL}/exams/new`
         );
         setRecentlyCreatedExams(response.data || []);
-      } catch (error) {}
+      } catch  {}
     };
 
     fetchRecentlyAttemptedExams();

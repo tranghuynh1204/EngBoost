@@ -1,14 +1,13 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { UserExam } from "@/types";
-import { formatTime } from "@/types"; // Replace with the correct path to your `formatTime` function
-import { FaClock, FaCheckCircle } from "react-icons/fa";
-import { MdOutlineCategory, MdDateRange } from "react-icons/md";
-import { HiOutlineClipboardList } from "react-icons/hi";
-import { TbBlockquote, TbClockEdit, TbClockQuestion, TbScoreboard } from "react-icons/tb";
-import { Button } from "./ui/button";
+import { formatTime } from "@/types";
+import { Clock, HelpCircle } from "lucide-react";
+import { AiOutlineComment } from "react-icons/ai";
+import { GiSpellBook } from "react-icons/gi";
+import { TbUserStar } from "react-icons/tb";
+import { TbScoreboard, TbClockEdit } from "react-icons/tb";
 
 interface UserExamCardProps {
   userExam: UserExam;
@@ -20,44 +19,56 @@ const UserExamCard: React.FC<UserExamCardProps> = ({ userExam }) => {
   // Handle sections display
   const sectionsDisplay =
     typeof sections === "string"
-      ? sections // If sections is a string (e.g., "full test")
+      ? sections
       : Array.isArray(sections)
-      ? sections.map((section) => section.name).join(", ") // If sections is an array
+      ? sections.map((section) => section.name).join(", ")
       : "Unknown";
 
   return (
-    <div className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition w-68">
-      <div className="flex justify-between items-center">
-        <h3 className="text-base font-bold text-zinc-600">{exam.title}</h3>
-        <span className="text-xs text-zinc-400 flex items-center gap-1">
-          <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
-            <TbClockEdit size={15} />
-          </button>
+    <div className="bg-slate-50 rounded-xl p-4 border border-slate-400 transition-transform transform hover:scale-105 hover:shadow-lg hover:border-slate-600 duration-300 ease-in-out">
+      <div className="flex justify-between mb-3">
+        <h2 className="text-md font-semibold text-gray-800">{exam.title}</h2>
+        <span className="text-xs text-zinc-500 flex items-center gap-1">
+          <TbClockEdit className="text-emerald-600" size={14} />
           {new Date(startTime).toLocaleDateString()}
         </span>
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-2">
-        <p className="text-sm text-gray-600 flex items-center gap-2">
-          <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
-            <TbBlockquote size={15} />
-          </button>
-          <span className="font-medium">Sections:</span>
-          <span>{sectionsDisplay}</span>
-        </p>
-        <p className="text-sm text-gray-600 flex items-center gap-2">
-          <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
-            <TbScoreboard size={15} />
-          </button>
-          <span className="font-medium">Result:</span>
-          <span>{result}</span>
-        </p>
-        <p className="text-sm text-gray-600 flex items-center gap-2">
-        <button className="text-emerald-600 bg-emerald-50 px-1 py-1 rounded-lg mr-1 ">
-            <TbClockQuestion size={15} />
-          </button>
-          <span className="font-medium">Duration:</span>
-          <span>{formatTime(duration)}</span>
-        </p>
+      <div className="text-gray-600 text-xs space-y-2">
+        <div className="flex items-center space-x-2">
+          <Clock className="w-4 h-4 text-cyan-600" />
+          <span>
+            <span className="font-semibold">Duration:</span>{" "}
+            {formatTime(duration)}
+          </span>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <HelpCircle className="w-4 h-4 text-cyan-600" />
+          <span>
+            <span className="font-semibold">Result:</span> {result}
+          </span>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <GiSpellBook className="w-4 h-4 text-cyan-600" />
+          <span>
+            <span className="font-semibold">Sections:</span>{" "}
+            {sectionsDisplay || "N/A"}
+          </span>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <TbUserStar className="w-4 h-4 text-cyan-600" />
+          <span>
+            <span className="font-semibold">User:</span> You
+          </span>
+        </div>
+      </div>
+
+      <div className="text-center mt-2">
+        <span className="inline-block bg-cyan-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
+          {exam.category || "General"}
+        </span>
       </div>
     </div>
   );

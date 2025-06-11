@@ -43,122 +43,109 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[rgb(251,249,241)]">
-      <ChatWidget />
-      <header className="bg-gradient-to-r from-[rgb(146,199,207)] to-[rgb(170,215,217)] text-[rgb(53,47,68)] py-12">
-        <div className="container mx-auto px-6 lg:px-12 text-center">
-          <h1 className="text-4xl lg:text-6xl font-bold mb-4">Welcome Back!</h1>
-          <p className="text-lg lg:text-xl mb-6">
-            Ready to continue your TOEIC journey? Here are your recent
-            activities and new exams to explore.
-          </p>
-          <Link
-            href="/exams"
-            className="bg-[rgb(229,225,218)] text-[rgb(53,47,68)] px-6 py-3 rounded-lg shadow-md hover:bg-gray-200 transition-transform transform hover:scale-105"
-          >
-            Explore All Exams
-          </Link>
-        </div>
-      </header>
-      {/* Recently Attempted Exams */}
-      <section className="py-12 bg-[rgb(229,225,218)]">
-        <div className="container mx-auto px-6 lg:px-12">
-          <h2 className="text-3xl font-bold text-[rgb(53,47,68)] mb-6">
-            Recently Attempted Exams
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recentlyAttemptedExams.length > 0 ? (
-              recentlyAttemptedExams.map((userExam) => (
-                <Link
-                  key={userExam._id} // Use the userExamId here
-                  href={`/exams/${userExam.exam._id}/result/${userExam._id}`} // exam._id and userExamId
-                  className="block"
-                >
-                  <UserExamCard key={userExam._id} userExam={userExam} />
-                </Link>
-              ))
-            ) : (
-              <p className="text-gray-600">
-                You haven’t attempted any exams yet. Start one now!
-              </p>
-            )}
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-50 py-8">
+      <section className="relative w-full h-[400px] overflow-hidden z-0 mb-12">
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src="/video/toeic_banner.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </section>
-      {/* Recently Created Exams */}
-      <section className="py-12 bg-[rgb(251,249,241)]">
-        <div className="container mx-auto px-6 lg:px-12">
-          <h2 className="text-3xl font-bold text-[rgb(53,47,68)] mb-6">
-            Recently Created Exams
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recentlyCreatedExams.length > 0 ? (
-              recentlyCreatedExams.map((exam) => (
-                <Link
-                  key={exam._id}
-                  href={`/exams/${exam._id}`}
-                  className="block"
-                >
-                  <ExamCard exam={exam} />
-                </Link>
-              ))
-            ) : (
-              <p className="text-gray-600">
-                No new exams available. Check back later!
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-      {/* Quick Links Section */}
-      <section className="py-12 bg-[rgb(229,225,218)]">
-        <div className="container mx-auto px-6 lg:px-12">
-          <h2 className="text-3xl font-bold text-[rgb(53,47,68)] mb-6">
-            Quick Links
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <Link
-              href="/exams"
-              className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition"
-            >
-              <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
-                Practice Tests
-              </h3>
-              <p className="text-gray-600 mt-2">
-                Simulate real TOEIC tests to sharpen your skills.
-              </p>
-            </Link>
-            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-              <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
-                Study Materials
-              </h3>
-              <p className="text-gray-600 mt-2">
-                Access resources for listening, reading, and grammar.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-              <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
-                Vocabulary Builder
-              </h3>
-              <p className="text-gray-600 mt-2">
-                Expand your vocabulary with interactive tools.
-              </p>
+      <main className="container mx-auto px-6 py-6 bg-white shadow-sm rounded-2xl border border-slate-300">
+        <ChatWidget />
+        {/* Recently Attempted Exams */}
+        <section className="py-12 bg-white">
+          <div className="container mx-auto px-6 lg:px-12">
+            <h2 className="text-3xl font-bold text-[rgb(53,47,68)] mb-6">
+              Recently Attempted Exams
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recentlyAttemptedExams.length > 0 ? (
+                recentlyAttemptedExams.map((userExam) => (
+                  <Link
+                    key={userExam._id} // Use the userExamId here
+                    href={`/exams/${userExam.exam._id}/result/${userExam._id}`} // exam._id and userExamId
+                    className="block"
+                  >
+                    <UserExamCard key={userExam._id} userExam={userExam} />
+                  </Link>
+                ))
+              ) : (
+                <p className="text-gray-600">
+                  You haven’t attempted any exams yet. Start one now!
+                </p>
+              )}
             </div>
           </div>
-        </div>
-      </section>
-      {/* Call to Action */}
-      <section className="py-12 bg-gradient-to-r from-[rgb(146,199,207)] to-[rgb(170,215,217)] text-[rgb(53,47,68)] text-center">
-        <div className="container mx-auto px-6 lg:px-12">
-          <h2 className="text-3xl font-bold mb-4">Keep Improving!</h2>
-          <p className="mb-6">
-            Stay consistent with your practice and watch your TOEIC score soar!
-          </p>
-          <div className="bg-[rgb(229,225,218)] text-[rgb(53,47,68)] px-6 py-3 rounded-lg shadow-md hover:bg-gray-200 transition-transform transform hover:scale-105">
-            Go to Dashboard
+        </section>
+        <section className="py-12 bg-white">
+          <div className="container mx-auto px-6 lg:px-12">
+            <h2 className="text-3xl font-bold text-[rgb(53,47,68)] mb-6">
+              Recently Created Exams
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recentlyCreatedExams.length > 0 ? (
+                recentlyCreatedExams.map((exam) => (
+                  <Link
+                    key={exam._id}
+                    href={`/exams/${exam._id}`}
+                    className="block"
+                  >
+                    <ExamCard exam={exam} />
+                  </Link>
+                ))
+              ) : (
+                <p className="text-gray-600">
+                  No new exams available. Check back later!
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+        {/* Quick Links Section */}
+        <section className="py-12 bg-white">
+          <div className="container mx-auto px-6 lg:px-12">
+            <h2 className="text-3xl font-bold text-[rgb(53,47,68)] mb-6">
+              Quick Links
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <Link
+                href="/exams"
+                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition"
+              >
+                <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
+                  Practice Tests
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Simulate real TOEIC tests to sharpen your skills.
+                </p>
+              </Link>
+              <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
+                  Flashcards
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Access resources for listening, reading, and grammar.
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                <h3 className="text-xl font-semibold text-[rgb(53,47,68)]">
+                  Vocabulary Builder
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Expand your vocabulary with interactive tools.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* Call to Action */}
+      </main>
     </div>
   );
 };

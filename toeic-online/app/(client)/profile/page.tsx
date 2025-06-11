@@ -96,7 +96,7 @@ const ProfilePage: React.FC = () => {
                 </span>
               </div>
               <h2 className="text-lg font-extrabold text-gray-800 text-center">
-                Welcome, {user.name}
+                {user.name}
               </h2>
               <p className="text-sm text-gray-600 text-center">{user.email}</p>
               <p className="mt-1 text-xs text-gray-500 text-center">

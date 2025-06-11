@@ -14,6 +14,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UserexamdraftModule } from './userexamdraft/userexamdraft.module';
 import jwtConfig from './config/jwt.config';
 import { MessageModule } from './message/message.module';
+import { RecommendationModule } from './recommendation/recommendation.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MessageModule } from './message/message.module';
     CloudinaryModule,
     UserexamdraftModule,
     MessageModule,
+    RecommendationModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

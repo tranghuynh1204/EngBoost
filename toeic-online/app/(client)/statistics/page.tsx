@@ -191,18 +191,16 @@ const Statisticspage = () => {
           <Area
             type="monotone"
             dataKey="Listening"
-            stackId="1"
-            stroke="#4ade80"
-            fill="#4ade80"
-            fillOpacity={0.4}
+            stroke="#7dd3fc"
+            fill="#7dd3fc"
+            fillOpacity={0.5}
           />
           <Area
             type="monotone"
             dataKey="Reading"
-            stackId="1"
-            stroke="#047857"
-            fill="#047857"
-            fillOpacity={0.4}
+            stroke="#f9a8d4"
+            fill="#f9a8d4"
+            fillOpacity={0.5}
           />
         </AreaChart>
       </ChartContainer>

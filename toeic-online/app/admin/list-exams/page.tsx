@@ -27,7 +27,7 @@ export const ExamList = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
-  const [exportingId, setExportingId] = useState<string | null>(null);
+  const [_exportingId, setExportingId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null); // State for the file input
   const [updatingId, setUpdatingId] = useState<string | null>(null); // ID for updating an exam
 
@@ -45,7 +45,7 @@ export const ExamList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [exporting, setExporting] = useState<string | null>(null);
+  const [exporting, _setExporting] = useState<string | null>(null);
 
   // Derived state for unique categories
   const uniqueCategories = useMemo(() => {
@@ -95,8 +95,8 @@ export const ExamList = () => {
       } else {
         setExams([]);
       }
-    } catch (err) {
-      setError("Failed to fetch exam data. Please try again.");
+    } catch {
+      // setError("Failed to fetch exam data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export const ExamList = () => {
         description: "Exam has been exported.",
         variant: "success",
       });
-    } catch (err) {
+    } catch {
       setError(`Failed to export exam with ID: ${examId}`);
     } finally {
       setExportingId(null);
@@ -146,7 +146,7 @@ export const ExamList = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
+      const _response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/exams`,
         formData,
         {
@@ -163,7 +163,7 @@ export const ExamList = () => {
         description: "Exam imported successfully.",
         variant: "success",
       });
-    } catch (err) {
+    } catch {
       setError("Failed to import exam. Please try again.");
     }
   };
@@ -179,7 +179,7 @@ export const ExamList = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.patch(
+      const _response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/${updatingId}`,
         formData,
         {
@@ -193,7 +193,7 @@ export const ExamList = () => {
       setFile(null); // Reset the file input
       setUpdatingId(null); // Clear the updating ID
       fetchExamData(); // Refresh the exam list
-    } catch (err) {
+    } catch {
       setError("Failed to update exam. Please try again.");
     }
   };

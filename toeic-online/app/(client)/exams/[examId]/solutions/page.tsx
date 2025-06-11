@@ -36,6 +36,7 @@ const SolutionsPage = () => {
         );
         setExam(response.data);
         console.log(response.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);

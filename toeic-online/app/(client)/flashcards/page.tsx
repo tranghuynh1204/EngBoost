@@ -39,6 +39,7 @@ const FlashcardPage = () => {
         setFlashcards(response.data.data);
         setCurrentPage(response.data.currentPage);
         setTotalPages(response.data.totalPages);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);

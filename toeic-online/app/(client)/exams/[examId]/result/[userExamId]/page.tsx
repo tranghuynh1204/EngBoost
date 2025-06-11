@@ -25,6 +25,23 @@ import { CommentContainer } from "@/components/comment/comment-container";
 import Loading from "@/components/loading";
 import NotFound from "@/components/not-found";
 
+interface TagFeedback {
+  tag: string;
+  correct: number;
+  total: number;
+  accuracy: number;
+  level: "Excellent" | "Good" | "Needs Improvement";
+  message: string;
+}
+
+interface SectionFeedback {
+  section: string;
+  category: string;
+  overallAccuracy: number;
+  level: "Excellent" | "Good" | "Needs Improvement";
+  message: string;
+  tagFeedbacks: TagFeedback[];
+}
 const UserExamIdPage = () => {
   const params = useParams();
   const dispatch = useDispatch();
@@ -33,6 +50,8 @@ const UserExamIdPage = () => {
   const router = useRouter();
   const [result, setResult] = useState<UserExamResult>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_recommended, setRecommended] = useState<SectionFeedback[]>([]);
+  const [_loadingRec, setLoadingRec] = useState(true);
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -48,6 +67,7 @@ const UserExamIdPage = () => {
           }
         );
         setResult(response.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
@@ -68,7 +88,32 @@ const UserExamIdPage = () => {
       dispatch(setMapGroup(result.mapGroup));
     }
   }, [result, dispatch]);
+  useEffect(() => {
+    if (result) {
+      dispatch(setMapQuestion(result.mapQuestion));
+      dispatch(setMapGroup(result.mapGroup));
 
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        axios
+          .get(
+            `${process.env.NEXT_PUBLIC_API_URL}/recommendation/${params.userExamId}?userId=${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          )
+          .then((res) => {
+            setRecommended(res.data as SectionFeedback[]);
+          })
+          .catch((err) => {
+            console.error("Recommendation fetch failed", err);
+          })
+          .finally(() => setLoadingRec(false));
+      }
+    }
+  }, [result, dispatch]);
   if (isLoading) {
     return <Loading />;
   }
@@ -197,6 +242,69 @@ const UserExamIdPage = () => {
             </ul>
           </div>
         </div>
+        {/* 
+<div className="bg-white shadow-md rounded-xl p-6 mb-8">
+  <h3 className="text-lg font-semibold text-zinc-800 mb-3">
+    📌 Personalised Section &amp; Tag Feedback
+  </h3>
+
+  {loadingRec ? (
+    <p className="text-sm text-gray-500">Loading...</p>
+  ) : recommended.length === 0 ? (
+    <p className="text-sm text-emerald-600">
+      You're doing great! No feedback needed.
+    </p>
+  ) : (
+    <div className="space-y-4">
+      {recommended.map(sec => (
+        <details key={sec.section} className="rounded-lg shadow p-4">
+          <summary className="cursor-pointer flex justify-between items-center">
+            <span className="font-medium">
+              {sec.section} ({sec.category})
+            </span>
+            <span
+              className={
+                sec.overallAccuracy >= 0.85
+                  ? 'text-emerald-600'
+                  : sec.overallAccuracy >= 0.6
+                  ? 'text-amber-600'
+                  : 'text-rose-600'
+              }
+            >
+              {(sec.overallAccuracy * 100).toFixed(0)}%
+            </span>
+          </summary>
+
+          <p className="mt-2 text-sm">{sec.message}</p>
+
+          <ul className="mt-3 space-y-1">
+            {sec.tagFeedbacks.map(tag => (
+              <li
+                key={tag.tag}
+                className={`p-2 rounded text-xs ${
+                  tag.level === 'Excellent'
+                    ? 'bg-emerald-50'
+                    : tag.level === 'Good'
+                    ? 'bg-amber-50'
+                    : 'bg-rose-50'
+                }`}
+              >
+                <div className="flex justify-between">
+                  <span>{tag.tag}</span>
+                  <span>
+                    {tag.correct}/{tag.total}{' '}
+                    ({(tag.accuracy * 100).toFixed(0)}%)
+                  </span>
+                </div>
+                <p className="mt-1">{tag.message}</p>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ))}
+    </div>
+  )}
+</div>  */}
 
         <div>
           <Button

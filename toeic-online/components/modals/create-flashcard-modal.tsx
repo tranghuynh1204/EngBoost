@@ -1,6 +1,6 @@
 "use client";
 import { RootState } from "@/lib/store/store";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
@@ -77,6 +77,7 @@ export const CreateFlashcardModal = () => {
         window.location.reload();
       }, 1000);
     } catch (error) {
+      console.error("Failed to update vocabulary:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +89,6 @@ export const CreateFlashcardModal = () => {
       onOpenChange={() => {
         dispatch(closeModal());
       }}
-      
     >
       <DialogContent
         ria-labelledby="dialog-title"

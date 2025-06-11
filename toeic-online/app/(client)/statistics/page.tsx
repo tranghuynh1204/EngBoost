@@ -9,23 +9,15 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -131,19 +123,25 @@ const Statisticspage = () => {
     }));
     return dataPoints;
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderLegendItems = (payload: any[]) => {
+  return payload?.map((entry, index) => (
+    <div key={`item-${index}`} className="flex items-center gap-2">
+      <span
+        className="w-3 h-3 rounded-full"
+        style={{ backgroundColor: entry.color }}
+      ></span>
+      <span>{entry.value}</span>
+    </div>
+  ));
+};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderCustomLegend = (props: any) => {
     const { payload } = props;
     return (
       <div className="flex justify-center gap-4 text-xs text-black mt-2">
-        {payload?.map((entry: any, index: number) => (
-          <div key={`item-${index}`} className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: entry.color }}
-            ></span>
-            <span>{entry.value}</span>
-          </div>
-        ))}
+        
+        {renderLegendItems(payload)}
       </div>
     );
   };
@@ -191,18 +189,16 @@ const Statisticspage = () => {
           <Area
             type="monotone"
             dataKey="Listening"
-            stackId="1"
-            stroke="#4ade80"
-            fill="#4ade80"
-            fillOpacity={0.4}
+            stroke="#7dd3fc"
+            fill="#7dd3fc"
+            fillOpacity={0.5}
           />
           <Area
             type="monotone"
             dataKey="Reading"
-            stackId="1"
-            stroke="#047857"
-            fill="#047857"
-            fillOpacity={0.4}
+            stroke="#f9a8d4"
+            fill="#f9a8d4"
+            fillOpacity={0.5}
           />
         </AreaChart>
       </ChartContainer>

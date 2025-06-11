@@ -13,7 +13,6 @@ import { VocabularyContainer } from "@/components/vocabulary/vocabulary-containe
 import { openModal } from "@/lib/store/modal-slice";
 import { Flashcard } from "@/types";
 import axios from "axios";
-import { Edit3 } from "lucide-react";
 
 import {
   useParams,
@@ -27,7 +26,6 @@ import {
   TbDotsVertical,
   TbEdit,
   TbId,
-  TbPlus,
 } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 
@@ -56,6 +54,7 @@ const FlashcardIdPage = () => {
         );
         console.log(response);
         setFlashcard(response.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.log(error);
         if (error.response.status === 401) {

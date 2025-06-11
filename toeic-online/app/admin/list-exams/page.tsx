@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Suspense } from "react";
 import axios from "axios";
 import {
   Table,
@@ -24,7 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 import { PiExport } from "react-icons/pi";
 import { Input } from "@/components/ui/input";
 
-const ExamList = () => {
+// Separate component that uses useSearchParams
+const ExamListContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -381,5 +382,37 @@ const ExamList = () => {
   );
 };
 
-// This is the key change - making it a default export
+// Loading fallback component
+const ExamListLoading = () => (
+  <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="text-3xl font-semibold text-gray-800 mb-6 text-center h-8 bg-gray-200 rounded animate-pulse w-64 mx-auto"></div>
+    <div className="mb-6 flex flex-col md:flex-row items-center justify-center gap-4">
+      <div className="h-10 bg-gray-200 rounded w-full md:w-64 animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+    </div>
+    <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+    <div className="overflow-x-auto">
+      <div className="min-w-full bg-white border border-gray-200 rounded-lg p-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-12 bg-gray-200 rounded mb-2 animate-pulse"></div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// Main component with Suspense wrapper
+const ExamList = () => {
+  return (
+    <Suspense fallback={<ExamListLoading />}>
+      <ExamListContent />
+    </Suspense>
+  );
+};
+
 export default ExamList;

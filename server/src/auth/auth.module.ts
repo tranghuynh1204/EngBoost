@@ -14,12 +14,18 @@ import { MailService } from 'src/mail/mail.service';
       global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET_KEY'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION_TIME') || '7d',
-        },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET_KEY');
+        const expiresIn = configService.get<string>('JWT_EXPIRATION_TIME')?.trim() || '7d';
+    
+        console.log('JWT_SECRET_KEY =', secret);
+        console.log('JWT_EXPIRATION_TIME =', expiresIn);
+    
+        return {
+          secret,
+          signOptions: { expiresIn },
+        };
+      },
     }),
   ],
   providers: [AuthService, MailService], //  keep MailService inline

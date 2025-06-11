@@ -64,7 +64,11 @@ export const ExamList = () => {
   const updateQuery = (newParams: Record<string, string | number>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newParams).forEach(([key, value]) => {
-      value ? params.set(key, String(value)) : params.delete(key);
+      if (value) {
+        params.set(key, String(value));
+      } else {
+        params.delete(key);
+      }
     });
     router.push(`?${params.toString()}`);
   };

@@ -24,7 +24,7 @@ import { GiSpellBook } from "react-icons/gi";
 import { CommentContainer } from "@/components/comment/comment-container";
 import Loading from "@/components/loading";
 import NotFound from "@/components/not-found";
-
+import AskAI from "@/components/ask-ai";
 interface TagFeedback {
   tag: string;
   correct: number;
@@ -408,6 +408,12 @@ const UserExamIdPage = () => {
         </div>
       </div>
       <CommentContainer />
+      <AskAI
+  examTitle={result.exam.title}
+  correct={result.correct}
+  incorrect={result.incorrect}
+  skipped={result.skipped}
+/>
     </div>
   );
 };

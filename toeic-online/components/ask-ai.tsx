@@ -15,6 +15,12 @@ interface Message {
   content: string;
 }
 
+// Add this interface for Gemini conversation history
+interface ChatMessage {
+  role: 'user' | 'model';
+  parts: { text: string }[];
+}
+
 export default function AskAI({
   examTitle,
   correct,
@@ -26,12 +32,16 @@ export default function AskAI({
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
   
+  // Add conversation history state for Gemini API
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([]);
+
   const handleSend = async () => {
     if (!prompt.trim() || loading) return;
     const userMessage: Message = { role: "user", content: prompt };
     setMessages((prev) => [...prev, userMessage]);
+    
+    const currentPrompt = prompt; // Store prompt before clearing
     setPrompt("");
     setLoading(true);
 
@@ -42,7 +52,8 @@ export default function AskAI({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            prompt,
+            prompt: currentPrompt,
+            conversationHistory: conversationHistory, // Send conversation history
             context: {
               examTitle,
               correct,
@@ -56,6 +67,11 @@ export default function AskAI({
       const data = await res.json();
       const aiMessage: Message = { role: "ai", content: data.reply };
       setMessages((prev) => [...prev, aiMessage]);
+      
+      // Update conversation history with the response from backend
+      if (data.conversationHistory) {
+        setConversationHistory(data.conversationHistory);
+      }
     } catch (e) {
       setMessages((prev) => [
         ...prev,
@@ -65,6 +81,18 @@ export default function AskAI({
       setLoading(false);
     }
   };
+
+  // Clear conversation history when chat is closed and reopened
+  const handleToggleChat = () => {
+    if (open) {
+      // When closing, optionally clear history for fresh start
+      // Remove these lines if you want to keep history between sessions
+      setMessages([]);
+      setConversationHistory([]);
+    }
+    setOpen(!open);
+  };
+
   const TypingDots = () => (
     <div className="text-black text-base italic px-2 py-1">
       <span className="inline-block animate-bounce [animation-delay:-0.3s]">
@@ -76,17 +104,19 @@ export default function AskAI({
       <span className="inline-block animate-bounce">.</span>
     </div>
   );
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, loading]);
+
   return (
     <>
       {/* Floating Button */}
       <button
         className="fixed bottom-6 right-6 z-50 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-full shadow-xl transition-all"
-        onClick={() => setOpen(!open)}
+        onClick={handleToggleChat}
       >
         💬 Ask AI
       </button>

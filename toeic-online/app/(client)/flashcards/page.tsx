@@ -5,11 +5,12 @@ import { openModal } from "@/lib/store/modal-slice";
 import { Flashcard } from "@/types";
 import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { TbPlus } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 
-const FlashcardPage = () => {
+// Separate component that uses useSearchParams
+const FlashcardContent = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -29,7 +30,6 @@ const FlashcardPage = () => {
               currentPage: page,
               pageSize: 20,
             },
-
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
               "Content-Type": "application/json",
@@ -39,6 +39,7 @@ const FlashcardPage = () => {
         setFlashcards(response.data.data);
         setCurrentPage(response.data.currentPage);
         setTotalPages(response.data.totalPages);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.response.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
@@ -46,25 +47,13 @@ const FlashcardPage = () => {
       }
     };
     fetchFlashcard();
-  }, []);
+  }, [page, router, pathname, searchParams]);
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       <main className="container mx-auto px-6 py-4 bg-white shadow-sm rounded-2xl border border-slate-400">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-bold">Exam</h1>
-          {/* <button
-            onClick={() =>
-              dispatch(
-                openModal({
-                  type: "CreateFlashcard",
-                })
-              )
-            }
-            className="px-3 py-2 text-sm bg-cyan-700 text-white rounded-md hover:bg-cyan-800 transition-colors ease-in-out duration-300"
-          >
-            Create Flashcard
-          </button> */}
         </div>
         {flashcards && flashcards.length > 0 ? (
           <>
@@ -123,6 +112,29 @@ const FlashcardPage = () => {
         )}
       </main>
     </div>
+  );
+};
+
+// Loading component for Suspense fallback
+const FlashcardLoading = () => (
+  <div className="min-h-screen bg-slate-50 py-8">
+    <main className="container mx-auto px-6 py-4 bg-white shadow-sm rounded-2xl border border-slate-400">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">Exam</h1>
+      </div>
+      <div className="text-center text-gray-500 text-lg">
+        Loading flashcards...
+      </div>
+    </main>
+  </div>
+);
+
+// Main component with Suspense boundary
+const FlashcardPage = () => {
+  return (
+    <Suspense fallback={<FlashcardLoading />}>
+      <FlashcardContent />
+    </Suspense>
   );
 };
 

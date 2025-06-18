@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { TbAbc, TbAccessible, TbCornerRightDown } from "react-icons/tb"
+import { TbCornerRightDown } from "react-icons/tb"
 interface UserExamContainerProps {
   examId: string;
 }
@@ -31,7 +31,7 @@ export const UserExamContainer = ({ examId }: UserExamContainerProps) => {
           }
         );
         setUserExams(response.data);
-      } catch (error: unknown) {
+      } catch {
         setUserExams([]);
       }
     };

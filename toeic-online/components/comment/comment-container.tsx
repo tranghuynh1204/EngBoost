@@ -60,7 +60,7 @@ export const CommentContainer = () => {
       } else {
         setComments(response.data);
       }
-    } catch (error) {
+    } catch  {
     } finally {
       setIsFetchingComments(false);
     }
@@ -81,7 +81,7 @@ export const CommentContainer = () => {
       );
       setComments([response.data, ...comments]);
       form.reset();
-    } catch (error) {
+    } catch  {
     } finally {
       setIsSubmittingComment(false);
     }

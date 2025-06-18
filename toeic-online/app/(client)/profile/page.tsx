@@ -1,18 +1,12 @@
-"use client";
-
+"use client";;
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
-import { setIsLogin } from "@/lib/store/data-slice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Loading from "@/components/loading";
 import Statisticspage from "../statistics/page"; // Adjust the import path accordingly
 import HistoryExams from "@/components/history-exam";
-import { MdHistoryEdu } from "react-icons/md";
 
 interface UserProfile {
   name: string;
@@ -21,7 +15,6 @@ interface UserProfile {
 
 const ProfilePage: React.FC = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
 
   const isLogin = useSelector((state: RootState) => state.data.isLogin);
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -47,7 +40,8 @@ const ProfilePage: React.FC = () => {
           }
         );
         setUser(response.data);
-      } catch (error: any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch  {
         router.push("/login");
       } finally {
         setLoading(false);

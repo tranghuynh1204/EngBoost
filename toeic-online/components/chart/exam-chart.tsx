@@ -38,7 +38,7 @@ const chartConfig = {
 
 export const ExamChart = () => {
   const [total, setTotal] = useState<number | undefined>();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<{ key: string; value: number; fill: string }[]>([]);
   const fixedOrder: Array<keyof typeof chartConfig> = ["toeic", "ielts", "part 1"];
   const fetchData = async () => {
     try {
@@ -58,7 +58,7 @@ export const ExamChart = () => {
           ]?.color || "#000",
       }));
       const sortedData = updatedData.sort(
-        (a:any, b:any) => fixedOrder.indexOf(a.key) - fixedOrder.indexOf(b.key)
+        (a: { key: string }, b: { key: string }) => fixedOrder.indexOf(a.key as keyof typeof chartConfig) - fixedOrder.indexOf(b.key as keyof typeof chartConfig)
       );
       setTotal(response.data.total);
       setData(sortedData);
@@ -120,9 +120,9 @@ export const ExamChart = () => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => {
+              tickFormatter={(value: string) => {
                 const item = data.find((d) => d.key === value);
-                return item ? item.value : "";
+                return item ? item.value.toString() : "";
               }}
               style={{ fill: "#343A40" }}
             />

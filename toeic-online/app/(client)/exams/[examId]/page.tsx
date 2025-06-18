@@ -13,7 +13,7 @@ import { AiOutlineComment } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { GiSpellBook } from "react-icons/gi";
 import { FaUserAstronaut } from "react-icons/fa6";
-import { TbList, TbMessageCircleQuestion } from "react-icons/tb";
+import { TbMessageCircleQuestion } from "react-icons/tb";
 import { TbListNumbers, TbListCheck } from "react-icons/tb";
 
 import {

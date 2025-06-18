@@ -1,8 +1,7 @@
 import { Exam } from "@/types";
-import { Clock, MessageSquare, Layers, HelpCircle } from "lucide-react";
+import { Clock, HelpCircle } from "lucide-react";
 import { AiOutlineComment } from "react-icons/ai";
 import { GiSpellBook } from "react-icons/gi";
-import { FiUsers } from "react-icons/fi";
 import { TbUserStar } from "react-icons/tb";
 interface ExamCardProps {
   exam: Exam; // Define exam as the prop

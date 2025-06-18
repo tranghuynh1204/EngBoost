@@ -69,6 +69,7 @@ const PracticeExamPage = () => {
           }
         );
         setExam(response.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.response?.status === 401) {
           router.replace(`/login?next=${pathname}?${searchParams}`);
@@ -103,7 +104,7 @@ const PracticeExamPage = () => {
           answeredQuestions.current = data.answers;
           countRef.current = data.duration;
         }
-      } catch (error: any) {
+      } catch {
       } finally {
         setIsLoading(false);
       }

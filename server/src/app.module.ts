@@ -15,7 +15,7 @@ import { UserexamdraftModule } from './userexamdraft/userexamdraft.module';
 import jwtConfig from './config/jwt.config';
 import { MessageModule } from './message/message.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
-
+import { ChatModule } from './chat/ chat.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -34,6 +34,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     UserexamdraftModule,
     MessageModule,
     RecommendationModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService, ExcelService],

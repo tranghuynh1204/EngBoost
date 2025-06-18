@@ -10,10 +10,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://eng-boost-rgs7192ix-trangs-projects-38a2c200.vercel.app', // <-- your frontend URL on Vercel
-    ], 
+    origin: true,
     methods: 'GET,POST,PUT,DELETE,PATCH',
     allowedHeaders: 'Content-Type, Authorization',
   });

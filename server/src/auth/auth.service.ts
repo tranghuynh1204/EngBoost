@@ -11,6 +11,7 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { Types } from 'mongoose';
 import { MailService } from 'src/mail/mail.service';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,6 +19,21 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
   ) {}
+
+  // Helper method to clean and validate expiresIn values
+  private getValidExpiresIn(envValue: string | undefined, fallback: string = '7d'): string {
+    if (!envValue) return fallback;
+    
+    let cleaned = envValue.trim().replace(/['"]/g, '');
+    
+    // Validate format
+    if (!/^\d+[smhdwy]?$/i.test(cleaned) && !/^\d+$/.test(cleaned)) {
+      console.warn(`Invalid expiresIn format: "${envValue}", using fallback: "${fallback}"`);
+      return fallback;
+    }
+    
+    return cleaned;
+  }
 
   async signIn(
     email: string,
@@ -34,21 +50,32 @@ export class AuthService {
     if (!(await bcrypt.compare(password, user.password))) {
       throw new HttpException('Sai mật khẩu', HttpStatus.BAD_REQUEST);
     }
+
     const payload = {
       sub: user._id,
       name: user.name,
       email: user.email,
       roles: user.roles,
     };
+
+    // Get clean refresh token expiration
+    const refreshExpiresIn = this.getValidExpiresIn(
+      process.env.REFRESH_JWT_EXPIRATION_TIME,
+      '30d' // Default fallback for refresh tokens
+    );
+
+    console.log('Signing tokens with expiresIn:', refreshExpiresIn);
+
     return {
       access_token: await this.jwtService.signAsync(payload),
       refresh_token: await this.jwtService.signAsync(payload, {
         secret: process.env.REFRESH_JWT_SECRET_KEY,
-        expiresIn: process.env.REFRESH_JWT_EXPIRATION_TIME,
+        expiresIn: refreshExpiresIn,
       }),
       userId: payload.sub,
     };
   }
+
   async refreshToken(
     refreshToken: string,
   ): Promise<{ access_token: string; refresh_token: string }> {
@@ -61,6 +88,7 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('Không tìm thấy người dùng');
       }
+
       const payload = {
         sub: user._id,
         name: user.name,
@@ -68,14 +96,21 @@ export class AuthService {
         roles: user.roles,
       };
 
+      // Get clean refresh token expiration
+      const refreshExpiresIn = this.getValidExpiresIn(
+        process.env.REFRESH_JWT_EXPIRATION_TIME,
+        '30d'
+      );
+
       return {
         access_token: await this.jwtService.signAsync(payload),
         refresh_token: await this.jwtService.signAsync(payload, {
           secret: process.env.REFRESH_JWT_SECRET_KEY,
-          expiresIn: process.env.REFRESH_JWT_EXPIRATION_TIME,
+          expiresIn: refreshExpiresIn,
         }),
       };
-    } catch {
+    } catch (error) {
+      console.error('Refresh token error:', error.message);
       throw new HttpException(
         'Refresh token không hợp lệ hoặc đã hết hạn',
         HttpStatus.UNAUTHORIZED,
@@ -92,22 +127,28 @@ export class AuthService {
     const otp = this.generateOtp();
     await this.mailService.sendResetPasswordEmail(email, otp);
 
-    const otpToken = this.jwtService.sign({ email, otp }, { expiresIn: '5m' });
+    // Use explicit valid format for OTP token
+    const otpToken = await this.jwtService.signAsync(
+      { email, otp }, 
+      { expiresIn: '5m' } // This is a valid format
+    );
+    
     return { message: 'OTP sent to email', otpToken };
   }
 
   async resetPassword(otp: string, newPassword: string, otpToken: string) {
     let decoded;
     try {
-      decoded = this.jwtService.verify(otpToken); // Kiểm tra token
+      decoded = await this.jwtService.verifyAsync(otpToken);
     } catch (error) {
-      // Xử lý các lỗi khi token không hợp lệ hoặc đã hết hạn
+      console.error('OTP token verification error:', error.message);
       if (error.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('OTP token has expired.'); // Token hết hạn
+        throw new UnauthorizedException('OTP token has expired.');
       } else {
-        throw new UnauthorizedException('Invalid OTP token.'); // Token không hợp lệ
+        throw new UnauthorizedException('Invalid OTP token.');
       }
     }
+
     if (decoded.otp !== otp) {
       throw new BadRequestException('Invalid OTP');
     }
@@ -121,7 +162,8 @@ export class AuthService {
 
     return { message: 'Password updated successfully' };
   }
+
   generateOtp(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // Tạo OTP 6 chữ số
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 }

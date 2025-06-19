@@ -9,7 +9,7 @@ interface ExamCardProps {
 }
 const ExamCard = ({ exam }: ExamCardProps) => {
   return (
-    <div className="bg-slate-50 rounded-xl p-4 border border-slate-400 transition-transform transform hover:scale-105 hover:shadow-lg hover:border-slate-600 duration-300 ease-in-out">
+    <div className="bg-slate-50 rounded-xl p-4 border border-slate-400 transition-transform transform hover:scale-105 hover:shadow-lg hover:border-slate-600 duration-300 w-[230px] h-[215px] ease-in-out">
       <div className="text-center mb-3">
         <h2 className="text-md font-semibold text-gray-800">{exam.title}</h2>
       </div>

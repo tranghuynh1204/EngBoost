@@ -68,7 +68,7 @@ const FlashcardPage = () => {
         </div>
         {flashcards && flashcards.length > 0 ? (
           <>
-            <div className="mr-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid gap-5 justify-center grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
               {/* "Create Flashcard" card */}
               <div
                 onClick={() =>
@@ -78,10 +78,10 @@ const FlashcardPage = () => {
                     })
                   )
                 }
-                className="flex flex-col justify-between bg-slate-50 w-[230px] h-[180px] rounded-lg 
-                p-4 border-2 border-dashed border-slate-400 hover:border-slate-400 transition-transform 
-                transform hover:scale-105 hover:shadow-sm duration-200 ease-in-out cursor-pointer"
-              >
+                className="flex flex-col justify-between w-[230px] h-[190px] bg-slate-50 rounded-lg 
+  p-4 border-2 border-dashed border-slate-400 hover:border-slate-400 transition-transform 
+  transform hover:scale-105 hover:shadow-sm duration-200 ease-in-out cursor-pointer"
+>
                 {/* Icon + Title */}
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center justify-center w-10 h-10 border-2 border-dashed border-gray-300 rounded-lg">

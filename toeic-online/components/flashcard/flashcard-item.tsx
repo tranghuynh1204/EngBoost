@@ -20,7 +20,7 @@ export const FlashcardItem = ({
         flex flex-col justify-between
         bg-slate-50
         w-[230px]
-        h-[180px]
+        h-[190px]
         rounded-lg
         p-4
         border

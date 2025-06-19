@@ -3,7 +3,7 @@ import { TbSearch } from "react-icons/tb";
 
 import { cn } from "@/lib/utils";
 
-// Base Input component interface and implementation as you have it
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
@@ -100,7 +100,7 @@ const IconInput = React.forwardRef<HTMLInputElement, IconInputProps>(
   }
 );
 IconInput.displayName = "IconInput";
-
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 

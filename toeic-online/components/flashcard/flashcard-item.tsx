@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { TbBook, TbId } from "react-icons/tb";
+import { TbId } from "react-icons/tb";
 export interface FlashcardItemProps {
   _id: string;
   title: string;

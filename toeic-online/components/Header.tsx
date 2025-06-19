@@ -34,11 +34,6 @@ interface UserProfile {
   email: string;
   roles: string[]; // e.g., ["user", "moderator"]
 }
-interface UserBadgeProps {
-  label: string;
-  variant: "default" | "destructive" | "outline" | "secondary";
-  className: string;
-}
 const Header = () => {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -80,7 +75,8 @@ const Header = () => {
           }
         );
         setUser(response.data);
-      } catch (error: any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch  {
         router.push("/login");
       } finally {
         setLoading(false);
@@ -130,7 +126,7 @@ const Header = () => {
     localStorage.removeItem("userId");
     dispatch(setIsLogin(false));
   };
-
+  if (loading) return <div>Loading...</div>;
   return (
     <header
       className={`sticky top-0 z-50 flex items-center justify-between p-4 transition-colors duration-300 ${

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Suspense } from "react";
 import axios from "axios";
 import {
   Table,
@@ -23,11 +23,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PiExport } from "react-icons/pi";
 import { Input } from "@/components/ui/input";
-export const ExamList = () => {
+
+// Separate component that uses useSearchParams
+const ExamListContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
-  const [exportingId, setExportingId] = useState<string | null>(null);
+  const [_exportingId, setExportingId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null); // State for the file input
   const [updatingId, setUpdatingId] = useState<string | null>(null); // ID for updating an exam
 
@@ -45,7 +47,7 @@ export const ExamList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [exporting, setExporting] = useState<string | null>(null);
+  const [exporting, _setExporting] = useState<string | null>(null);
 
   // Derived state for unique categories
   const uniqueCategories = useMemo(() => {
@@ -53,6 +55,7 @@ export const ExamList = () => {
       new Set(exams.map((exam) => exam.category).filter(Boolean))
     );
   }, [exams]);
+  
   useEffect(() => {
     setTitle(searchParams.get("title") || "");
     setCategory(searchParams.get("category") || "");
@@ -60,11 +63,16 @@ export const ExamList = () => {
     setEndDate(searchParams.get("endDate") || "");
     setCurrentPage(Number(searchParams.get("page")) || 1);
   }, [searchParams]);
+  
   // Update query parameters in the URL
   const updateQuery = (newParams: Record<string, string | number>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newParams).forEach(([key, value]) => {
-      value ? params.set(key, String(value)) : params.delete(key);
+      if (value) {
+        params.set(key, String(value));
+      } else {
+        params.delete(key);
+      }
     });
     router.push(`?${params.toString()}`);
   };
@@ -95,8 +103,8 @@ export const ExamList = () => {
       } else {
         setExams([]);
       }
-    } catch (err) {
-      setError("Failed to fetch exam data. Please try again.");
+    } catch {
+      // setError("Failed to fetch exam data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -129,7 +137,7 @@ export const ExamList = () => {
         description: "Exam has been exported.",
         variant: "success",
       });
-    } catch (err) {
+    } catch {
       setError(`Failed to export exam with ID: ${examId}`);
     } finally {
       setExportingId(null);
@@ -146,7 +154,7 @@ export const ExamList = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
+      const _response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/exams`,
         formData,
         {
@@ -163,7 +171,7 @@ export const ExamList = () => {
         description: "Exam imported successfully.",
         variant: "success",
       });
-    } catch (err) {
+    } catch {
       setError("Failed to import exam. Please try again.");
     }
   };
@@ -179,7 +187,7 @@ export const ExamList = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.patch(
+      const _response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/exams/${updatingId}`,
         formData,
         {
@@ -193,7 +201,7 @@ export const ExamList = () => {
       setFile(null); // Reset the file input
       setUpdatingId(null); // Clear the updating ID
       fetchExamData(); // Refresh the exam list
-    } catch (err) {
+    } catch {
       setError("Failed to update exam. Please try again.");
     }
   };
@@ -202,6 +210,7 @@ export const ExamList = () => {
   useEffect(() => {
     fetchExamData();
   }, [category, title, startDate, endDate, currentPage]);
+  
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
@@ -370,6 +379,39 @@ export const ExamList = () => {
         </div>
       )}
     </div>
+  );
+};
+
+// Loading fallback component
+const ExamListLoading = () => (
+  <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="text-3xl font-semibold text-gray-800 mb-6 text-center h-8 bg-gray-200 rounded animate-pulse w-64 mx-auto"></div>
+    <div className="mb-6 flex flex-col md:flex-row items-center justify-center gap-4">
+      <div className="h-10 bg-gray-200 rounded w-full md:w-64 animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+    </div>
+    <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+    <div className="overflow-x-auto">
+      <div className="min-w-full bg-white border border-gray-200 rounded-lg p-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-12 bg-gray-200 rounded mb-2 animate-pulse"></div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// Main component with Suspense wrapper
+const ExamList = () => {
+  return (
+    <Suspense fallback={<ExamListLoading />}>
+      <ExamListContent />
+    </Suspense>
   );
 };
 

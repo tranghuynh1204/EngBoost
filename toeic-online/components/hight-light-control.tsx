@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { openModal } from "@/lib/store/modal-slice";
 import { useDispatch } from "react-redux";
-import { MdOutlineLibraryAdd } from "react-icons/md";
 import { TbMessage2Plus } from "react-icons/tb";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 export const HightLightControl = () => {

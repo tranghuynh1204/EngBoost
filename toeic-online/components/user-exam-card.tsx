@@ -4,17 +4,16 @@ import React from "react";
 import { UserExam } from "@/types";
 import { formatTime } from "@/types";
 import { Clock, HelpCircle } from "lucide-react";
-import { AiOutlineComment } from "react-icons/ai";
 import { GiSpellBook } from "react-icons/gi";
 import { TbUserStar } from "react-icons/tb";
-import { TbScoreboard, TbClockEdit } from "react-icons/tb";
+import { TbClockEdit } from "react-icons/tb";
 
 interface UserExamCardProps {
   userExam: UserExam;
 }
 
 const UserExamCard: React.FC<UserExamCardProps> = ({ userExam }) => {
-  const { _id, startTime, duration, result, sections, exam } = userExam;
+  const { startTime, duration, result, sections, exam } = userExam;
 
   // Handle sections display
   const sectionsDisplay =

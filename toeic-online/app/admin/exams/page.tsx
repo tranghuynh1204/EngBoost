@@ -53,7 +53,7 @@ const AdminExamsPage = () => {
   const handleChange = (value: string) => {
     setContent(value);
   };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleUploadSuccess = (result: any) => {
     setData((prevData) => [
       ...prevData,

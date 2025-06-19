@@ -117,6 +117,7 @@ export const UpdateVocabularyModal = () => {
         window.location.reload();
       }, 2000);
     } catch (error) {
+      console.error("Failed to update vocabulary:", error);
     } finally {
       setIsSubmitting(false);
     }

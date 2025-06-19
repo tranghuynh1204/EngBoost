@@ -70,6 +70,7 @@ const LoginPage = () => {
         title: "Login Successful!",
         description: "You have successfully logged in.",
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.response.status === 404) {
         form.setError("email", {

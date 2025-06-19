@@ -203,6 +203,7 @@ export const CreateVocabularyModal = () => {
         }, 1000);
       }
     } catch (error) {
+      console.error("Failed to update vocabulary:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -384,7 +385,7 @@ export const CreateVocabularyModal = () => {
                       control={form.control}
                       name="file"
                       render={({
-                        field: { value, onChange, ...fieldProps },
+                        field: { value: _value, onChange, ...fieldProps },
                       }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className="text-sm text-gray-700 font-semibold">
